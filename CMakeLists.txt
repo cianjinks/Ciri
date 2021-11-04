@@ -26,8 +26,9 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(dependencies/glfw)
 add_subdirectory(dependencies/glad)
+add_subdirectory(dependencies/glm)
 
 file(GLOB_RECURSE source CONFIGURE_DEPENDS "src/*.h" "src/*.hpp" "src/*.cpp")
 
 add_executable(Ciri ${source})
-target_link_libraries(Ciri ${OPENGL_LIBRARIES} glfw glad)
+target_link_libraries(Ciri ${OPENGL_LIBRARIES} glfw glad glm)
