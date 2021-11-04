@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.3)
-
 project(Ciri)
 
 # OpenGL
@@ -50,3 +49,8 @@ file(GLOB_RECURSE source CONFIGURE_DEPENDS "src/*.h" "src/*.hpp" "src/*.cpp")
 add_executable(Ciri ${source} ${imgui-source})
 target_link_libraries(Ciri ${OPENGL_LIBRARIES} glfw glad glm)
 target_include_directories(Ciri PRIVATE ${imgui-directory})
+
+# Visual Studio Startup Project
+if(WIN32)
+	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Ciri)
+endif()
