@@ -24,11 +24,29 @@ set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
+# ImGui
+set(imgui-directory dependencies/imgui)
+set(imgui-source ${imgui-directory}/imconfig.h
+	${imgui-directory}/imgui.h
+	${imgui-directory}/imgui.cpp
+	${imgui-directory}/imgui_draw.cpp
+	${imgui-directory}/imgui_internal.h
+	${imgui-directory}/imgui_widgets.cpp
+	${imgui-directory}/imstb_rectpack.h
+	${imgui-directory}/imstb_textedit.h
+	${imgui-directory}/imstb_truetype.h
+    ${imgui-directory}/imgui_tables.cpp
+	${imgui-directory}/imgui_demo.cpp
+	${imgui-directory}/backends/imgui_impl_glfw.cpp
+	${imgui-directory}/backends/imgui_impl_opengl3.cpp
+)
+
 add_subdirectory(dependencies/glfw)
 add_subdirectory(dependencies/glad)
 add_subdirectory(dependencies/glm)
 
 file(GLOB_RECURSE source CONFIGURE_DEPENDS "src/*.h" "src/*.hpp" "src/*.cpp")
 
-add_executable(Ciri ${source})
+add_executable(Ciri ${source} ${imgui-source})
 target_link_libraries(Ciri ${OPENGL_LIBRARIES} glfw glad glm)
+target_include_directories(Ciri PRIVATE ${imgui-directory})
