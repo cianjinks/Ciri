@@ -19,3 +19,7 @@ The executable will be placed in the corresponding build folder.
 ### Windows
 
 Running `win_setup.bat` will create a Visual Studio solution in the folder `./build`.
+
+## Resources
+
+Test models contained in the `resources` folder were downloaded from Morgan McGuire's [Computer Graphics Archive](https://casual-effects.com/data).
