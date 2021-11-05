@@ -5,6 +5,8 @@
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 
+#include "tiny_obj_loader.h"
+
 #include <glad/glad.h>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -90,6 +92,19 @@ int main()
 
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 110");
+
+    // Test .obj loading
+    tinyobj::attrib_t attrib;
+    std::vector<tinyobj::shape_t> shapes;
+    std::vector<tinyobj::material_t> materials;
+    std::string warn;
+    std::string err;
+    bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, "resources/mesh/cube.obj");
+    if (!ret)
+    {
+        std::cout << "Failed to load object!" << std::endl;
+        std::cout << err << std::endl;
+    }
 
     // Spinning Triangle Test
     glGenBuffers(1, &vertex_buffer);

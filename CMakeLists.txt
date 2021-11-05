@@ -43,11 +43,15 @@ set(imgui-source ${imgui-directory}/imconfig.h
 add_subdirectory(dependencies/glfw)
 add_subdirectory(dependencies/glad)
 add_subdirectory(dependencies/glm)
+add_subdirectory(dependencies/tinyobjloader)
 
 file(GLOB_RECURSE source CONFIGURE_DEPENDS "src/*.h" "src/*.hpp" "src/*.cpp")
 
+# Copy Resources
+file(COPY resources/ DESTINATION ${PROJECT_BINARY_DIR}/resources/)
+
 add_executable(Ciri ${source} ${imgui-source})
-target_link_libraries(Ciri ${OPENGL_LIBRARIES} glfw glad glm)
+target_link_libraries(Ciri ${OPENGL_LIBRARIES} glfw glad glm tinyobjloader)
 target_include_directories(Ciri PRIVATE ${imgui-directory})
 
 # Visual Studio Startup Project
