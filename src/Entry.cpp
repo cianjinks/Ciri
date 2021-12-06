@@ -46,11 +46,11 @@ void poll_input(GLFWwindow *window)
     float cameraSpeed = 5.0f;
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
     {
-        cameraSpeed = 5.0f * deltaTime;
+        cameraSpeed = 10.0f * deltaTime;
     }
     else
     {
-        cameraSpeed = 2.5f * deltaTime;
+        cameraSpeed = 5.0f * deltaTime;
     }
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -90,7 +90,7 @@ void cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
     lastX = xpos;
     lastY = ypos;
 
-    float sensitivity = 0.1f;
+    float sensitivity = 0.05f;
     xoffset *= sensitivity;
     yoffset *= sensitivity;
 
@@ -164,8 +164,12 @@ std::string ParseShaderFromFile(const char *filename)
     }
 }
 
-void loadOBJ(tinyobj::attrib_t &attrib, std::vector<tinyobj::shape_t> &shapes, std::vector<tinyobj::material_t> &materials)
+void loadOBJ(std::vector<tinyobj::real_t> &data)
 {
+    tinyobj::attrib_t attrib;
+    std::vector<tinyobj::shape_t> shapes;
+    std::vector<tinyobj::material_t> materials;
+
     std::string warn;
     std::string err;
     std::string path = "resources/mesh/dragon/";
@@ -189,6 +193,83 @@ void loadOBJ(tinyobj::attrib_t &attrib, std::vector<tinyobj::shape_t> &shapes, s
     for (size_t i = 0; i < materials.size(); i++)
     {
         printf("Material %d: %s\n", i, materials[i].name.c_str());
+    }
+
+    for (size_t s = 0; s < shapes.size(); s++)
+    {
+        for (size_t f = 0; f < shapes[s].mesh.indices.size(); f += 3)
+        {
+            tinyobj::index_t idx0 = shapes[s].mesh.indices[f + 0];
+            tinyobj::index_t idx1 = shapes[s].mesh.indices[f + 1];
+            tinyobj::index_t idx2 = shapes[s].mesh.indices[f + 2];
+
+            float v[3][3];
+            for (int k = 0; k < 3; k++)
+            {
+                int f0 = idx0.vertex_index;
+                int f1 = idx1.vertex_index;
+                int f2 = idx2.vertex_index;
+                assert(f0 >= 0);
+                assert(f1 >= 0);
+                assert(f2 >= 0);
+
+                v[0][k] = attrib.vertices[3 * f0 + k];
+                v[1][k] = attrib.vertices[3 * f1 + k];
+                v[2][k] = attrib.vertices[3 * f2 + k];
+            }
+
+            float n[3][3];
+            {
+                bool invalid_normal_index = false;
+                if (attrib.normals.size() > 0)
+                {
+                    int nf0 = idx0.normal_index;
+                    int nf1 = idx1.normal_index;
+                    int nf2 = idx2.normal_index;
+
+                    if ((nf0 < 0) || (nf1 < 0) || (nf2 < 0))
+                    {
+                        invalid_normal_index = true;
+                    }
+                    else
+                    {
+                        for (int k = 0; k < 3; k++)
+                        {
+                            assert(size_t(3 * nf0 + k) < attrib.normals.size());
+                            assert(size_t(3 * nf1 + k) < attrib.normals.size());
+                            assert(size_t(3 * nf2 + k) < attrib.normals.size());
+                            n[0][k] = attrib.normals[3 * nf0 + k];
+                            n[1][k] = attrib.normals[3 * nf1 + k];
+                            n[2][k] = attrib.normals[3 * nf2 + k];
+                        }
+                    }
+                }
+                else
+                {
+                    invalid_normal_index = true;
+                }
+
+                if (invalid_normal_index)
+                {
+                    n[1][0] = 0.0f;
+                    n[1][1] = 0.0f;
+                    n[1][2] = 0.0f;
+                    n[2][0] = 0.0f;
+                    n[2][1] = 0.0f;
+                    n[2][2] = 0.0f;
+                }
+            }
+
+            for (int k = 0; k < 3; k++)
+            {
+                data.push_back(v[k][0]);
+                data.push_back(v[k][1]);
+                data.push_back(v[k][2]);
+                data.push_back(n[k][0]);
+                data.push_back(n[k][1]);
+                data.push_back(n[k][2]);
+            }
+        }
     }
 }
 
@@ -215,6 +296,8 @@ int main()
     }
 
     glfwMakeContextCurrent(window);
+    glfwSwapInterval(0);
+
     int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     if (!status)
     {
@@ -238,43 +321,8 @@ int main()
     ImGui_ImplOpenGL3_Init("#version 460 core");
 
     // Test .obj loading
-    tinyobj::attrib_t attrib;
-    std::vector<tinyobj::shape_t> shapes;
-    std::vector<tinyobj::material_t> materials;
-    loadOBJ(attrib, shapes, materials);
-
-    std::vector<tinyobj::real_t> buffer;
-    for (size_t s = 0; s < shapes.size(); s++)
-    {
-        for (size_t f = 0; f < shapes[s].mesh.indices.size() / 3; f++)
-        {
-            tinyobj::index_t idx0 = shapes[s].mesh.indices[3 * f + 0];
-            tinyobj::index_t idx1 = shapes[s].mesh.indices[3 * f + 1];
-            tinyobj::index_t idx2 = shapes[s].mesh.indices[3 * f + 2];
-
-            float v[3][3];
-            for (int k = 0; k < 3; k++)
-            {
-                int f0 = idx0.vertex_index;
-                int f1 = idx1.vertex_index;
-                int f2 = idx2.vertex_index;
-                assert(f0 >= 0);
-                assert(f1 >= 0);
-                assert(f2 >= 0);
-
-                v[0][k] = attrib.vertices[3 * f0 + k];
-                v[1][k] = attrib.vertices[3 * f1 + k];
-                v[2][k] = attrib.vertices[3 * f2 + k];
-            }
-
-            for (int k = 0; k < 3; k++)
-            {
-                buffer.push_back(v[k][0]);
-                buffer.push_back(v[k][1]);
-                buffer.push_back(v[k][2]);
-            }
-        }
-    }
+    std::vector<tinyobj::real_t> data;
+    loadOBJ(data);
 
 #if 0
     // Test Cube
@@ -305,6 +353,8 @@ int main()
     const char *vertexSrc = vertexShader.c_str();
     const char *fragSrc = fragmentShader.c_str();
 
+    glEnable(GL_DEPTH_TEST);
+
     GLuint vaoID;
     glGenVertexArrays(1, &vaoID);
     glBindVertexArray(vaoID);
@@ -312,9 +362,11 @@ int main()
     GLuint vboID;
     glGenBuffers(1, &vboID);
     glBindBuffer(GL_ARRAY_BUFFER, vboID);
-    glBufferData(GL_ARRAY_BUFFER, buffer.size() * sizeof(float), buffer.data(), GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+    glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), data.data(), GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     // GLuint iboID;
     // glGenBuffers(1, &iboID);
@@ -354,6 +406,10 @@ int main()
         ImGui::Text("Version: OpenGL %s", glGetString(GL_VERSION));
         ImGui::Text("Vendor: %s", glGetString(GL_VENDOR));
         ImGui::Text("Renderer: %s", glGetString(GL_RENDERER));
+        ImGui::Separator();
+        ImGui::Text("Triangles: %d", data.size() / (3 + 3));
+        ImGui::Text("Frame Time: %fms", deltaTime * 1000);
+        ImGui::Text("FPS: %f", 1.0f / deltaTime);
         ImGui::End();
 
         ImGui::Render();
@@ -384,7 +440,7 @@ int main()
         glUseProgram(programID);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
         // glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-        glDrawArrays(GL_TRIANGLES, 0, 3 * buffer.size() / 3);
+        glDrawArrays(GL_TRIANGLES, 0, data.size() / (3 + 3)); // (3 pos, 3 normal)
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
