@@ -1,6 +1,7 @@
 [] - Load and display obj models (rasterization)
     [X] - Separate shaders into files
-    [] -
+    [X] - Basic test camera system
+    [] - Load indices and vertices
 [] - Design code structure (Entry, Application, Renderer, etc)
     [] - Scene structure (objects, primitives?)
 [] - ImGUIzmo

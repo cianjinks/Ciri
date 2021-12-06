@@ -16,6 +16,118 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+// Window
+const int WINDOW_WIDTH = 1080;
+const int WINDOW_HEIGHT = 720;
+
+// Camera
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+bool firstMouse = true;
+float lastX = (float)WINDOW_WIDTH / 2;
+float lastY = (float)WINDOW_HEIGHT / 2;
+float yaw = -90.0f;
+float pitch = 0.0f;
+
+void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
+{
+}
+
+void poll_input(GLFWwindow *window)
+{
+    if (glfwGetInputMode(window, GLFW_CURSOR) != GLFW_CURSOR_DISABLED)
+    {
+        return;
+    }
+
+    float cameraSpeed = 5.0f;
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+    {
+        cameraSpeed = 5.0f * deltaTime;
+    }
+    else
+    {
+        cameraSpeed = 2.5f * deltaTime;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    {
+        cameraPos += cameraSpeed * cameraFront;
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    {
+        cameraPos -= cameraSpeed * cameraFront;
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    {
+        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    {
+        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    }
+}
+
+void cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
+{
+    if (glfwGetInputMode(window, GLFW_CURSOR) != GLFW_CURSOR_DISABLED)
+    {
+        return;
+    }
+
+    if (firstMouse)
+    {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos;
+    lastX = xpos;
+    lastY = ypos;
+
+    float sensitivity = 0.1f;
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+    yaw += xoffset;
+    pitch += yoffset;
+
+    if (pitch > 89.0f)
+        pitch = 89.0f;
+    if (pitch < -89.0f)
+        pitch = -89.0f;
+
+    glm::vec3 direction;
+    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    direction.y = sin(glm::radians(pitch));
+    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    cameraFront = glm::normalize(direction);
+}
+
+void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
+{
+    if (ImGui::GetIO().WantCaptureMouse)
+    {
+        return;
+    }
+
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+    {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
+
+    if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+    {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        firstMouse = true;
+    }
+}
+
 void ErrorHandleShader(GLuint &shader)
 {
     GLint result;
@@ -52,6 +164,37 @@ std::string ParseShaderFromFile(const char *filename)
     }
 }
 
+void loadOBJ()
+{
+    tinyobj::attrib_t attrib;
+    std::vector<tinyobj::shape_t> shapes;
+    std::vector<tinyobj::material_t> materials;
+    std::string warn;
+    std::string err;
+    std::string path = "resources/mesh/cornellbox/";
+    std::string objFile = "CornellBox-Original.obj";
+    std::string obj = path + objFile;
+
+    bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, obj.c_str(), path.c_str());
+    if (!ret)
+    {
+        std::cout << "Failed to load object!" << std::endl;
+        std::cout << err << std::endl;
+    }
+
+    printf("Successfully loaded %s - Shapes: %d | Materials: %d\n", objFile.c_str(), shapes.size(), materials.size());
+    for (size_t i = 0; i < shapes.size(); i++)
+    {
+        // Why is tallbox missing?
+        printf("Shape %d: %s\n", i, shapes[i].name.c_str());
+    }
+    printf("\n");
+    for (size_t i = 0; i < materials.size(); i++)
+    {
+        printf("Material %d: %s\n", i, materials[i].name.c_str());
+    }
+}
+
 int main()
 {
     GLFWwindow *window;
@@ -63,11 +206,8 @@ int main()
         return 0;
     }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-
-    const int WINDOW_WIDTH = 1080;
-    const int WINDOW_HEIGHT = 720;
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
 
     window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Simple example", nullptr, nullptr);
     if (!window)
@@ -85,13 +225,15 @@ int main()
         return 0;
     }
 
+    glfwSetKeyCallback(window, key_callback);
+    glfwSetCursorPosCallback(window, cursor_position_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
+
     // ImGUI
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
     (void)io;
-    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
     ImGui::StyleColorsDark();
 
@@ -99,28 +241,51 @@ int main()
     ImGui_ImplOpenGL3_Init("#version 460 core");
 
     // Test .obj loading
-    tinyobj::attrib_t attrib;
-    std::vector<tinyobj::shape_t> shapes;
-    std::vector<tinyobj::material_t> materials;
-    std::string warn;
-    std::string err;
-    bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, "resources/mesh/cube.obj");
-    if (!ret)
-    {
-        std::cout << "Failed to load object!" << std::endl;
-        std::cout << err << std::endl;
-    }
+    loadOBJ();
 
-    // Spinning Triangle Test
-    static const struct
-    {
-        float x, y;
-        float r, g, b;
-    } vertices[3] =
-        {
-            {-0.6f, -0.4f, 1.f, 0.f, 0.f},
-            {0.6f, -0.4f, 0.f, 1.f, 0.f},
-            {0.f, 0.6f, 0.f, 0.f, 1.f}};
+    // Test Cube
+    float vertices[] = {
+        -0.5f, -0.5f, -0.5f,
+        0.5f, -0.5f, -0.5f,
+        0.5f, 0.5f, -0.5f,
+        0.5f, 0.5f, -0.5f,
+        -0.5f, 0.5f, -0.5f,
+        -0.5f, -0.5f, -0.5f,
+
+        -0.5f, -0.5f, 0.5f,
+        0.5f, -0.5f, 0.5f,
+        0.5f, 0.5f, 0.5f,
+        0.5f, 0.5f, 0.5f,
+        -0.5f, 0.5f, 0.5f,
+        -0.5f, -0.5f, 0.5f,
+
+        -0.5f, 0.5f, 0.5f,
+        -0.5f, 0.5f, -0.5f,
+        -0.5f, -0.5f, -0.5f,
+        -0.5f, -0.5f, -0.5f,
+        -0.5f, -0.5f, 0.5f,
+        -0.5f, 0.5f, 0.5f,
+
+        0.5f, 0.5f, 0.5f,
+        0.5f, 0.5f, -0.5f,
+        0.5f, -0.5f, -0.5f,
+        0.5f, -0.5f, -0.5f,
+        0.5f, -0.5f, 0.5f,
+        0.5f, 0.5f, 0.5f,
+
+        -0.5f, -0.5f, -0.5f,
+        0.5f, -0.5f, -0.5f,
+        0.5f, -0.5f, 0.5f,
+        0.5f, -0.5f, 0.5f,
+        -0.5f, -0.5f, 0.5f,
+        -0.5f, -0.5f, -0.5f,
+
+        -0.5f, 0.5f, -0.5f,
+        0.5f, 0.5f, -0.5f,
+        0.5f, 0.5f, 0.5f,
+        0.5f, 0.5f, 0.5f,
+        -0.5f, 0.5f, 0.5f,
+        -0.5f, 0.5f, -0.5f};
 
     std::string vertexShader = ParseShaderFromFile("resources/shader/test.vert");
     std::string fragmentShader = ParseShaderFromFile("resources/shader/test.frag");
@@ -135,10 +300,8 @@ int main()
     glGenBuffers(1, &vboID);
     glBindBuffer(GL_ARRAY_BUFFER, vboID);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(vertices[0]), (void *)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertices[0]), (void *)(sizeof(float) * 2));
-    glEnableVertexAttribArray(1);
 
     GLuint vertShaderObj = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertShaderObj, 1, &vertexSrc, NULL);
@@ -180,24 +343,29 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
 
-        float ratio;
-        int width, height;
-        glm::mat4 m, p, mvp;
+        poll_input(window);
 
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
+        int width, height;
         glfwGetFramebufferSize(window, &width, &height);
-        ratio = width / (float)height;
 
         glViewport(0, 0, width, height);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        m = glm::mat4(1.0f);
-        m = glm::rotate(m, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
-        p = glm::ortho(-ratio, ratio, -1.0f, 1.0f, 1.0f, -1.0f);
-        mvp = p * m;
+        // Projection
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
+        glm::mat4 view = glm::mat4(1.0f);
+        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        glm::mat4 model = glm::mat4(1.0f);
+        // model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+        glm::mat4 mvp = projection * view * model;
 
         glUseProgram(programID);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
