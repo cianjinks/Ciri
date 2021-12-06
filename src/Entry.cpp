@@ -164,15 +164,12 @@ std::string ParseShaderFromFile(const char *filename)
     }
 }
 
-void loadOBJ()
+void loadOBJ(tinyobj::attrib_t &attrib, std::vector<tinyobj::shape_t> &shapes, std::vector<tinyobj::material_t> &materials)
 {
-    tinyobj::attrib_t attrib;
-    std::vector<tinyobj::shape_t> shapes;
-    std::vector<tinyobj::material_t> materials;
     std::string warn;
     std::string err;
-    std::string path = "resources/mesh/cornellbox/";
-    std::string objFile = "CornellBox-Original.obj";
+    std::string path = "resources/mesh/dragon/";
+    std::string objFile = "dragon.obj";
     std::string obj = path + objFile;
 
     bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, obj.c_str(), path.c_str());
@@ -209,7 +206,7 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
 
-    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Simple example", nullptr, nullptr);
+    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "OBJ Loading", nullptr, nullptr);
     if (!window)
     {
         glfwTerminate();
@@ -241,8 +238,45 @@ int main()
     ImGui_ImplOpenGL3_Init("#version 460 core");
 
     // Test .obj loading
-    loadOBJ();
+    tinyobj::attrib_t attrib;
+    std::vector<tinyobj::shape_t> shapes;
+    std::vector<tinyobj::material_t> materials;
+    loadOBJ(attrib, shapes, materials);
 
+    std::vector<tinyobj::real_t> buffer;
+    for (size_t s = 0; s < shapes.size(); s++)
+    {
+        for (size_t f = 0; f < shapes[s].mesh.indices.size() / 3; f++)
+        {
+            tinyobj::index_t idx0 = shapes[s].mesh.indices[3 * f + 0];
+            tinyobj::index_t idx1 = shapes[s].mesh.indices[3 * f + 1];
+            tinyobj::index_t idx2 = shapes[s].mesh.indices[3 * f + 2];
+
+            float v[3][3];
+            for (int k = 0; k < 3; k++)
+            {
+                int f0 = idx0.vertex_index;
+                int f1 = idx1.vertex_index;
+                int f2 = idx2.vertex_index;
+                assert(f0 >= 0);
+                assert(f1 >= 0);
+                assert(f2 >= 0);
+
+                v[0][k] = attrib.vertices[3 * f0 + k];
+                v[1][k] = attrib.vertices[3 * f1 + k];
+                v[2][k] = attrib.vertices[3 * f2 + k];
+            }
+
+            for (int k = 0; k < 3; k++)
+            {
+                buffer.push_back(v[k][0]);
+                buffer.push_back(v[k][1]);
+                buffer.push_back(v[k][2]);
+            }
+        }
+    }
+
+#if 0
     // Test Cube
     float vertices[] = {
         -0.5f, -0.5f, -0.5f,
@@ -263,7 +297,8 @@ int main()
         -0.5f, 0.5f, 0.5f,
         0.5f, 0.5f, 0.5f};
 
-    int indices[] = {0, 1, 5, 5, 1, 6, 1, 2, 6, 6, 2, 7, 2, 3, 7, 7, 3, 8, 3, 4, 8, 8, 4, 9, 10, 11, 0, 0, 11, 1, 5, 6, 12, 12, 6, 13};
+    unsigned int indices[] = {0, 1, 5, 5, 1, 6, 1, 2, 6, 6, 2, 7, 2, 3, 7, 7, 3, 8, 3, 4, 8, 8, 4, 9, 10, 11, 0, 0, 11, 1, 5, 6, 12, 12, 6, 13};
+#endif
 
     std::string vertexShader = ParseShaderFromFile("resources/shader/test.vert");
     std::string fragmentShader = ParseShaderFromFile("resources/shader/test.frag");
@@ -277,14 +312,14 @@ int main()
     GLuint vboID;
     glGenBuffers(1, &vboID);
     glBindBuffer(GL_ARRAY_BUFFER, vboID);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, buffer.size() * sizeof(float), buffer.data(), GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
 
-    GLuint iboID;
-    glGenBuffers(1, &iboID);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboID);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    // GLuint iboID;
+    // glGenBuffers(1, &iboID);
+    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboID);
+    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     GLuint vertShaderObj = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertShaderObj, 1, &vertexSrc, NULL);
@@ -348,7 +383,8 @@ int main()
 
         glUseProgram(programID);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        // glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        glDrawArrays(GL_TRIANGLES, 0, 3 * buffer.size() / 3);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);

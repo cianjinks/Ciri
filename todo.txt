@@ -2,6 +2,7 @@
     [X] - Separate shaders into files
     [X] - Basic test camera system
     [] - Load indices and vertices
+    [] - Choose file to load from within program (file browser)
 [] - Design code structure (Entry, Application, Renderer, etc)
     [] - Scene structure (objects, primitives?)
 [] - ImGUIzmo
