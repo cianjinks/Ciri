@@ -1,0 +1,7 @@
+[] - Load and display obj models (rasterization)
+    [X] - Separate shaders into files
+    [] -
+[] - Design code structure (Entry, Application, Renderer, etc)
+    [] - Scene structure (objects, primitives?)
+[] - ImGUIzmo
+[] -

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -15,44 +16,45 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-static const struct
+void ErrorHandleShader(GLuint &shader)
 {
-    float x, y;
-    float r, g, b;
-} vertices[3] =
+    GLint result;
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
+    if (result == GL_FALSE)
     {
-        {-0.6f, -0.4f, 1.f, 0.f, 0.f},
-        {0.6f, -0.4f, 0.f, 1.f, 0.f},
-        {0.f, 0.6f, 0.f, 0.f, 1.f}};
+        GLint length;
+        glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
+        GLchar *log = new GLchar[length];
+        glGetShaderInfoLog(shader, length, &length, log);
+        std::cout << log << std::endl;
+        delete log;
+        glDeleteShader(shader);
+    }
+}
 
-static const char *vertex_shader_text =
-    "#version 110\n"
-    "uniform mat4 MVP;\n"
-    "attribute vec3 vCol;\n"
-    "attribute vec2 vPos;\n"
-    "varying vec3 color;\n"
-    "void main()\n"
-    "{\n"
-    "    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
-    "    color = vCol;\n"
-    "}\n";
-
-static const char *fragment_shader_text =
-    "#version 110\n"
-    "varying vec3 color;\n"
-    "void main()\n"
-    "{\n"
-    "    gl_FragColor = vec4(color, 1.0);\n"
-    "}\n";
-
-const int WINDOW_WIDTH = 1080;
-const int WINDOW_HEIGHT = 720;
+std::string ParseShaderFromFile(const char *filename)
+{
+    std::ifstream in(filename, std::ios::in);
+    if (in)
+    {
+        std::string contents;
+        in.seekg(0, std::ios::end);
+        contents.resize(in.tellg());
+        in.seekg(0, std::ios::beg);
+        in.read(&contents[0], contents.size());
+        in.close();
+        return contents;
+    }
+    else
+    {
+        std::cout << "Error parsing shader!" << std::endl;
+        return NULL;
+    }
+}
 
 int main()
 {
     GLFWwindow *window;
-    GLuint vertex_buffer, vertex_shader, fragment_shader, program;
-    GLint mvp_location, vpos_location, vcol_location;
 
     // GLFW and Glad
     if (!glfwInit())
@@ -63,6 +65,9 @@ int main()
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+
+    const int WINDOW_WIDTH = 1080;
+    const int WINDOW_HEIGHT = 720;
 
     window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Simple example", nullptr, nullptr);
     if (!window)
@@ -85,13 +90,13 @@ int main()
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
     (void)io;
-    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
     ImGui::StyleColorsDark();
 
     ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init("#version 110");
+    ImGui_ImplOpenGL3_Init("#version 460 core");
 
     // Test .obj loading
     tinyobj::attrib_t attrib;
@@ -107,33 +112,53 @@ int main()
     }
 
     // Spinning Triangle Test
-    glGenBuffers(1, &vertex_buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+    static const struct
+    {
+        float x, y;
+        float r, g, b;
+    } vertices[3] =
+        {
+            {-0.6f, -0.4f, 1.f, 0.f, 0.f},
+            {0.6f, -0.4f, 0.f, 1.f, 0.f},
+            {0.f, 0.6f, 0.f, 0.f, 1.f}};
+
+    std::string vertexShader = ParseShaderFromFile("resources/shader/test.vert");
+    std::string fragmentShader = ParseShaderFromFile("resources/shader/test.frag");
+    const char *vertexSrc = vertexShader.c_str();
+    const char *fragSrc = fragmentShader.c_str();
+
+    GLuint vaoID;
+    glGenVertexArrays(1, &vaoID);
+    glBindVertexArray(vaoID);
+
+    GLuint vboID;
+    glGenBuffers(1, &vboID);
+    glBindBuffer(GL_ARRAY_BUFFER, vboID);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(vertices[0]), (void *)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertices[0]), (void *)(sizeof(float) * 2));
+    glEnableVertexAttribArray(1);
 
-    vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
-    glCompileShader(vertex_shader);
+    GLuint vertShaderObj = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertShaderObj, 1, &vertexSrc, NULL);
+    glCompileShader(vertShaderObj);
 
-    fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
-    glCompileShader(fragment_shader);
+    ErrorHandleShader(vertShaderObj);
 
-    program = glCreateProgram();
-    glAttachShader(program, vertex_shader);
-    glAttachShader(program, fragment_shader);
-    glLinkProgram(program);
+    GLuint fragShaderObj = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragShaderObj, 1, &fragSrc, NULL);
+    glCompileShader(fragShaderObj);
 
-    mvp_location = glGetUniformLocation(program, "MVP");
-    vpos_location = glGetAttribLocation(program, "vPos");
-    vcol_location = glGetAttribLocation(program, "vCol");
+    ErrorHandleShader(fragShaderObj);
 
-    glEnableVertexAttribArray(vpos_location);
-    glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE,
-                          sizeof(vertices[0]), (void *)0);
-    glEnableVertexAttribArray(vcol_location);
-    glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
-                          sizeof(vertices[0]), (void *)(sizeof(float) * 2));
+    GLuint programID = glCreateProgram();
+    glAttachShader(programID, vertShaderObj);
+    glAttachShader(programID, fragShaderObj);
+    glLinkProgram(programID);
+    glValidateProgram(programID);
+
+    GLuint mvp_location = glGetUniformLocation(programID, "u_MVP");
 
     while (!glfwWindowShouldClose(window))
     {
@@ -170,7 +195,7 @@ int main()
         p = glm::ortho(-ratio, ratio, -1.0f, 1.0f, 1.0f, -1.0f);
         mvp = p * m;
 
-        glUseProgram(program);
+        glUseProgram(programID);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
