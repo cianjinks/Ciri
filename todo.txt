@@ -1,8 +1,10 @@
 [] - Load and display obj models (rasterization)
     [X] - Separate shaders into files
     [X] - Basic test camera system
-    [] - Load indices and vertices
+    [X] - Load indices and vertices
+    [] - Load materials
     [] - Choose file to load from within program (file browser)
+    [] - Hotswap shaders (default, normal, texcoord)
 [] - Design code structure (Entry, Application, Renderer, etc)
     [] - Scene structure (objects, primitives?)
 [] - ImGUIzmo

@@ -40,6 +40,9 @@ set(imgui-source ${imgui-directory}/imconfig.h
 	${imgui-directory}/backends/imgui_impl_opengl3.cpp
 )
 
+# stb_image
+set(stb_image-include dependencies/stb_image/include)
+
 add_subdirectory(dependencies/glfw)
 add_subdirectory(dependencies/glad)
 add_subdirectory(dependencies/glm)
@@ -53,6 +56,7 @@ file(COPY resources/ DESTINATION ${PROJECT_BINARY_DIR}/resources/)
 add_executable(Ciri ${source} ${imgui-source})
 target_link_libraries(Ciri ${OPENGL_LIBRARIES} glfw glad glm tinyobjloader)
 target_include_directories(Ciri PRIVATE ${imgui-directory})
+target_include_directories(Ciri PRIVATE ${stb_image-include})
 
 # Visual Studio Startup Project
 if(WIN32)

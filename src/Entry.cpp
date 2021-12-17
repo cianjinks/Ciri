@@ -12,6 +12,9 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -134,6 +137,7 @@ void ErrorHandleShader(GLuint &shader)
     glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
     if (result == GL_FALSE)
     {
+        std::cout << "Shader " << shader << " failed:" << std::endl;
         GLint length;
         glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
         GLchar *log = new GLchar[length];
@@ -172,8 +176,8 @@ void loadOBJ(std::vector<tinyobj::real_t> &data)
 
     std::string warn;
     std::string err;
-    std::string path = "resources/mesh/dragon/";
-    std::string objFile = "dragon.obj";
+    std::string path = "resources/mesh/cube/";
+    std::string objFile = "cube.obj";
     std::string obj = path + objFile;
 
     bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, obj.c_str(), path.c_str());
@@ -184,17 +188,82 @@ void loadOBJ(std::vector<tinyobj::real_t> &data)
     }
 
     printf("Successfully loaded %s - Shapes: %d | Materials: %d\n", objFile.c_str(), shapes.size(), materials.size());
+    if (!warn.empty())
+    {
+        std::cout << warn << std::endl;
+    }
     for (size_t i = 0; i < shapes.size(); i++)
     {
-        // Why is tallbox missing?
         printf("Shape %d: %s\n", i, shapes[i].name.c_str());
     }
     printf("\n");
+    materials.push_back(tinyobj::material_t());
     for (size_t i = 0; i < materials.size(); i++)
     {
         printf("Material %d: %s\n", i, materials[i].name.c_str());
     }
 
+    for (size_t s = 0; s < shapes.size(); s++)
+    {
+        int offset = 0;
+
+        for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++)
+        {
+            for (int v = 0; v < 3; v++)
+            {
+                tinyobj::index_t index = shapes[s].mesh.indices[offset + v];
+
+                // Vertices
+                tinyobj::real_t vx = attrib.vertices[3 * index.vertex_index + 0];
+                tinyobj::real_t vy = attrib.vertices[3 * index.vertex_index + 1];
+                tinyobj::real_t vz = attrib.vertices[3 * index.vertex_index + 2];
+
+                // Normals
+                tinyobj::real_t nx;
+                tinyobj::real_t ny;
+                tinyobj::real_t nz;
+                if (attrib.normals.size() > 0)
+                {
+                    nx = attrib.normals[3 * index.normal_index + 0];
+                    ny = attrib.normals[3 * index.normal_index + 1];
+                    nz = attrib.normals[3 * index.normal_index + 2];
+                }
+                else
+                {
+                    nx = 0.0f;
+                    ny = 0.0f;
+                    nz = 0.0f;
+                }
+
+                // Texture Coordinates
+                tinyobj::real_t tx;
+                tinyobj::real_t ty;
+                if (attrib.texcoords.size() > 0)
+                {
+                    tx = attrib.texcoords[2 * index.texcoord_index + 0];
+                    ty = attrib.texcoords[2 * index.texcoord_index + 1];
+                }
+                else
+                {
+                    tx = 0.0f;
+                    ty = 0.0f;
+                }
+
+                data.push_back(vx);
+                data.push_back(vy);
+                data.push_back(vz);
+                data.push_back(nx);
+                data.push_back(ny);
+                data.push_back(nz);
+                data.push_back(tx);
+                data.push_back(ty);
+            }
+
+            offset += 3;
+        }
+    }
+
+#if 0
     for (size_t s = 0; s < shapes.size(); s++)
     {
         for (size_t f = 0; f < shapes[s].mesh.indices.size(); f += 3)
@@ -271,6 +340,7 @@ void loadOBJ(std::vector<tinyobj::real_t> &data)
             }
         }
     }
+#endif
 }
 
 int main()
@@ -363,10 +433,12 @@ int main()
     glGenBuffers(1, &vboID);
     glBindBuffer(GL_ARRAY_BUFFER, vboID);
     glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), data.data(), GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(2 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     // GLuint iboID;
     // glGenBuffers(1, &iboID);
@@ -440,7 +512,7 @@ int main()
         glUseProgram(programID);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
         // glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-        glDrawArrays(GL_TRIANGLES, 0, data.size() / (3 + 3)); // (3 pos, 3 normal)
+        glDrawArrays(GL_TRIANGLES, 0, data.size() / (3 + 3 + 2)); // (3 pos, 3 normal, 2 texcoord)
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
