@@ -6,9 +6,7 @@ in vec3 v_Normal;
 in vec3 v_Color;
 in vec2 v_TexCoord;
 
-uniform sampler2D u_DiffuseTexture;
-
 void main()
 {
-    a_Color = texture(u_DiffuseTexture, v_TexCoord) * vec4(v_Color, 1.0f);
+    a_Color = vec4(v_Color, 1.0f);
 }

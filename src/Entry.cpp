@@ -261,26 +261,25 @@ void loadOBJ(RenderData *renderData)
                 {
                     std::cerr << "Unable to load texture: " << std::endl;
                 }
-                std::cout << "Loaded texture: "
-                          << ", w = " << w << ", h = " << h << ", nrChannels = " << nrChannels << std::endl;
+                std::cout << "Loaded texture: " << texture_filename << ", w = " << w << ", h = " << h << ", nrChannels = " << nrChannels << std::endl;
 
                 glGenTextures(1, &textureID);
                 glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, textureID);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
                 if (nrChannels == 3)
                 {
                     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-                    glGenerateMipmap(GL_TEXTURE_2D);
+                    // glGenerateMipmap(GL_TEXTURE_2D);
                 }
                 else if (nrChannels == 4)
                 {
                     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-                    glGenerateMipmap(GL_TEXTURE_2D);
+                    // glGenerateMipmap(GL_TEXTURE_2D);
                 }
                 else
                 {
@@ -292,6 +291,10 @@ void loadOBJ(RenderData *renderData)
                 renderData->textureMap.insert(std::make_pair(materials[m].diffuse_texname, textureID));
             }
         }
+        else
+        {
+            printf("No diffuse texture for material: %s\n", materials[m].name.c_str());
+        }
     }
 
     for (size_t s = 0; s < shapes.size(); s++)
@@ -302,6 +305,17 @@ void loadOBJ(RenderData *renderData)
 
         for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++)
         {
+            int currentMaterialID = shapes[s].mesh.material_ids[f];
+            if ((currentMaterialID < 0) || (currentMaterialID >= static_cast<int>(materials.size())))
+            {
+                currentMaterialID = materials.size() - 1;
+                std::cout << "Invalid current material id for mesh" << std::endl;
+            }
+            // color = diffuse * ambient
+            float cx = materials[currentMaterialID].diffuse[0] * materials[currentMaterialID].ambient[0];
+            float cy = materials[currentMaterialID].diffuse[1] * materials[currentMaterialID].ambient[1];
+            float cz = materials[currentMaterialID].diffuse[2] * materials[currentMaterialID].ambient[2];
+
             for (int v = 0; v < 3; v++)
             {
                 tinyobj::index_t index = shapes[s].mesh.indices[offset + v];
@@ -331,10 +345,12 @@ void loadOBJ(RenderData *renderData)
                 // Texture Coordinates
                 tinyobj::real_t tx;
                 tinyobj::real_t ty;
-                if (attrib.texcoords.size() > 0)
+                size_t tindex_x = 2 * index.texcoord_index + 0;
+                size_t tindex_y = 2 * index.texcoord_index + 1;
+                if (attrib.texcoords.size() > 0 && tindex_x < attrib.texcoords.size() && tindex_y < attrib.texcoords.size())
                 {
-                    tx = attrib.texcoords[2 * index.texcoord_index + 0];
-                    ty = attrib.texcoords[2 * index.texcoord_index + 1];
+                    tx = attrib.texcoords[tindex_x];
+                    ty = attrib.texcoords[tindex_y];
                 }
                 else
                 {
@@ -348,6 +364,9 @@ void loadOBJ(RenderData *renderData)
                 data.push_back(nx);
                 data.push_back(ny);
                 data.push_back(nz);
+                data.push_back(cx);
+                data.push_back(cy);
+                data.push_back(cz);
                 data.push_back(tx);
                 data.push_back(ty);
             }
@@ -355,7 +374,7 @@ void loadOBJ(RenderData *renderData)
             offset += 3;
         }
 
-        // Texture (no per face materials/textures yet)
+        // Texture (no per face textures yet)
         int materialID = shapes[s].mesh.material_ids[0];
         if ((materialID < 0) || (materialID >= static_cast<int>(materials.size())))
         {
@@ -379,14 +398,16 @@ void loadOBJ(RenderData *renderData)
             glBindBuffer(GL_ARRAY_BUFFER, mesh.vboID);
             glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), data.data(), GL_STATIC_DRAW);
 
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 0);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), 0);
             glEnableVertexAttribArray(0);
-            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void *)(3 * sizeof(float)));
             glEnableVertexAttribArray(1);
-            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
+            glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void *)(6 * sizeof(float)));
             glEnableVertexAttribArray(2);
+            glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void *)(9 * sizeof(float)));
+            glEnableVertexAttribArray(3);
 
-            mesh.triCount = data.size() / (3 + 3 + 2) / 3; // (3 pos, 3 normal, 2 texcoord)
+            mesh.triCount = data.size() / (3 + 3 + 3 + 2) / 3; // (3 pos, 3 normal, 3 color, 2 texcoord)
             renderData->totalTriCount += mesh.triCount;
         }
 
@@ -454,31 +475,45 @@ int main()
     RenderData renderData;
     loadOBJ(&renderData);
 
-    std::string vertexShader = ParseShaderFromFile("resources/shader/base.vert");
-    std::string fragmentShader = ParseShaderFromFile("resources/shader/texture.frag");
-    const char *vertexSrc = vertexShader.c_str();
-    const char *fragSrc = fragmentShader.c_str();
+    // Texture Shader
+    std::string baseVertexShader = ParseShaderFromFile("resources/shader/base.vert");
+    std::string textureFragmentShader = ParseShaderFromFile("resources/shader/texture.frag");
+    const char *baseVertexSrc = baseVertexShader.c_str();
+    const char *textureFragSrc = textureFragmentShader.c_str();
 
-    GLuint vertShaderObj = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertShaderObj, 1, &vertexSrc, NULL);
-    glCompileShader(vertShaderObj);
+    GLuint baseVertShaderObj = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(baseVertShaderObj, 1, &baseVertexSrc, NULL);
+    glCompileShader(baseVertShaderObj);
 
-    ErrorHandleShader(vertShaderObj);
+    ErrorHandleShader(baseVertShaderObj);
 
-    GLuint fragShaderObj = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragShaderObj, 1, &fragSrc, NULL);
-    glCompileShader(fragShaderObj);
+    GLuint textureFragShaderObj = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(textureFragShaderObj, 1, &textureFragSrc, NULL);
+    glCompileShader(textureFragShaderObj);
 
-    ErrorHandleShader(fragShaderObj);
+    ErrorHandleShader(textureFragShaderObj);
 
-    GLuint programID = glCreateProgram();
-    glAttachShader(programID, vertShaderObj);
-    glAttachShader(programID, fragShaderObj);
-    glLinkProgram(programID);
-    glValidateProgram(programID);
+    GLuint textureProgramID = glCreateProgram();
+    glAttachShader(textureProgramID, baseVertShaderObj);
+    glAttachShader(textureProgramID, textureFragShaderObj);
+    glLinkProgram(textureProgramID);
+    glValidateProgram(textureProgramID);
 
-    GLuint mvp_location = glGetUniformLocation(programID, "u_MVP");
-    GLuint texture_location = glGetUniformLocation(programID, "u_DiffuseTexture");
+    // Diffuse Shader
+    std::string diffuseFragmentShader = ParseShaderFromFile("resources/shader/diffuse.frag");
+    const char *diffuseFragSrc = diffuseFragmentShader.c_str();
+
+    GLuint diffuseFragShaderObj = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(diffuseFragShaderObj, 1, &diffuseFragSrc, NULL);
+    glCompileShader(diffuseFragShaderObj);
+
+    ErrorHandleShader(diffuseFragShaderObj);
+
+    GLuint diffuseProgramID = glCreateProgram();
+    glAttachShader(diffuseProgramID, baseVertShaderObj);
+    glAttachShader(diffuseProgramID, diffuseFragShaderObj);
+    glLinkProgram(diffuseProgramID);
+    glValidateProgram(diffuseProgramID);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -527,18 +562,33 @@ int main()
         // model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
         glm::mat4 mvp = projection * view * model;
 
-        glUseProgram(programID);
-        glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
-        glUniform1i(texture_location, 0);
-
         for (Mesh &m : renderData.meshes)
         {
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, m.textureID);
+            GLuint currentProgramID = 0;
+            if (m.textureID == 0)
+            {
+                glUseProgram(diffuseProgramID);
+                currentProgramID = diffuseProgramID;
+            }
+            else
+            {
+                glUseProgram(textureProgramID);
+                currentProgramID = textureProgramID;
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, m.textureID);
+            }
+            GLuint mvp_location = glGetUniformLocation(currentProgramID, "u_MVP");
+            GLuint texture_location = glGetUniformLocation(currentProgramID, "u_DiffuseTexture");
+            glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
+            glUniform1i(texture_location, 0);
+
             glBindVertexArray(m.vaoID);
+
             glDrawArrays(GL_TRIANGLES, 0, 3 * m.triCount);
+
             glBindVertexArray(0);
             glBindTexture(GL_TEXTURE_2D, 0);
+            glUseProgram(0);
         }
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
