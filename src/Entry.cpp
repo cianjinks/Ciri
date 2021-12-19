@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <map>
+#include <algorithm>
 
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -20,8 +22,8 @@
 #include <glm/gtc/type_ptr.hpp>
 
 // Window
-const int WINDOW_WIDTH = 1080;
-const int WINDOW_HEIGHT = 720;
+const int WINDOW_WIDTH = 1600;
+const int WINDOW_HEIGHT = 900;
 
 // Camera
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
@@ -35,6 +37,27 @@ float lastY = (float)WINDOW_HEIGHT / 2;
 float yaw = -90.0f;
 float pitch = 0.0f;
 
+float cameraSpeedHigh = 10.0f;
+float cameraSpeedLow = 5.0f;
+float renderDistance = 10000.0f;
+
+bool debug = false;
+
+struct Mesh
+{
+    GLuint vaoID = 0;
+    GLuint vboID = 0;
+    GLuint textureID = 0;
+    int triCount = 0;
+};
+
+struct RenderData
+{
+    std::vector<Mesh> meshes;
+    std::map<std::string, GLuint> textureMap;
+    int totalTriCount = 0;
+};
+
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
 }
@@ -46,14 +69,14 @@ void poll_input(GLFWwindow *window)
         return;
     }
 
-    float cameraSpeed = 5.0f;
+    float cameraSpeed = cameraSpeedLow;
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
     {
-        cameraSpeed = 10.0f * deltaTime;
+        cameraSpeed = cameraSpeedHigh * deltaTime;
     }
     else
     {
-        cameraSpeed = 5.0f * deltaTime;
+        cameraSpeed = cameraSpeedLow * deltaTime;
     }
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -131,6 +154,19 @@ void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
     }
 }
 
+void GLAPIENTRY MessageCallback(GLenum source,
+                                GLenum type,
+                                GLuint id,
+                                GLenum severity,
+                                GLsizei length,
+                                const GLchar *message,
+                                const void *userParam)
+{
+    fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+            (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
+            type, severity, message);
+}
+
 void ErrorHandleShader(GLuint &shader)
 {
     GLint result;
@@ -168,7 +204,7 @@ std::string ParseShaderFromFile(const char *filename)
     }
 }
 
-void loadOBJ(std::vector<tinyobj::real_t> &data)
+void loadOBJ(RenderData *renderData)
 {
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
@@ -176,8 +212,8 @@ void loadOBJ(std::vector<tinyobj::real_t> &data)
 
     std::string warn;
     std::string err;
-    std::string path = "resources/mesh/cube/";
-    std::string objFile = "cube.obj";
+    std::string path = "resources/mesh/sponza/";
+    std::string objFile = "sponza.obj";
     std::string obj = path + objFile;
 
     bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, obj.c_str(), path.c_str());
@@ -201,11 +237,68 @@ void loadOBJ(std::vector<tinyobj::real_t> &data)
     for (size_t i = 0; i < materials.size(); i++)
     {
         printf("Material %d: %s\n", i, materials[i].name.c_str());
+        if (materials[i].diffuse_texname.length() > 0)
+        {
+            printf("    Diffuse Texture: %s\n", materials[i].diffuse_texname.c_str());
+        }
+    }
+
+    for (size_t m = 0; m < materials.size(); m++)
+    {
+        if (materials[m].diffuse_texname.length() > 0)
+        {
+            // Only load the texture if it is not already loaded
+            if (renderData->textureMap.find(materials[m].diffuse_texname) == renderData->textureMap.end())
+            {
+                GLuint textureID;
+                int w, h;
+                int nrChannels;
+
+                std::string texture_filename = path + materials[m].diffuse_texname;
+                std::replace(texture_filename.begin(), texture_filename.end(), '\\', '/');
+                unsigned char *image = stbi_load(texture_filename.c_str(), &w, &h, &nrChannels, STBI_default);
+                if (!image)
+                {
+                    std::cerr << "Unable to load texture: " << std::endl;
+                }
+                std::cout << "Loaded texture: "
+                          << ", w = " << w << ", h = " << h << ", nrChannels = " << nrChannels << std::endl;
+
+                glGenTextures(1, &textureID);
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, textureID);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+                if (nrChannels == 3)
+                {
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+                    glGenerateMipmap(GL_TEXTURE_2D);
+                }
+                else if (nrChannels == 4)
+                {
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+                    glGenerateMipmap(GL_TEXTURE_2D);
+                }
+                else
+                {
+                    std::cout << "Invalid number of channels for texture " << std::endl;
+                }
+                glBindTexture(GL_TEXTURE_2D, textureID);
+
+                stbi_image_free(image);
+                renderData->textureMap.insert(std::make_pair(materials[m].diffuse_texname, textureID));
+            }
+        }
     }
 
     for (size_t s = 0; s < shapes.size(); s++)
     {
         int offset = 0;
+        Mesh mesh;
+        std::vector<tinyobj::real_t> data;
 
         for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++)
         {
@@ -261,86 +354,44 @@ void loadOBJ(std::vector<tinyobj::real_t> &data)
 
             offset += 3;
         }
-    }
 
-#if 0
-    for (size_t s = 0; s < shapes.size(); s++)
-    {
-        for (size_t f = 0; f < shapes[s].mesh.indices.size(); f += 3)
+        // Texture (no per face materials/textures yet)
+        int materialID = shapes[s].mesh.material_ids[0];
+        if ((materialID < 0) || (materialID >= static_cast<int>(materials.size())))
         {
-            tinyobj::index_t idx0 = shapes[s].mesh.indices[f + 0];
-            tinyobj::index_t idx1 = shapes[s].mesh.indices[f + 1];
-            tinyobj::index_t idx2 = shapes[s].mesh.indices[f + 2];
-
-            float v[3][3];
-            for (int k = 0; k < 3; k++)
-            {
-                int f0 = idx0.vertex_index;
-                int f1 = idx1.vertex_index;
-                int f2 = idx2.vertex_index;
-                assert(f0 >= 0);
-                assert(f1 >= 0);
-                assert(f2 >= 0);
-
-                v[0][k] = attrib.vertices[3 * f0 + k];
-                v[1][k] = attrib.vertices[3 * f1 + k];
-                v[2][k] = attrib.vertices[3 * f2 + k];
-            }
-
-            float n[3][3];
-            {
-                bool invalid_normal_index = false;
-                if (attrib.normals.size() > 0)
-                {
-                    int nf0 = idx0.normal_index;
-                    int nf1 = idx1.normal_index;
-                    int nf2 = idx2.normal_index;
-
-                    if ((nf0 < 0) || (nf1 < 0) || (nf2 < 0))
-                    {
-                        invalid_normal_index = true;
-                    }
-                    else
-                    {
-                        for (int k = 0; k < 3; k++)
-                        {
-                            assert(size_t(3 * nf0 + k) < attrib.normals.size());
-                            assert(size_t(3 * nf1 + k) < attrib.normals.size());
-                            assert(size_t(3 * nf2 + k) < attrib.normals.size());
-                            n[0][k] = attrib.normals[3 * nf0 + k];
-                            n[1][k] = attrib.normals[3 * nf1 + k];
-                            n[2][k] = attrib.normals[3 * nf2 + k];
-                        }
-                    }
-                }
-                else
-                {
-                    invalid_normal_index = true;
-                }
-
-                if (invalid_normal_index)
-                {
-                    n[1][0] = 0.0f;
-                    n[1][1] = 0.0f;
-                    n[1][2] = 0.0f;
-                    n[2][0] = 0.0f;
-                    n[2][1] = 0.0f;
-                    n[2][2] = 0.0f;
-                }
-            }
-
-            for (int k = 0; k < 3; k++)
-            {
-                data.push_back(v[k][0]);
-                data.push_back(v[k][1]);
-                data.push_back(v[k][2]);
-                data.push_back(n[k][0]);
-                data.push_back(n[k][1]);
-                data.push_back(n[k][2]);
-            }
+            materialID = materials.size() - 1;
+            std::cout << "Invalid material id for mesh" << std::endl;
         }
+
+        std::string diffuse_texname = materials[materialID].diffuse_texname;
+        if (renderData->textureMap.find(diffuse_texname) != renderData->textureMap.end())
+        {
+            mesh.textureID = renderData->textureMap[diffuse_texname];
+        }
+
+        // Vertex Data
+        if (data.size() > 0)
+        {
+            glGenVertexArrays(1, &mesh.vaoID);
+            glBindVertexArray(mesh.vaoID);
+
+            glGenBuffers(1, &mesh.vboID);
+            glBindBuffer(GL_ARRAY_BUFFER, mesh.vboID);
+            glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), data.data(), GL_STATIC_DRAW);
+
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 0);
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
+            glEnableVertexAttribArray(1);
+            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
+            glEnableVertexAttribArray(2);
+
+            mesh.triCount = data.size() / (3 + 3 + 2) / 3; // (3 pos, 3 normal, 2 texcoord)
+            renderData->totalTriCount += mesh.triCount;
+        }
+
+        renderData->meshes.push_back(mesh);
     }
-#endif
 }
 
 int main()
@@ -375,6 +426,12 @@ int main()
         return 0;
     }
 
+    if (debug)
+    {
+        glEnable(GL_DEBUG_OUTPUT);
+        glDebugMessageCallback(MessageCallback, 0);
+    }
+
     glfwSetKeyCallback(window, key_callback);
     glfwSetCursorPosCallback(window, cursor_position_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
@@ -390,60 +447,17 @@ int main()
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 460 core");
 
-    // Test .obj loading
-    std::vector<tinyobj::real_t> data;
-    loadOBJ(data);
-
-#if 0
-    // Test Cube
-    float vertices[] = {
-        -0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f, 0.5f, -0.5f,
-        -0.5f, 0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-
-        -0.5f, -0.5f, 0.5f,
-        0.5f, -0.5f, 0.5f,
-        0.5f, 0.5f, 0.5f,
-        -0.5f, 0.5f, 0.5f,
-        -0.5f, -0.5f, 0.5f,
-
-        -0.5f, 0.5f, -0.5f,
-        0.5f, 0.5f, -0.5f,
-
-        -0.5f, 0.5f, 0.5f,
-        0.5f, 0.5f, 0.5f};
-
-    unsigned int indices[] = {0, 1, 5, 5, 1, 6, 1, 2, 6, 6, 2, 7, 2, 3, 7, 7, 3, 8, 3, 4, 8, 8, 4, 9, 10, 11, 0, 0, 11, 1, 5, 6, 12, 12, 6, 13};
-#endif
-
-    std::string vertexShader = ParseShaderFromFile("resources/shader/test.vert");
-    std::string fragmentShader = ParseShaderFromFile("resources/shader/test.frag");
-    const char *vertexSrc = vertexShader.c_str();
-    const char *fragSrc = fragmentShader.c_str();
-
+    stbi_set_flip_vertically_on_load(true);
     glEnable(GL_DEPTH_TEST);
 
-    GLuint vaoID;
-    glGenVertexArrays(1, &vaoID);
-    glBindVertexArray(vaoID);
+    // .obj loading
+    RenderData renderData;
+    loadOBJ(&renderData);
 
-    GLuint vboID;
-    glGenBuffers(1, &vboID);
-    glBindBuffer(GL_ARRAY_BUFFER, vboID);
-    glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), data.data(), GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(2 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-
-    // GLuint iboID;
-    // glGenBuffers(1, &iboID);
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboID);
-    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    std::string vertexShader = ParseShaderFromFile("resources/shader/base.vert");
+    std::string fragmentShader = ParseShaderFromFile("resources/shader/texture.frag");
+    const char *vertexSrc = vertexShader.c_str();
+    const char *fragSrc = fragmentShader.c_str();
 
     GLuint vertShaderObj = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertShaderObj, 1, &vertexSrc, NULL);
@@ -464,6 +478,7 @@ int main()
     glValidateProgram(programID);
 
     GLuint mvp_location = glGetUniformLocation(programID, "u_MVP");
+    GLuint texture_location = glGetUniformLocation(programID, "u_DiffuseTexture");
 
     while (!glfwWindowShouldClose(window))
     {
@@ -479,15 +494,17 @@ int main()
         ImGui::Text("Vendor: %s", glGetString(GL_VENDOR));
         ImGui::Text("Renderer: %s", glGetString(GL_RENDERER));
         ImGui::Separator();
-        ImGui::Text("Triangles: %d", data.size() / (3 + 3));
+        ImGui::Text("Mesh Count: %d", renderData.meshes.size());
+        ImGui::Text("Triangles: %d", renderData.totalTriCount);
         ImGui::Text("Frame Time: %fms", deltaTime * 1000);
         ImGui::Text("FPS: %f", 1.0f / deltaTime);
+        ImGui::Separator();
+        ImGui::SliderFloat("Camera Speed High", &cameraSpeedHigh, 1.0f, 1000.0f);
+        ImGui::SliderFloat("Camera Speed Low", &cameraSpeedLow, 1.0f, 500.0f);
+        ImGui::SliderFloat("Render Distance", &renderDistance, 10.0f, 10000.0f);
         ImGui::End();
 
         ImGui::Render();
-
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
 
         poll_input(window);
 
@@ -499,10 +516,11 @@ int main()
         glfwGetFramebufferSize(window, &width, &height);
 
         glViewport(0, 0, width, height);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
 
         // Projection
-        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, renderDistance);
         glm::mat4 view = glm::mat4(1.0f);
         view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
         glm::mat4 model = glm::mat4(1.0f);
@@ -511,8 +529,17 @@ int main()
 
         glUseProgram(programID);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
-        // glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-        glDrawArrays(GL_TRIANGLES, 0, data.size() / (3 + 3 + 2)); // (3 pos, 3 normal, 2 texcoord)
+        glUniform1i(texture_location, 0);
+
+        for (Mesh &m : renderData.meshes)
+        {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, m.textureID);
+            glBindVertexArray(m.vaoID);
+            glDrawArrays(GL_TRIANGLES, 0, 3 * m.triCount);
+            glBindVertexArray(0);
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
