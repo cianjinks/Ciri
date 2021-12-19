@@ -1,6 +1,8 @@
 # Ciri Path Tracer
 
 ## Media
+![Sponza Textured](docs/sponza_textured.png)
+![Lost Empire Textured](docs/lostempire_textured.png)
 ![Dragon Normals](docs/dragon_normals.png)
 ![Hairball Normals](docs/hairball_normals.png)
 

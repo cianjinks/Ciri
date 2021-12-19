@@ -42,6 +42,7 @@ float cameraSpeedLow = 5.0f;
 float renderDistance = 10000.0f;
 
 bool debug = false;
+bool mipmap = true;
 
 struct Mesh
 {
@@ -268,18 +269,27 @@ void loadOBJ(RenderData *renderData)
                 glBindTexture(GL_TEXTURE_2D, textureID);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                if (mipmap)
+                {
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+                }
+                else
+                {
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                }
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
                 if (nrChannels == 3)
                 {
                     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-                    // glGenerateMipmap(GL_TEXTURE_2D);
+                    if (mipmap)
+                        glGenerateMipmap(GL_TEXTURE_2D);
                 }
                 else if (nrChannels == 4)
                 {
                     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-                    // glGenerateMipmap(GL_TEXTURE_2D);
+                    if (mipmap)
+                        glGenerateMipmap(GL_TEXTURE_2D);
                 }
                 else
                 {
