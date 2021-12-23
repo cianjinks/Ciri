@@ -43,6 +43,7 @@ float renderDistance = 10000.0f;
 
 bool debug = false;
 bool mipmap = true;
+bool normal = false;
 
 struct Mesh
 {
@@ -525,6 +526,22 @@ int main()
     glLinkProgram(diffuseProgramID);
     glValidateProgram(diffuseProgramID);
 
+    // Normal Shader
+    std::string normalFragmentShader = ParseShaderFromFile("resources/shader/flat_normal.frag");
+    const char *normalFragSrc = normalFragmentShader.c_str();
+
+    GLuint normalFragShaderObj = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(normalFragShaderObj, 1, &normalFragSrc, NULL);
+    glCompileShader(normalFragShaderObj);
+
+    ErrorHandleShader(normalFragShaderObj);
+
+    GLuint normalProgramID = glCreateProgram();
+    glAttachShader(normalProgramID, baseVertShaderObj);
+    glAttachShader(normalProgramID, normalFragShaderObj);
+    glLinkProgram(normalProgramID);
+    glValidateProgram(normalProgramID);
+
     while (!glfwWindowShouldClose(window))
     {
         // Start the Dear ImGui frame
@@ -547,6 +564,7 @@ int main()
         ImGui::SliderFloat("Camera Speed High", &cameraSpeedHigh, 1.0f, 1000.0f);
         ImGui::SliderFloat("Camera Speed Low", &cameraSpeedLow, 1.0f, 500.0f);
         ImGui::SliderFloat("Render Distance", &renderDistance, 10.0f, 10000.0f);
+        ImGui::Checkbox("Normals", &normal);
         ImGui::End();
 
         ImGui::Render();
@@ -575,7 +593,12 @@ int main()
         for (Mesh &m : renderData.meshes)
         {
             GLuint currentProgramID = 0;
-            if (m.textureID == 0)
+            if (normal)
+            {
+                glUseProgram(normalProgramID);
+                currentProgramID = normalProgramID;
+            }
+            else if (m.textureID == 0)
             {
                 glUseProgram(diffuseProgramID);
                 currentProgramID = diffuseProgramID;
