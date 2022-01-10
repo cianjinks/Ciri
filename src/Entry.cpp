@@ -215,8 +215,8 @@ void loadOBJ(RenderData *renderData)
 
     std::string warn;
     std::string err;
-    std::string path = "resources/mesh/sponza/";
-    std::string objFile = "sponza.obj";
+    std::string path = "resources/mesh/bugatti/";
+    std::string objFile = "bugatti.obj";
     std::string obj = path + objFile;
 
     bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, obj.c_str(), path.c_str());
@@ -387,17 +387,21 @@ void loadOBJ(RenderData *renderData)
         }
 
         // Texture (no per face textures yet)
-        int materialID = shapes[s].mesh.material_ids[0];
-        if ((materialID < 0) || (materialID >= static_cast<int>(materials.size())))
+        if (!shapes[s].mesh.material_ids.empty())
         {
-            materialID = materials.size() - 1;
-            std::cout << "Invalid material id for mesh" << std::endl;
-        }
+            int materialID = shapes[s].mesh.material_ids[0];
 
-        std::string diffuse_texname = materials[materialID].diffuse_texname;
-        if (renderData->textureMap.find(diffuse_texname) != renderData->textureMap.end())
-        {
-            mesh.textureID = renderData->textureMap[diffuse_texname];
+            if ((materialID < 0) || (materialID >= static_cast<int>(materials.size())))
+            {
+                materialID = materials.size() - 1;
+                std::cout << "Invalid material id for mesh" << std::endl;
+            }
+
+            std::string diffuse_texname = materials[materialID].diffuse_texname;
+            if (renderData->textureMap.find(diffuse_texname) != renderData->textureMap.end())
+            {
+                mesh.textureID = renderData->textureMap[diffuse_texname];
+            }
         }
 
         // Vertex Data
