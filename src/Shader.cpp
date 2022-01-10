@@ -19,24 +19,39 @@ namespace Ciri
         }
     }
 
+    void ShaderLibrary::SetMat4f(const char *name, float *mat4)
+    {
+        uint32_t loc = glGetUniformLocation(m_CurrentShader->program_id, name);
+        glUniformMatrix4fv(loc, 1, GL_FALSE, mat4);
+    }
+
+    void ShaderLibrary::SetInt1i(const char *name, int32_t int1)
+    {
+        uint32_t loc = glGetUniformLocation(m_CurrentShader->program_id, name);
+        glUniform1i(loc, int1);
+    }
+
     void ShaderLibrary::BindShader(ShaderType type)
     {
         Shader *shader = m_ShaderList[type];
         glUseProgram(shader->program_id);
         m_CurrentShaderType = type;
+        m_CurrentShader = shader;
     }
 
     void ShaderLibrary::RegisterShaders()
     {
         // NONE
-        Shader *none = new Shader(ShaderType::NONE, "", "");
+        Shader *none = new Shader("None", ShaderType::NONE, "", "");
         none->program_id = 0;
         m_ShaderList[ShaderType::NONE] = none;
+        m_CurrentShaderType = ShaderType::NONE;
+        m_CurrentShader = none;
 
-        AddShader(ShaderType::DIFFUSE, "resources/shader/base.vert", "resources/shader/diffuse.frag");
-        AddShader(ShaderType::FLAT_NORMAL, "resources/shader/base.vert", "resources/shader/flat_normal.frag");
-        AddShader(ShaderType::SMOOTH_NORMAL, "resources/shader/base.vert", "resources/shader/normal.frag");
-        AddShader(ShaderType::TEXTURE, "resources/shader/base.vert", "resources/shader/texture.frag");
+        AddShader("Diffuse", ShaderType::DIFFUSE, "resources/shader/base.vert", "resources/shader/diffuse.frag");
+        AddShader("Flat Normal", ShaderType::FLAT_NORMAL, "resources/shader/base.vert", "resources/shader/flat_normal.frag");
+        AddShader("Smooth Normal", ShaderType::SMOOTH_NORMAL, "resources/shader/base.vert", "resources/shader/normal.frag");
+        AddShader("Texture", ShaderType::TEXTURE, "resources/shader/base.vert", "resources/shader/texture.frag");
     }
 
     void ShaderLibrary::CompileShaders()
@@ -92,7 +107,7 @@ namespace Ciri
         }
     }
 
-    void ShaderLibrary::AddShader(ShaderType type, const char *vert_src, const char *frag_src)
+    void ShaderLibrary::AddShader(const char *name, ShaderType type, const char *vert_src, const char *frag_src)
     {
         if (m_SourceMap.find(vert_src) == m_SourceMap.end())
         {
@@ -114,7 +129,7 @@ namespace Ciri
             m_SourceMap[frag_src] = frag_code;
         }
 
-        Shader *shader = new Shader(type, vert_src, frag_src);
+        Shader *shader = new Shader(name, type, vert_src, frag_src);
         m_ShaderList[type] = shader;
     }
 

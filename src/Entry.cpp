@@ -45,7 +45,6 @@ float renderDistance = 10000.0f;
 
 bool debug = false;
 bool mipmap = true;
-bool normal = false;
 
 struct Mesh
 {
@@ -490,6 +489,8 @@ int main()
 
     // Shaders
     Ciri::ShaderLibrary *shaderLibrary = new Ciri::ShaderLibrary();
+    auto &shaders = shaderLibrary->GetShaderList();
+    Ciri::ShaderType selected = Ciri::ShaderType::FLAT_NORMAL;
 
     while (!glfwWindowShouldClose(window))
     {
@@ -513,7 +514,19 @@ int main()
         ImGui::SliderFloat("Camera Speed High", &cameraSpeedHigh, 1.0f, 1000.0f);
         ImGui::SliderFloat("Camera Speed Low", &cameraSpeedLow, 1.0f, 500.0f);
         ImGui::SliderFloat("Render Distance", &renderDistance, 10.0f, 10000.0f);
-        ImGui::Checkbox("Normals", &normal);
+        if (ImGui::BeginCombo("Shading", shaders[selected]->name, 0))
+        {
+            for (auto &pair : shaders)
+            {
+                Ciri::Shader *shader = pair.second;
+                const bool is_selected = (selected == shader->type);
+                if (ImGui::Selectable(shader->name, is_selected))
+                    selected = shader->type;
+                if (is_selected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
         ImGui::End();
 
         ImGui::Render();
@@ -541,26 +554,12 @@ int main()
 
         for (Mesh &m : renderData.meshes)
         {
-            if (normal)
-            {
-                shaderLibrary->BindShader(Ciri::ShaderType::FLAT_NORMAL);
-            }
-            else if (m.textureID == 0)
-            {
-                shaderLibrary->BindShader(Ciri::ShaderType::DIFFUSE);
-            }
-            else
-            {
-                shaderLibrary->BindShader(Ciri::ShaderType::TEXTURE);
-                glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, m.textureID);
-            }
+            shaderLibrary->BindShader(selected);
+            shaderLibrary->SetMat4f("u_MVP", glm::value_ptr(mvp));
+            shaderLibrary->SetInt1i("u_DiffuseTexture", 0);
 
-            uint32_t currentProgramID = shaderLibrary->GetShader()->program_id;
-            GLuint mvp_location = glGetUniformLocation(currentProgramID, "u_MVP");
-            GLuint texture_location = glGetUniformLocation(currentProgramID, "u_DiffuseTexture");
-            glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
-            glUniform1i(texture_location, 0);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, m.textureID);
 
             glBindVertexArray(m.vaoID);
 
