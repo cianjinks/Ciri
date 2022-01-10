@@ -2,7 +2,7 @@
 
 layout(location = 0) out vec4 a_Color;
 
-in flat vec3 v_Normal;
+in vec3 v_Normal;
 in vec2 v_TexCoord;
 
 void main()

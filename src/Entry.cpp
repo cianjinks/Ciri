@@ -21,6 +21,8 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Shader.h"
+
 // Window
 const int WINDOW_WIDTH = 1600;
 const int WINDOW_HEIGHT = 900;
@@ -486,61 +488,8 @@ int main()
     RenderData renderData;
     loadOBJ(&renderData);
 
-    // Texture Shader
-    std::string baseVertexShader = ParseShaderFromFile("resources/shader/base.vert");
-    std::string textureFragmentShader = ParseShaderFromFile("resources/shader/texture.frag");
-    const char *baseVertexSrc = baseVertexShader.c_str();
-    const char *textureFragSrc = textureFragmentShader.c_str();
-
-    GLuint baseVertShaderObj = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(baseVertShaderObj, 1, &baseVertexSrc, NULL);
-    glCompileShader(baseVertShaderObj);
-
-    ErrorHandleShader(baseVertShaderObj);
-
-    GLuint textureFragShaderObj = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(textureFragShaderObj, 1, &textureFragSrc, NULL);
-    glCompileShader(textureFragShaderObj);
-
-    ErrorHandleShader(textureFragShaderObj);
-
-    GLuint textureProgramID = glCreateProgram();
-    glAttachShader(textureProgramID, baseVertShaderObj);
-    glAttachShader(textureProgramID, textureFragShaderObj);
-    glLinkProgram(textureProgramID);
-    glValidateProgram(textureProgramID);
-
-    // Diffuse Shader
-    std::string diffuseFragmentShader = ParseShaderFromFile("resources/shader/diffuse.frag");
-    const char *diffuseFragSrc = diffuseFragmentShader.c_str();
-
-    GLuint diffuseFragShaderObj = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(diffuseFragShaderObj, 1, &diffuseFragSrc, NULL);
-    glCompileShader(diffuseFragShaderObj);
-
-    ErrorHandleShader(diffuseFragShaderObj);
-
-    GLuint diffuseProgramID = glCreateProgram();
-    glAttachShader(diffuseProgramID, baseVertShaderObj);
-    glAttachShader(diffuseProgramID, diffuseFragShaderObj);
-    glLinkProgram(diffuseProgramID);
-    glValidateProgram(diffuseProgramID);
-
-    // Normal Shader
-    std::string normalFragmentShader = ParseShaderFromFile("resources/shader/flat_normal.frag");
-    const char *normalFragSrc = normalFragmentShader.c_str();
-
-    GLuint normalFragShaderObj = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(normalFragShaderObj, 1, &normalFragSrc, NULL);
-    glCompileShader(normalFragShaderObj);
-
-    ErrorHandleShader(normalFragShaderObj);
-
-    GLuint normalProgramID = glCreateProgram();
-    glAttachShader(normalProgramID, baseVertShaderObj);
-    glAttachShader(normalProgramID, normalFragShaderObj);
-    glLinkProgram(normalProgramID);
-    glValidateProgram(normalProgramID);
+    // Shaders
+    Ciri::ShaderLibrary *shaderLibrary = new Ciri::ShaderLibrary();
 
     while (!glfwWindowShouldClose(window))
     {
@@ -592,24 +541,22 @@ int main()
 
         for (Mesh &m : renderData.meshes)
         {
-            GLuint currentProgramID = 0;
             if (normal)
             {
-                glUseProgram(normalProgramID);
-                currentProgramID = normalProgramID;
+                shaderLibrary->BindShader(Ciri::ShaderType::FLAT_NORMAL);
             }
             else if (m.textureID == 0)
             {
-                glUseProgram(diffuseProgramID);
-                currentProgramID = diffuseProgramID;
+                shaderLibrary->BindShader(Ciri::ShaderType::DIFFUSE);
             }
             else
             {
-                glUseProgram(textureProgramID);
-                currentProgramID = textureProgramID;
+                shaderLibrary->BindShader(Ciri::ShaderType::TEXTURE);
                 glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, m.textureID);
             }
+
+            uint32_t currentProgramID = shaderLibrary->GetShader()->program_id;
             GLuint mvp_location = glGetUniformLocation(currentProgramID, "u_MVP");
             GLuint texture_location = glGetUniformLocation(currentProgramID, "u_DiffuseTexture");
             glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
