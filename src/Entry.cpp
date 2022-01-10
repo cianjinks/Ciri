@@ -215,8 +215,8 @@ void loadOBJ(RenderData *renderData)
 
     std::string warn;
     std::string err;
-    std::string path = "resources/mesh/bugatti/";
-    std::string objFile = "bugatti.obj";
+    std::string path = "resources/mesh/sponza/";
+    std::string objFile = "sponza.obj";
     std::string obj = path + objFile;
 
     bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, obj.c_str(), path.c_str());

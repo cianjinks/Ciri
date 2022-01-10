@@ -60,6 +60,12 @@ namespace Ciri
         for (auto &pair : m_ShaderList)
         {
             Shader *shader = pair.second;
+
+            if (shader->type == ShaderType::NONE)
+            {
+                continue;
+            }
+
             if (m_ObjectMap.find(shader->vert_src) == m_ObjectMap.end())
             {
                 std::string vert_code = m_SourceMap[shader->vert_src];
