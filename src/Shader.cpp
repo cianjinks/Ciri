@@ -68,7 +68,7 @@ namespace Ciri
             {
                 std::string frag_code = m_SourceMap[shader->frag_src];
                 const char *frag_raw = frag_code.c_str();
-                frag_object = glCreateShader(GL_VERTEX_SHADER);
+                frag_object = glCreateShader(GL_FRAGMENT_SHADER);
 
                 glShaderSource(frag_object, 1, &frag_raw, NULL);
                 glCompileShader(frag_object);
