@@ -21,7 +21,7 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Shader.h"
+#include "Render/Shader.h"
 
 // Window
 const int WINDOW_WIDTH = 1600;
