@@ -1,3 +1,6 @@
+#ifndef CIRI_SHADER_H
+#define CIRI_SHADER_H
+
 #include <cstdint>
 #include <vector>
 #include <map>
@@ -62,3 +65,5 @@ namespace Ciri
     };
 
 }
+
+#endif
