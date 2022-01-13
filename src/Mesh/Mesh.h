@@ -17,12 +17,16 @@ namespace Ciri
         uint32_t m_VAO;
         uint32_t m_VBO;
 
+    protected:
         std::vector<glm::vec3> m_PositionData;
         std::vector<glm::vec3> m_NormalData;
         std::vector<glm::vec3> m_ColorData;
         std::vector<glm::vec2> m_TexCoordData;
 
+        static const glm::vec3 s_DefaultColor; // For primitives
+
     public:
+        Mesh(const char *name);
         Mesh(const char *name, std::vector<glm::vec3> position_data, std::vector<glm::vec3> normal_data, std::vector<glm::vec3> color_data, std::vector<glm::vec2> texcoord_data);
         ~Mesh() = default;
 

@@ -4,6 +4,11 @@
 
 namespace Ciri
 {
+    Mesh::Mesh(const char *name)
+        : Name(name)
+    {
+    }
+
     Mesh::Mesh(const char *name, std::vector<glm::vec3> position_data, std::vector<glm::vec3> normal_data, std::vector<glm::vec3> color_data, std::vector<glm::vec2> texcoord_data)
         : Name(name), m_PositionData(position_data), m_NormalData(normal_data), m_ColorData(color_data), m_TexCoordData(texcoord_data)
     {
