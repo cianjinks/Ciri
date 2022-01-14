@@ -7,9 +7,11 @@ namespace Ciri
         m_Children.push_back(child);
     }
 
-    Scene::Scene()
+    Scene::Scene(const char *name)
+        : Name(name)
     {
         m_Root = new SceneNode();
+        m_Root->Name = name;
     }
 
     Scene::~Scene()

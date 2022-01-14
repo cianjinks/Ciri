@@ -157,6 +157,25 @@ void GLAPIENTRY MessageCallback(GLenum source,
             type, severity, message);
 }
 
+void SceneUI(Ciri::SceneNode *root)
+{
+    if (ImGui::TreeNode(root->Name))
+    {
+        if (root->NodeMesh)
+        {
+            ImGui::Text(" - Position: %.3f, %.3f, %.3f", root->Position.x, root->Position.y, root->Position.z);
+            ImGui::Text(" - Scale: %.3f, %.3f, %.3f", root->Scale.x, root->Scale.y, root->Scale.z);
+        }
+
+        for (Ciri::SceneNode *node : root->m_Children)
+        {
+            SceneUI(node);
+        }
+
+        ImGui::TreePop();
+    }
+}
+
 int main()
 {
     GLFWwindow *window;
@@ -219,20 +238,25 @@ int main()
     Ciri::ShaderType selected = Ciri::ShaderType::FLAT_NORMAL;
 
     // Scene
-    Ciri::Scene *mainScene = new Ciri::Scene();
+    Ciri::Scene *mainScene = new Ciri::Scene("Main Scene");
     Ciri::Mesh *cube1 = new Ciri::Cube(glm::vec3(1.0f, 0.0f, 0.0f));
     Ciri::Mesh *cube2 = new Ciri::Cube(glm::vec3(0.0f, 1.0f, 0.0f));
     Ciri::Mesh *cube3 = new Ciri::Cube(glm::vec3(0.0f, 0.0f, 1.0f));
+    Ciri::Mesh *quad = new Ciri::Quad(glm::vec3(1.0f, 0.0f, 1.0f));
     cube1->Construct();
     cube2->Construct();
     cube3->Construct();
+    quad->Construct();
     Ciri::SceneNode *cube1Node = mainScene->AddMesh("cube1", cube1);
     Ciri::SceneNode *cube2Node = mainScene->AddMesh("cube2", cube2);
     Ciri::SceneNode *cube3Node = mainScene->AddMesh("cube3", cube3);
+    Ciri::SceneNode *quadNode = mainScene->AddMesh("quad", quad);
     cube1Node->Position = glm::vec3(-3.0f, 0.0f, 0.0f);
     cube3Node->Position = glm::vec3(3.0f, 0.0f, 0.0f);
+    quadNode->Position = glm::vec3(-0.5f, 0.0f, 2.0f);
     cube1Node->Scale = glm::vec3(0.5f);
     cube2Node->Scale = glm::vec3(0.75f);
+    quadNode->Scale = glm::vec3(10.0f, 10.0f, 0.0f);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -243,7 +267,7 @@ int main()
 
         // ImGui::ShowDemoWindow();
 
-        ImGui::Begin("Test Window");
+        ImGui::Begin("Debug Info");
         ImGui::Text("Version: OpenGL %s", glGetString(GL_VERSION));
         ImGui::Text("Vendor: %s", glGetString(GL_VENDOR));
         ImGui::Text("Renderer: %s", glGetString(GL_RENDERER));
@@ -269,6 +293,10 @@ int main()
             }
             ImGui::EndCombo();
         }
+        ImGui::End();
+
+        ImGui::Begin("Scene");
+        SceneUI(mainScene->GetRoot());
         ImGui::End();
 
         ImGui::Render();

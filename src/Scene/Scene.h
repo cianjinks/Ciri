@@ -29,8 +29,7 @@ namespace Ciri
     class Scene
     {
     public:
-        Scene();
-        ~Scene();
+        const char *Name;
 
     private:
         SceneNode *m_Root = nullptr;
@@ -39,9 +38,13 @@ namespace Ciri
         uint32_t m_TotalTriCount = 0;
 
     public:
+        Scene(const char *name);
+        ~Scene();
+
+    public:
         SceneNode *AddMesh(const char *name, Mesh *mesh);
 
-        const SceneNode *GetRoot() const { return m_Root; }
+        SceneNode *GetRoot() const { return m_Root; }
         const uint32_t GetMeshCount() const { return m_MeshCount; }
         const uint32_t GetTotalTriCount() const { return m_TotalTriCount; }
 
