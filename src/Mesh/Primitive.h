@@ -10,15 +10,15 @@ namespace Ciri
     class Cube : public Mesh
     {
     public:
-        Cube(const char *name);
-        Cube(const char *name, glm::vec3 color);
+        Cube();
+        Cube(glm::vec3 color);
     };
 
     class Quad : public Mesh
     {
     public:
-        Quad(const char *name);
-        Quad(const char *name, glm::vec3 color);
+        Quad();
+        Quad(glm::vec3 color);
     };
 
     class Sphere : public Mesh

@@ -4,7 +4,7 @@ project(Ciri)
 # OpenGL
 set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL REQUIRED)
-include_directories(${OPENGL_INCLUDE_DIRS})
+include_directories(src ${OPENGL_INCLUDE_DIRS})
 
 # Address Sanitizer
 set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")

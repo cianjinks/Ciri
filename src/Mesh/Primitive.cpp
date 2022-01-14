@@ -4,13 +4,12 @@ namespace Ciri
 {
     const glm::vec3 Mesh::s_DefaultColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
-    Cube::Cube(const char *name)
-        : Cube(name, s_DefaultColor)
+    Cube::Cube()
+        : Cube(s_DefaultColor)
     {
     }
 
-    Cube::Cube(const char *name, glm::vec3 color)
-        : Mesh(name)
+    Cube::Cube(glm::vec3 color)
     {
         // clang-format off
         m_PositionData = {
@@ -153,13 +152,12 @@ namespace Ciri
         // clang-format on
     }
 
-    Quad::Quad(const char *name)
-        : Quad(name, s_DefaultColor)
+    Quad::Quad()
+        : Quad(s_DefaultColor)
     {
     }
 
-    Quad::Quad(const char *name, glm::vec3 color)
-        : Mesh(name)
+    Quad::Quad(glm::vec3 color)
     {
         // clang-format off
         m_PositionData = {
