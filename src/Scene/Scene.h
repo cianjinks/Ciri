@@ -34,7 +34,6 @@ namespace Ciri
 
     private:
         SceneNode *m_Root = nullptr;
-        std::unordered_set<const char *> m_NameLookup; // Ensure no duplicate names
         uint32_t m_MeshCount = 0;
         uint32_t m_TotalTriCount = 0;
 

@@ -2,6 +2,7 @@
 #include <fstream>
 #include <map>
 #include <algorithm>
+#include <cstring>
 
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -41,8 +42,8 @@ float lastY = (float)WINDOW_HEIGHT / 2;
 float yaw = -90.0f;
 float pitch = 0.0f;
 
-float cameraSpeedHigh = 10.0f;
-float cameraSpeedLow = 5.0f;
+float cameraSpeedHigh = 30.0f;
+float cameraSpeedLow = 15.0f;
 float renderDistance = 10000.0f;
 
 bool debug = false;
@@ -294,6 +295,12 @@ int main()
     dragonNode->Position = glm::vec3(10.0f, 10.0f, 0.0f);
     dragonNode->Scale = glm::vec3(10.0f);
 
+    // UI
+    char *addmesh_name = new char[20]();
+    glm::vec3 addmesh_position = glm::vec3(0.0f);
+    glm::vec3 addmesh_scale = glm::vec3(1.0f);
+    glm::vec3 addmesh_color = glm::vec3(1.0f);
+
     while (!glfwWindowShouldClose(window))
     {
         // Start the Dear ImGui frame
@@ -329,6 +336,76 @@ int main()
             }
             ImGui::EndCombo();
         }
+
+        ImGui::Separator();
+
+        if (ImGui::Button("Add Mesh.."))
+            ImGui::OpenPopup("Add Mesh");
+
+        ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+        ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+        if (ImGui::BeginPopupModal("Add Mesh", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            const char *mesh_types[] = {"Cube", "Quad", "Load Model.."};
+            static int type = 0;
+            ImGui::Combo("Type", &type, mesh_types, IM_ARRAYSIZE(mesh_types));
+            ImGui::Separator();
+
+            ImGui::InputText("Name", addmesh_name, 20);
+            ImGui::InputFloat3("Position", &addmesh_position.x);
+            ImGui::InputFloat3("Scale", &addmesh_scale.x);
+            ImGui::InputFloat3("Color", &addmesh_color.x);
+            ImGui::Separator();
+
+            if (ImGui::Button("OK", ImVec2(120, 0)))
+            {
+                switch (type)
+                {
+                case 0:
+                {
+                    Ciri::Mesh *cube = new Ciri::Cube(addmesh_color);
+                    cube->Construct();
+                    Ciri::SceneNode *cubeNode = mainScene->AddMesh(addmesh_name, cube);
+                    cubeNode->Position = addmesh_position;
+                    cubeNode->Scale = addmesh_scale;
+                    break;
+                }
+                case 1:
+                {
+                    Ciri::Mesh *quad = new Ciri::Quad(addmesh_color);
+                    quad->Construct();
+                    Ciri::SceneNode *quadNode = mainScene->AddMesh(addmesh_name, quad);
+                    quadNode->Position = addmesh_position;
+                    quadNode->Scale = addmesh_scale;
+                    break;
+                }
+                case 2:
+                {
+                    Ciri::SceneNode *dragonNode = mainScene->LoadModel(addmesh_name, "resources/mesh/dragon/dragon.obj", "resources/mesh/dragon/");
+                    dragonNode->Position = addmesh_position;
+                    dragonNode->Scale = addmesh_scale;
+                    break;
+                }
+                }
+                ImGui::CloseCurrentPopup();
+
+                // Reset values as opposed to saving them
+                std::memset(addmesh_name, 0, 20);
+                addmesh_position = glm::vec3(0.0f);
+                addmesh_scale = glm::vec3(1.0f);
+                addmesh_color = glm::vec3(1.0f);
+            }
+            ImGui::SetItemDefaultFocus();
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel", ImVec2(120, 0)))
+            {
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::EndPopup();
+        }
+
         ImGui::End();
 
         ImGui::Begin("Scene");

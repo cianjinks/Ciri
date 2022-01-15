@@ -37,14 +37,6 @@ namespace Ciri
     {
         SceneNode *node = new SceneNode();
 
-        // Check for duplicates
-        if (m_NameLookup.find(name) != m_NameLookup.end())
-        {
-            std::cout << "Failed to add mesh to scene with duplicate name: " << name << std::endl;
-            return node;
-        }
-        m_NameLookup.insert(name);
-
         node->Name = name;
         node->NodeMesh = mesh;
         m_Root->AddChild(node);
@@ -58,13 +50,6 @@ namespace Ciri
     SceneNode *Scene::AddContainer(const char *name)
     {
         SceneNode *node = new SceneNode();
-        // Check for duplicates
-        if (m_NameLookup.find(name) != m_NameLookup.end())
-        {
-            std::cout << "Failed to add container to scene with duplicate name: " << name << std::endl;
-            return node;
-        }
-        m_NameLookup.insert(name);
 
         node->Name = name;
         m_Root->AddChild(node);
