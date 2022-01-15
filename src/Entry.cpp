@@ -159,7 +159,7 @@ void GLAPIENTRY MessageCallback(GLenum source,
 
 void SceneUI(Ciri::SceneNode *root)
 {
-    if (ImGui::TreeNode(root->Name.c_str()))
+    if ((root->Name == "") ? ImGui::TreeNode("null") : ImGui::TreeNode(root->Name.c_str()))
     {
         for (Ciri::SceneNode *node : root->m_Children)
         {
@@ -290,7 +290,7 @@ int main()
 
     Ciri::SceneNode *sponzaNode = mainScene->LoadModel("sponza", "resources/mesh/sponza/sponza.obj", "resources/mesh/sponza/");
     Ciri::SceneNode *dragonNode = mainScene->LoadModel("dragon", "resources/mesh/dragon/dragon.obj", "resources/mesh/dragon/");
-    sponzaNode->Scale = glm::vec3(0.1f);
+    sponzaNode->Scale = glm::vec3(0.05f);
     dragonNode->Position = glm::vec3(10.0f, 10.0f, 0.0f);
     dragonNode->Scale = glm::vec3(10.0f);
 
