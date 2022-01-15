@@ -120,7 +120,7 @@ namespace Ciri
                 {
                     // currentMaterialID = materials.size() - 1;
                     // std::cout << "Invalid current material id for mesh" << std::endl;
-                    color = glm::vec3(0.0f, 0.0f, 0.0f);
+                    color = Mesh::s_DefaultColor;
                 }
                 else
                 {

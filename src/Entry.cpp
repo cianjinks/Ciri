@@ -182,7 +182,7 @@ void RenderScene(Ciri::SceneNode *root, Ciri::ShaderType &selected, Ciri::Shader
     {
         glm::mat4 accumulateModel = model;
         accumulateModel = glm::translate(accumulateModel, node->Position);
-        accumulateModel = glm::scale(accumulateModel, node->Scale);
+        accumulateModel = glm::scale(accumulateModel, node->Scale); // Accumulative scaling doesnt work correctly
 
         // No mesh means this is just a container
         if (node->NodeMesh)
@@ -282,14 +282,16 @@ int main()
     Ciri::SceneNode *cube1Node = mainScene->AddMesh("cube1", cube1);
     Ciri::SceneNode *cube2Node = mainScene->AddMesh("cube2", cube2);
     Ciri::SceneNode *cube3Node = mainScene->AddMesh("cube3", cube3);
-    cube1Node->Position = glm::vec3(-3.0f, 0.0f, 0.0f);
-    cube3Node->Position = glm::vec3(3.0f, 0.0f, 0.0f);
+    cube1Node->Position = glm::vec3(-3.0f, 10.0f, 0.0f);
     cube1Node->Scale = glm::vec3(0.5f);
+    cube2Node->Position = glm::vec3(0.0f, 10.0f, 0.0f);
     cube2Node->Scale = glm::vec3(0.75f);
+    cube3Node->Position = glm::vec3(3.0f, 10.0f, 0.0f);
 
-    // Ciri::SceneNode *sponzaNode = mainScene->LoadModel("sponza", "resources/mesh/sponza/sponza.obj", "resources/mesh/sponza/");
+    Ciri::SceneNode *sponzaNode = mainScene->LoadModel("sponza", "resources/mesh/sponza/sponza.obj", "resources/mesh/sponza/");
     Ciri::SceneNode *dragonNode = mainScene->LoadModel("dragon", "resources/mesh/dragon/dragon.obj", "resources/mesh/dragon/");
-    dragonNode->Position = glm::vec3(10.0f, 0.0f, 0.0f);
+    sponzaNode->Scale = glm::vec3(0.1f);
+    dragonNode->Position = glm::vec3(10.0f, 10.0f, 0.0f);
     dragonNode->Scale = glm::vec3(10.0f);
 
     while (!glfwWindowShouldClose(window))

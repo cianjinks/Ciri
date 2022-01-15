@@ -1,9 +1,15 @@
 [X] - Scene structure
-[] - Obj loading into scene
+[X] - Obj loading into scene
     [] - File browser
+    [] - UI for loading and setting position + scale
 [] - Create add primitive UI
     [] - Sphere primitive
 [] - Renderer
-    [] - Scene render (materials/textures/etc)
+    [] - Scene render
+        [] - Shaders
+        [] - Materials (textures for now)
+[] - Camera
+    [] - Fly Camera
+    [] - Orbital Camera
 [] - ImGUIzmo
 [] -
