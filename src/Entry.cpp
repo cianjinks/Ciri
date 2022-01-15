@@ -30,7 +30,7 @@ const int WINDOW_WIDTH = 1600;
 const int WINDOW_HEIGHT = 900;
 
 // Camera
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 10.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 float deltaTime = 0.0f;
@@ -161,15 +161,15 @@ void SceneUI(Ciri::SceneNode *root)
 {
     if (ImGui::TreeNode(root->Name.c_str()))
     {
-        if (root->NodeMesh)
-        {
-            ImGui::Text(" - Position: %.3f, %.3f, %.3f", root->Position.x, root->Position.y, root->Position.z);
-            ImGui::Text(" - Scale: %.3f, %.3f, %.3f", root->Scale.x, root->Scale.y, root->Scale.z);
-        }
-
         for (Ciri::SceneNode *node : root->m_Children)
         {
             SceneUI(node);
+        }
+
+        if (root->Name != "Main Scene")
+        {
+            ImGui::InputFloat3("Position", &root->Position.x);
+            ImGui::InputFloat3("Scale", &root->Scale.x);
         }
 
         ImGui::TreePop();
@@ -178,9 +178,9 @@ void SceneUI(Ciri::SceneNode *root)
 
 void RenderScene(Ciri::SceneNode *root, Ciri::ShaderType &selected, Ciri::ShaderLibrary *library, glm::mat4 &proj, glm::mat4 &view, glm::mat4 model)
 {
-    glm::mat4 accumulateModel = model;
     for (Ciri::SceneNode *node : root->m_Children)
     {
+        glm::mat4 accumulateModel = model;
         accumulateModel = glm::translate(accumulateModel, node->Position);
         accumulateModel = glm::scale(accumulateModel, node->Scale);
 
@@ -207,7 +207,6 @@ void RenderScene(Ciri::SceneNode *root, Ciri::ShaderType &selected, Ciri::Shader
         }
 
         RenderScene(node, selected, library, proj, view, accumulateModel);
-        accumulateModel = model;
     }
 }
 
@@ -275,27 +274,22 @@ int main()
     // Scene
     Ciri::Scene *mainScene = new Ciri::Scene("Main Scene");
     Ciri::Mesh *cube1 = new Ciri::Cube(glm::vec3(1.0f, 0.0f, 0.0f));
-    // Ciri::Mesh *cube2 = new Ciri::Cube(glm::vec3(0.0f, 1.0f, 0.0f));
+    Ciri::Mesh *cube2 = new Ciri::Cube(glm::vec3(0.0f, 1.0f, 0.0f));
     Ciri::Mesh *cube3 = new Ciri::Cube(glm::vec3(0.0f, 0.0f, 1.0f));
-    // Ciri::Mesh *quad = new Ciri::Quad(glm::vec3(1.0f, 0.0f, 1.0f));
     cube1->Construct();
-    // cube2->Construct();
+    cube2->Construct();
     cube3->Construct();
-    // quad->Construct();
     Ciri::SceneNode *cube1Node = mainScene->AddMesh("cube1", cube1);
-    // Ciri::SceneNode *cube2Node = mainScene->AddMesh("cube2", cube2);
+    Ciri::SceneNode *cube2Node = mainScene->AddMesh("cube2", cube2);
     Ciri::SceneNode *cube3Node = mainScene->AddMesh("cube3", cube3);
-    // Ciri::SceneNode *quadNode = mainScene->AddMesh("quad", quad);
     cube1Node->Position = glm::vec3(-3.0f, 0.0f, 0.0f);
     cube3Node->Position = glm::vec3(3.0f, 0.0f, 0.0f);
-    // quadNode->Position = glm::vec3(-0.5f, 0.0f, 2.0f);
     cube1Node->Scale = glm::vec3(0.5f);
-    // cube2Node->Scale = glm::vec3(0.75f);
-    // quadNode->Scale = glm::vec3(10.0f, 10.0f, 0.0f);
+    cube2Node->Scale = glm::vec3(0.75f);
 
     // Ciri::SceneNode *sponzaNode = mainScene->LoadModel("sponza", "resources/mesh/sponza/sponza.obj", "resources/mesh/sponza/");
     Ciri::SceneNode *dragonNode = mainScene->LoadModel("dragon", "resources/mesh/dragon/dragon.obj", "resources/mesh/dragon/");
-    dragonNode->Position = glm::vec3(0.0f, 0.0f, 0.0f);
+    dragonNode->Position = glm::vec3(10.0f, 0.0f, 0.0f);
     dragonNode->Scale = glm::vec3(10.0f);
 
     while (!glfwWindowShouldClose(window))
