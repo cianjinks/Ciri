@@ -159,7 +159,7 @@ void GLAPIENTRY MessageCallback(GLenum source,
 
 void SceneUI(Ciri::SceneNode *root)
 {
-    if (ImGui::TreeNode(root->Name))
+    if (ImGui::TreeNode(root->Name.c_str()))
     {
         if (root->NodeMesh)
         {
@@ -173,6 +173,41 @@ void SceneUI(Ciri::SceneNode *root)
         }
 
         ImGui::TreePop();
+    }
+}
+
+void RenderScene(Ciri::SceneNode *root, Ciri::ShaderType &selected, Ciri::ShaderLibrary *library, glm::mat4 &proj, glm::mat4 &view, glm::mat4 model)
+{
+    glm::mat4 accumulateModel = model;
+    for (Ciri::SceneNode *node : root->m_Children)
+    {
+        accumulateModel = glm::translate(accumulateModel, node->Position);
+        accumulateModel = glm::scale(accumulateModel, node->Scale);
+
+        // No mesh means this is just a container
+        if (node->NodeMesh)
+        {
+            glm::mat4 mvp = proj * view * accumulateModel;
+
+            library->BindShader(selected);
+            library->SetMat4f("u_MVP", glm::value_ptr(mvp));
+            library->SetInt1i("u_DiffuseTexture", 0);
+
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, 0);
+
+            Ciri::Mesh *mesh = node->NodeMesh;
+            glBindVertexArray(mesh->m_VAO);
+
+            glDrawArrays(GL_TRIANGLES, 0, 3 * mesh->TriCount);
+
+            glBindVertexArray(0);
+            glBindTexture(GL_TEXTURE_2D, 0);
+            library->BindShader(Ciri::ShaderType::NONE);
+        }
+
+        RenderScene(node, selected, library, proj, view, accumulateModel);
+        accumulateModel = model;
     }
 }
 
@@ -240,23 +275,28 @@ int main()
     // Scene
     Ciri::Scene *mainScene = new Ciri::Scene("Main Scene");
     Ciri::Mesh *cube1 = new Ciri::Cube(glm::vec3(1.0f, 0.0f, 0.0f));
-    Ciri::Mesh *cube2 = new Ciri::Cube(glm::vec3(0.0f, 1.0f, 0.0f));
+    // Ciri::Mesh *cube2 = new Ciri::Cube(glm::vec3(0.0f, 1.0f, 0.0f));
     Ciri::Mesh *cube3 = new Ciri::Cube(glm::vec3(0.0f, 0.0f, 1.0f));
-    Ciri::Mesh *quad = new Ciri::Quad(glm::vec3(1.0f, 0.0f, 1.0f));
+    // Ciri::Mesh *quad = new Ciri::Quad(glm::vec3(1.0f, 0.0f, 1.0f));
     cube1->Construct();
-    cube2->Construct();
+    // cube2->Construct();
     cube3->Construct();
-    quad->Construct();
+    // quad->Construct();
     Ciri::SceneNode *cube1Node = mainScene->AddMesh("cube1", cube1);
-    Ciri::SceneNode *cube2Node = mainScene->AddMesh("cube2", cube2);
+    // Ciri::SceneNode *cube2Node = mainScene->AddMesh("cube2", cube2);
     Ciri::SceneNode *cube3Node = mainScene->AddMesh("cube3", cube3);
-    Ciri::SceneNode *quadNode = mainScene->AddMesh("quad", quad);
+    // Ciri::SceneNode *quadNode = mainScene->AddMesh("quad", quad);
     cube1Node->Position = glm::vec3(-3.0f, 0.0f, 0.0f);
     cube3Node->Position = glm::vec3(3.0f, 0.0f, 0.0f);
-    quadNode->Position = glm::vec3(-0.5f, 0.0f, 2.0f);
+    // quadNode->Position = glm::vec3(-0.5f, 0.0f, 2.0f);
     cube1Node->Scale = glm::vec3(0.5f);
-    cube2Node->Scale = glm::vec3(0.75f);
-    quadNode->Scale = glm::vec3(10.0f, 10.0f, 0.0f);
+    // cube2Node->Scale = glm::vec3(0.75f);
+    // quadNode->Scale = glm::vec3(10.0f, 10.0f, 0.0f);
+
+    // Ciri::SceneNode *sponzaNode = mainScene->LoadModel("sponza", "resources/mesh/sponza/sponza.obj", "resources/mesh/sponza/");
+    Ciri::SceneNode *dragonNode = mainScene->LoadModel("dragon", "resources/mesh/dragon/dragon.obj", "resources/mesh/dragon/");
+    dragonNode->Position = glm::vec3(0.0f, 0.0f, 0.0f);
+    dragonNode->Scale = glm::vec3(10.0f);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -314,39 +354,13 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
 
-        for (Ciri::SceneNode *node : mainScene->GetRoot()->m_Children)
-        {
-            // No mesh means this is just a container
-            if (node->NodeMesh)
-            {
-                glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, renderDistance);
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, renderDistance);
 
-                glm::mat4 view = glm::mat4(1.0f);
-                view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        glm::mat4 view = glm::mat4(1.0f);
+        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
-                glm::mat4 model = glm::mat4(1.0f);
-                model = glm::translate(model, node->Position);
-                model = glm::scale(model, node->Scale);
-
-                glm::mat4 mvp = projection * view * model;
-
-                shaderLibrary->BindShader(selected);
-                shaderLibrary->SetMat4f("u_MVP", glm::value_ptr(mvp));
-                shaderLibrary->SetInt1i("u_DiffuseTexture", 0);
-
-                glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, 0);
-
-                Ciri::Mesh *mesh = node->NodeMesh;
-                glBindVertexArray(mesh->m_VAO);
-
-                glDrawArrays(GL_TRIANGLES, 0, 3 * mesh->TriCount);
-
-                glBindVertexArray(0);
-                glBindTexture(GL_TEXTURE_2D, 0);
-                shaderLibrary->BindShader(Ciri::ShaderType::NONE);
-            }
-        }
+        glm::mat4 model = glm::mat4(1.0f);
+        RenderScene(mainScene->GetRoot(), selected, shaderLibrary, projection, view, model);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);

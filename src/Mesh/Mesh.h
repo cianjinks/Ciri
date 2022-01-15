@@ -14,6 +14,8 @@ namespace Ciri
         // Public for rendering tests
         uint32_t m_VAO = 0;
 
+        static const glm::vec3 s_DefaultColor; // For primitives
+
     private:
         uint32_t m_VBO = 0;
 
@@ -22,8 +24,6 @@ namespace Ciri
         std::vector<glm::vec3> m_NormalData;
         std::vector<glm::vec3> m_ColorData;
         std::vector<glm::vec2> m_TexCoordData;
-
-        static const glm::vec3 s_DefaultColor; // For primitives
 
     public:
         Mesh();

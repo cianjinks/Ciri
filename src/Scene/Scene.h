@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include <glm/glm.hpp>
 #include <iostream>
+#include <string>
 
 #include "Mesh/Mesh.h"
 
@@ -13,7 +14,7 @@ namespace Ciri
     class SceneNode
     {
     public:
-        const char *Name = nullptr;
+        std::string Name = "";
         Mesh *NodeMesh = nullptr;
         glm::vec3 Position = glm::vec3(0.0f);
         glm::vec3 Rotation = glm::vec3(0.0f); // TODO: remove
@@ -43,8 +44,13 @@ namespace Ciri
 
     public:
         SceneNode *AddMesh(const char *name, Mesh *mesh);
+        SceneNode *AddContainer(const char *name);                                              // Create empty scene node
+        SceneNode *LoadModel(const char *name, const char *filepath, const char *materialpath); // Load .obj file
 
-        SceneNode *GetRoot() const { return m_Root; }
+        SceneNode *GetRoot() const
+        {
+            return m_Root;
+        }
         const uint32_t GetMeshCount() const { return m_MeshCount; }
         const uint32_t GetTotalTriCount() const { return m_TotalTriCount; }
 

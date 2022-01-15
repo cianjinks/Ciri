@@ -1,11 +1,9 @@
-[] - Load and display obj models (rasterization)
-    [X] - Separate shaders into files
-    [X] - Basic test camera system
-    [X] - Load indices and vertices
-    [] - Load materials
-    [] - Choose file to load from within program (file browser)
-    [] - Hotswap shaders (default, normal, texcoord)
-[] - Design code structure (Entry, Application, Renderer, etc)
-    [] - Scene structure (objects, primitives?)
+[X] - Scene structure
+[] - Obj loading into scene
+    [] - File browser
+[] - Create add primitive UI
+    [] - Sphere primitive
+[] - Renderer
+    [] - Scene render (materials/textures/etc)
 [] - ImGUIzmo
 [] -
