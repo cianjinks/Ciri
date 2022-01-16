@@ -158,19 +158,38 @@ void GLAPIENTRY MessageCallback(GLenum source,
             type, severity, message);
 }
 
-void SceneUI(Ciri::SceneNode *root)
+static Ciri::SceneNode *selected_node = nullptr;
+void SceneUI(Ciri::SceneNode *root, int ptr_id)
 {
-    if ((root->Name == "") ? ImGui::TreeNode("null") : ImGui::TreeNode(root->Name.c_str()))
+    ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
+
+    // Leaf
+    bool leaf = root->m_Children.empty();
+    if (leaf)
+    {
+        node_flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+    }
+
+    // This node is selected
+    if (selected_node == root)
+    {
+        node_flags |= ImGuiTreeNodeFlags_Selected;
+    }
+
+    // TODO: Blank root name is buggy
+    bool node_open = ImGui::TreeNodeEx((void *)(intptr_t)ptr_id, node_flags, root->Name.c_str());
+
+    // Update selected node on click but not expand toggle click
+    if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+    {
+        selected_node = root;
+    }
+
+    if (node_open && !leaf)
     {
         for (Ciri::SceneNode *node : root->m_Children)
         {
-            SceneUI(node);
-        }
-
-        if (root->Name != "Main Scene")
-        {
-            ImGui::InputFloat3("Position", &root->Position.x);
-            ImGui::InputFloat3("Scale", &root->Scale.x);
+            SceneUI(node, ptr_id++);
         }
 
         ImGui::TreePop();
@@ -257,7 +276,7 @@ int main()
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
-    (void)io;
+    (void)io; // Trick to suppress unused warnings
 
     ImGui::StyleColorsDark();
 
@@ -355,7 +374,10 @@ int main()
             ImGui::InputText("Name", addmesh_name, 20);
             ImGui::InputFloat3("Position", &addmesh_position.x);
             ImGui::InputFloat3("Scale", &addmesh_scale.x);
-            ImGui::InputFloat3("Color", &addmesh_color.x);
+            if (type != 2) // Can't select color for model
+            {
+                ImGui::InputFloat3("Color", &addmesh_color.x);
+            }
             ImGui::Separator();
 
             if (ImGui::Button("OK", ImVec2(120, 0)))
@@ -409,13 +431,24 @@ int main()
         ImGui::End();
 
         ImGui::Begin("Scene");
-        SceneUI(mainScene->GetRoot());
+        SceneUI(mainScene->GetRoot(), 0);
+        ImGui::End();
+
+        ImGui::Begin("Mesh Settings");
+        if (selected_node)
+        {
+            ImGui::Text(selected_node->Name.c_str());
+            ImGui::InputFloat3("Position", &selected_node->Position.x);
+            ImGui::InputFloat3("Scale", &selected_node->Scale.x);
+        }
         ImGui::End();
 
         ImGui::Render();
 
+        // Input
         poll_input(window);
 
+        // Rendering
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
