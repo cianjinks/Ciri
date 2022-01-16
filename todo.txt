@@ -1,8 +1,8 @@
 [X] - Scene structure
 [X] - Obj loading into scene
     [] - File browser
-    [] - UI for loading and setting position + scale
-[] - Create add primitive UI
+    [X] - UI for loading and setting position + scale
+[X] - Create add primitive UI
     [] - Sphere primitive
 [] - Renderer
     [] - Scene render
