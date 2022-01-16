@@ -247,7 +247,7 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
 
-    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "OBJ Loading", nullptr, nullptr);
+    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Ciri", nullptr, nullptr);
     if (!window)
     {
         glfwTerminate();
@@ -349,6 +349,7 @@ int main()
         ImGui::Text("Frame Time: %fms", deltaTime * 1000);
         ImGui::Text("FPS: %f", 1.0f / deltaTime);
         ImGui::Separator();
+        ImGui::Text("Camera Position: %.3f, %.3f, %.3f", cameraPos.x, cameraPos.y, cameraPos.z);
         ImGui::SliderFloat("Camera Speed High", &cameraSpeedHigh, 1.0f, 1000.0f);
         ImGui::SliderFloat("Camera Speed Low", &cameraSpeedLow, 1.0f, 500.0f);
         ImGui::SliderFloat("Render Distance", &renderDistance, 10.0f, 10000.0f);
