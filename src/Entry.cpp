@@ -29,6 +29,7 @@
 // Window
 const int WINDOW_WIDTH = 1600;
 const int WINDOW_HEIGHT = 900;
+bool mouseCaptured = false;
 
 // Camera
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 10.0f);
@@ -136,12 +137,14 @@ void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
     {
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        mouseCaptured = true;
     }
 
     if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
     {
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         firstMouse = true;
+        mouseCaptured = false;
     }
 }
 
@@ -329,7 +332,11 @@ int main()
 
         // ImGui::ShowDemoWindow();
 
-        ImGui::Begin("Debug Info");
+        // Options
+        ImGuiWindowFlags flags = mouseCaptured ? ImGuiWindowFlags_NoInputs : 0;
+        ImGui::PushStyleColor(ImGuiCol_ResizeGrip, 0);
+
+        ImGui::Begin("Debug Info", NULL, flags);
         ImGui::Text("Version: OpenGL %s", glGetString(GL_VERSION));
         ImGui::Text("Vendor: %s", glGetString(GL_VENDOR));
         ImGui::Text("Renderer: %s", glGetString(GL_RENDERER));
@@ -430,11 +437,11 @@ int main()
 
         ImGui::End();
 
-        ImGui::Begin("Scene");
+        ImGui::Begin("Scene", NULL, flags);
         SceneUI(mainScene->GetRoot(), 0);
         ImGui::End();
 
-        ImGui::Begin("Mesh Settings");
+        ImGui::Begin("Mesh Settings", NULL, flags);
         if (selected_node)
         {
             ImGui::Text(selected_node->Name.c_str());
@@ -443,6 +450,7 @@ int main()
         }
         ImGui::End();
 
+        ImGui::PopStyleColor(1);
         ImGui::Render();
 
         // Input
