@@ -311,8 +311,8 @@ int main()
     cube2Node->Scale = glm::vec3(0.75f);
     cube3Node->Position = glm::vec3(3.0f, 10.0f, 0.0f);
 
-    Ciri::SceneNode *sponzaNode = mainScene->LoadModel("sponza", "resources/mesh/sponza/sponza.obj", "resources/mesh/sponza/");
-    Ciri::SceneNode *dragonNode = mainScene->LoadModel("dragon", "resources/mesh/dragon/dragon.obj", "resources/mesh/dragon/");
+    Ciri::SceneNode *sponzaNode = mainScene->LoadModel("sponza", "resources/mesh/sponza/sponza.obj");
+    Ciri::SceneNode *dragonNode = mainScene->LoadModel("dragon", "resources/mesh/dragon/dragon.obj");
     sponzaNode->Scale = glm::vec3(0.05f);
     dragonNode->Position = glm::vec3(10.0f, 10.0f, 0.0f);
     dragonNode->Scale = glm::vec3(10.0f);
@@ -322,6 +322,9 @@ int main()
     glm::vec3 addmesh_position = glm::vec3(0.0f);
     glm::vec3 addmesh_scale = glm::vec3(1.0f);
     glm::vec3 addmesh_color = glm::vec3(1.0f);
+    char *addmesh_filepath = new char[100];
+    const char *default_filepath = "resources/mesh/dragon/dragon.obj";
+    std::strcpy(addmesh_filepath, default_filepath);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -385,6 +388,10 @@ int main()
             {
                 ImGui::InputFloat3("Color", &addmesh_color.x);
             }
+            else
+            {
+                ImGui::InputText("File Path", addmesh_filepath, 100);
+            }
             ImGui::Separator();
 
             if (ImGui::Button("OK", ImVec2(120, 0)))
@@ -411,7 +418,7 @@ int main()
                 }
                 case 2:
                 {
-                    Ciri::SceneNode *dragonNode = mainScene->LoadModel(addmesh_name, "resources/mesh/dragon/dragon.obj", "resources/mesh/dragon/");
+                    Ciri::SceneNode *dragonNode = mainScene->LoadModel(addmesh_name, addmesh_filepath);
                     dragonNode->Position = addmesh_position;
                     dragonNode->Scale = addmesh_scale;
                     break;
@@ -424,6 +431,7 @@ int main()
                 addmesh_position = glm::vec3(0.0f);
                 addmesh_scale = glm::vec3(1.0f);
                 addmesh_color = glm::vec3(1.0f);
+                std::strcpy(addmesh_filepath, default_filepath);
             }
             ImGui::SetItemDefaultFocus();
             ImGui::SameLine();

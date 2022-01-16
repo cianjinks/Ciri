@@ -43,8 +43,8 @@ namespace Ciri
 
     public:
         SceneNode *AddMesh(const char *name, Mesh *mesh);
-        SceneNode *AddContainer(const char *name);                                              // Create empty scene node
-        SceneNode *LoadModel(const char *name, const char *filepath, const char *materialpath); // Load .obj file
+        SceneNode *AddContainer(const char *name);                    // Create empty scene node
+        SceneNode *LoadModel(const char *name, const char *filepath); // Load .obj file
 
         SceneNode *GetRoot() const
         {

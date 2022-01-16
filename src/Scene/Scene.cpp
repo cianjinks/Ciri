@@ -57,7 +57,7 @@ namespace Ciri
         return node;
     }
 
-    SceneNode *Scene::LoadModel(const char *name, const char *filepath, const char *materialpath)
+    SceneNode *Scene::LoadModel(const char *name, const char *filepath)
     {
         tinyobj::attrib_t attrib;
         std::vector<tinyobj::shape_t> shapes;
@@ -65,6 +65,21 @@ namespace Ciri
 
         std::string warn;
         std::string err;
+
+        // materialpath = folder containing .obj
+        int i = std::strlen(filepath) - 1;
+        while (filepath[i] != '/' && i >= 0)
+        {
+            i--;
+        }
+        char materialpath[i + 2];
+        for (int j = 0; j <= i; j++)
+        {
+            materialpath[j] = filepath[j];
+        }
+        materialpath[i + 1] = '\0';
+
+        // ^TODO: Remove, find better solution
 
         bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filepath, materialpath);
         if (!ret)
