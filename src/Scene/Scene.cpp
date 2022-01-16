@@ -188,6 +188,9 @@ namespace Ciri
 
             container->AddChild(node);
 
+            m_TotalTriCount += mesh->TriCount;
+            m_MeshCount++;
+
             positionData.clear();
             normalData.clear();
             colorData.clear();
