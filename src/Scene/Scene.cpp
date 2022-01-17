@@ -57,7 +57,8 @@ namespace Ciri
         return node;
     }
 
-    SceneNode *Scene::LoadModel(const char *name, const char *filepath)
+    // `default_color` for now since there is no material support
+    SceneNode *Scene::LoadModel(const char *name, const char *filepath, glm::vec3 default_color)
     {
         tinyobj::attrib_t attrib;
         std::vector<tinyobj::shape_t> shapes;
@@ -120,7 +121,7 @@ namespace Ciri
                 {
                     // currentMaterialID = materials.size() - 1;
                     // std::cout << "Invalid current material id for mesh" << std::endl;
-                    color = Mesh::s_DefaultColor;
+                    color = default_color;
                 }
                 else
                 {

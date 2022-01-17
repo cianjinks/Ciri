@@ -311,8 +311,8 @@ int main()
     cube2Node->Scale = glm::vec3(0.75f);
     cube3Node->Position = glm::vec3(3.0f, 10.0f, 0.0f);
 
-    Ciri::SceneNode *sponzaNode = mainScene->LoadModel("sponza", "resources/mesh/sponza/sponza.obj");
-    Ciri::SceneNode *dragonNode = mainScene->LoadModel("dragon", "resources/mesh/dragon/dragon.obj");
+    Ciri::SceneNode *sponzaNode = mainScene->LoadModel("sponza", "resources/mesh/sponza/sponza.obj", glm::vec3(0.25f, 0.41f, 1.0f));
+    Ciri::SceneNode *dragonNode = mainScene->LoadModel("dragon", "resources/mesh/dragon/dragon.obj", glm::vec3(0.25f, 0.41f, 1.0f));
     sponzaNode->Scale = glm::vec3(0.05f);
     dragonNode->Position = glm::vec3(10.0f, 10.0f, 0.0f);
     dragonNode->Scale = glm::vec3(10.0f);
@@ -419,7 +419,7 @@ int main()
                 }
                 case 2:
                 {
-                    Ciri::SceneNode *dragonNode = mainScene->LoadModel(addmesh_name, addmesh_filepath);
+                    Ciri::SceneNode *dragonNode = mainScene->LoadModel(addmesh_name, addmesh_filepath, glm::vec3(0.25f, 0.41f, 1.0f));
                     dragonNode->Position = addmesh_position;
                     dragonNode->Scale = addmesh_scale;
                     break;
