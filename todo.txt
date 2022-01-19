@@ -4,12 +4,14 @@
     [X] - UI for loading and setting position + scale
 [X] - Create add primitive UI
     [] - Sphere primitive
-[] - Renderer
-    [] - Scene render
-        [] - Shaders
-        [] - Materials (textures for now)
+[X] - Materials
+    [] - Texture/TextureLibrary classes
 [] - Camera
     [] - Fly Camera
     [] - Orbital Camera
+[] - std::string replacing char*
 [] - ImGUIzmo
 [] - Logging
+[] - Abstract UI
+[] - Abstract application
+[] - Renderer
