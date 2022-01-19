@@ -254,15 +254,75 @@ void RenderScene(Ciri::SceneNode *root, Ciri::ShaderType &selected, Ciri::Shader
     }
 }
 
-void MaterialUI(Ciri::MaterialLibrary &library)
+void MaterialLibraryUI(Ciri::MaterialLibrary &library, Ciri::Material *&selected_material, ImGuiWindowFlags &flags)
 {
-    ImGui::Begin("Materials");
+    ImGui::Begin("Materials", NULL, flags);
     for (auto &pair : library.GetMaterials())
     {
         std::string name = pair.first;
         Ciri::Material *material = pair.second;
-        ImGui::Text(ICON_FK_CODEPEN "%s", name.c_str());
+        std::string text = ICON_FK_CODEPEN + std::string(" ") + name;
+        if (ImGui::Selectable(text.c_str(), selected_material == material))
+        {
+            selected_material = material;
+        }
     }
+    ImGui::End();
+}
+
+void CreateTextureCombo(const char *name, uint32_t &material_tex_id, Ciri::Scene *scene)
+{
+    std::string texture_name = "None";
+    for (auto &pair : scene->MatLib.GetTextures())
+    {
+        if (material_tex_id == pair.second)
+        {
+            texture_name = pair.first;
+        }
+    }
+
+    if (ImGui::BeginCombo(name, texture_name.c_str(), 0))
+    {
+        for (auto &pair : scene->MatLib.GetTextures())
+        {
+            std::string tex_name = pair.first;
+            uint32_t texture_id = pair.second;
+            const bool is_selected = (material_tex_id == texture_id);
+            if (ImGui::Selectable(tex_name.c_str(), is_selected))
+                material_tex_id = texture_id;
+            if (is_selected)
+                ImGui::SetItemDefaultFocus();
+        }
+        ImGui::EndCombo();
+    }
+}
+
+void MaterialSettingsUI(Ciri::Material *material, Ciri::Scene *scene, ImGuiWindowFlags &flags)
+{
+    ImGui::Begin("Material Settings", NULL, flags);
+
+    if (material)
+    {
+        ImGui::Text(material->name.c_str());
+        ImGui::InputFloat3("Base Color", &material->baseColor.x);
+        CreateTextureCombo("Albedo Texture", material->baseColorTextureID, scene);
+        CreateTextureCombo("Normal Texture", material->normalTextureID, scene);
+        CreateTextureCombo("Metallic Texture", material->metallicTextureID, scene);
+        CreateTextureCombo("Roughness Texture", material->roughnessTextureID, scene);
+        CreateTextureCombo("Emissive Texture", material->emissiveTextureID, scene);
+        CreateTextureCombo("Occlusion Texture", material->occlusionTextureID, scene);
+        ImGui::InputFloat("Subsurface", &material->subsurface);
+        ImGui::InputFloat("Metallic", &material->metallic);
+        ImGui::InputFloat("Specular", &material->specular);
+        ImGui::InputFloat("Specular Tint", &material->specularTint);
+        ImGui::InputFloat("Roughness", &material->roughness);
+        ImGui::InputFloat("Anisotropic", &material->anisotropic);
+        ImGui::InputFloat("Sheen", &material->sheen);
+        ImGui::InputFloat("Sheen Tint", &material->sheenTint);
+        ImGui::InputFloat("Clearcoat", &material->clearcoat);
+        ImGui::InputFloat("Clearcoat Gloss", &material->clearcoatGloss);
+    }
+
     ImGui::End();
 }
 
@@ -333,7 +393,7 @@ int main()
     // Shaders
     Ciri::ShaderLibrary *shaderLibrary = new Ciri::ShaderLibrary();
     auto &shaders = shaderLibrary->GetShaderList();
-    Ciri::ShaderType selected = Ciri::ShaderType::FLAT_NORMAL;
+    Ciri::ShaderType selected_shader = Ciri::ShaderType::FLAT_NORMAL;
 
     // Scene
     Ciri::Scene *mainScene = new Ciri::Scene("Main Scene");
@@ -366,6 +426,8 @@ int main()
     const char *default_filepath = "resources/mesh/dragon/dragon.obj";
     std::strcpy(addmesh_filepath, default_filepath);
 
+    Ciri::Material *selected_material = nullptr;
+
     while (!glfwWindowShouldClose(window))
     {
         // Start the Dear ImGui frame
@@ -393,14 +455,14 @@ int main()
         ImGui::SliderFloat("Camera Speed High", &cameraSpeedHigh, 1.0f, 1000.0f);
         ImGui::SliderFloat("Camera Speed Low", &cameraSpeedLow, 1.0f, 500.0f);
         ImGui::SliderFloat("Render Distance", &renderDistance, 10.0f, 10000.0f);
-        if (ImGui::BeginCombo("Shading", shaders[selected]->name, 0))
+        if (ImGui::BeginCombo("Shading", shaders[selected_shader]->name, 0))
         {
             for (auto &pair : shaders)
             {
-                Ciri::Shader *shader = pair.second; // TODO: Blank root name is buggy and icon handling is rough
-                const bool is_selected = (selected == shader->type);
+                Ciri::Shader *shader = pair.second;
+                const bool is_selected = (selected_shader == shader->type);
                 if (ImGui::Selectable(shader->name, is_selected))
-                    selected = shader->type;
+                    selected_shader = shader->type;
                 if (is_selected)
                     ImGui::SetItemDefaultFocus();
             }
@@ -491,10 +553,29 @@ int main()
             ImGui::Text(selected_node->Name.c_str());
             ImGui::InputFloat3("Position", &selected_node->Position.x);
             ImGui::InputFloat3("Scale", &selected_node->Scale.x);
+
+            // Material setting
+            if (selected_node->NodeMesh)
+            {
+                if (ImGui::BeginCombo("Material", selected_node->NodeMaterial->name.c_str(), 0))
+                {
+                    for (auto &pair : mainScene->MatLib.GetMaterials())
+                    {
+                        Ciri::Material *material = pair.second;
+                        const bool is_selected = (selected_node->NodeMaterial == material);
+                        if (ImGui::Selectable(material->name.c_str(), is_selected))
+                            selected_node->NodeMaterial = material;
+                        if (is_selected)
+                            ImGui::SetItemDefaultFocus();
+                    }
+                    ImGui::EndCombo();
+                }
+            }
         }
         ImGui::End();
 
-        MaterialUI(mainScene->MatLib);
+        MaterialLibraryUI(mainScene->MatLib, selected_material, flags);
+        MaterialSettingsUI(selected_material, mainScene, flags);
 
         ImGui::PopStyleColor(1);
         ImGui::Render();
@@ -520,7 +601,7 @@ int main()
         view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
         glm::mat4 model = glm::mat4(1.0f);
-        RenderScene(mainScene->GetRoot(), selected, shaderLibrary, projection, view, model);
+        RenderScene(mainScene->GetRoot(), selected_shader, shaderLibrary, projection, view, model);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);

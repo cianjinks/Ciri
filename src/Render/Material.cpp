@@ -61,7 +61,9 @@ namespace Ciri
         material->sheenTint = sheenTint;
         material->clearcoat = clearcoat;
         material->clearcoatGloss = clearcoatGloss;
+
         material->settings = settings;
+        material->name = name;
 
         m_MaterialList[name] = material;
         return material;

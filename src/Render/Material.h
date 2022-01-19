@@ -3,7 +3,6 @@
 
 #include <cstdint>
 #include <map>
-#include <unordered_map>
 #include <iostream>
 #include <string>
 
@@ -43,6 +42,7 @@ namespace Ciri
 
         // Settings
         MaterialSettings settings;
+        std::string name;
 
     public:
         Material();
@@ -51,8 +51,8 @@ namespace Ciri
     class MaterialLibrary
     {
     private:
-        std::map<std::string, Material *> m_MaterialList;        // name -> material
-        std::unordered_map<std::string, uint32_t> m_TextureList; // filepath -> texture id
+        std::map<std::string, Material *> m_MaterialList; // name -> material
+        std::map<std::string, uint32_t> m_TextureList;    // filepath -> texture id
 
     public:
         MaterialLibrary();
@@ -60,6 +60,7 @@ namespace Ciri
 
         Material *GetMaterial(std::string name);
         const std::map<std::string, Material *> &GetMaterials() const { return m_MaterialList; };
+        const std::map<std::string, uint32_t> &GetTextures() const { return m_TextureList; };
 
         Material *CreateMaterial(std::string name, glm::vec3 base_color,
                                  MaterialSettings settings,
