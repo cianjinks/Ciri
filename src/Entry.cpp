@@ -11,6 +11,8 @@
 
 #include "tiny_obj_loader.h"
 
+#include "IconsForkAwesome.h"
+
 #include <glad/glad.h>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -162,7 +164,7 @@ void GLAPIENTRY MessageCallback(GLenum source,
 static Ciri::SceneNode *selected_node = nullptr;
 void SceneUI(Ciri::SceneNode *root, int ptr_id)
 {
-    ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
+    ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
 
     // Leaf
     bool leaf = root->m_Children.empty();
@@ -177,8 +179,9 @@ void SceneUI(Ciri::SceneNode *root, int ptr_id)
         node_flags |= ImGuiTreeNodeFlags_Selected;
     }
 
-    // TODO: Blank root name is buggy
-    bool node_open = ImGui::TreeNodeEx((void *)(intptr_t)ptr_id, node_flags, root->Name.c_str());
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2.0f, 2.0f));
+    // TODO: Blank root name is buggy and icon handling is rough
+    bool node_open = ImGui::TreeNodeEx((void *)(intptr_t)ptr_id, node_flags, "%s %s", root->NodeMesh ? ICON_FK_CUBE "" : ICON_FK_SQUARE_O "", root->Name.c_str());
 
     // Update selected node on click but not expand toggle click
     if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
@@ -195,6 +198,7 @@ void SceneUI(Ciri::SceneNode *root, int ptr_id)
 
         ImGui::TreePop();
     }
+    ImGui::PopStyleVar();
 }
 
 void RenderScene(Ciri::SceneNode *root, Ciri::ShaderType &selected, Ciri::ShaderLibrary *library, glm::mat4 &proj, glm::mat4 &view, glm::mat4 model)
@@ -296,7 +300,16 @@ int main()
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
-    (void)io; // Trick to suppress unused warnings
+
+    // Merge in icons from Fork Awesome
+    io.Fonts->AddFontDefault();
+    static const ImWchar icons_ranges[] = {ICON_MIN_FK, ICON_MAX_FK, 0};
+    ImFontConfig icons_config;
+    icons_config.MergeMode = true;
+    icons_config.PixelSnapH = true;
+    icons_config.GlyphOffset = {0.f, 2.f};
+    icons_config.GlyphMinAdvanceX = 20.0f; // necessary?
+    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FK, 16.0f, &icons_config, icons_ranges);
 
     ImGui::StyleColorsDark();
 
@@ -372,7 +385,7 @@ int main()
         {
             for (auto &pair : shaders)
             {
-                Ciri::Shader *shader = pair.second;
+                Ciri::Shader *shader = pair.second; // TODO: Blank root name is buggy and icon handling is rough
                 const bool is_selected = (selected == shader->type);
                 if (ImGui::Selectable(shader->name, is_selected))
                     selected = shader->type;
