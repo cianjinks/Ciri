@@ -20,6 +20,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Render/Shader.h"
+#include "Render/Material.h"
 #include "Scene/Scene.h"
 #include "Mesh/Primitive.h"
 
@@ -211,10 +212,29 @@ void RenderScene(Ciri::SceneNode *root, Ciri::ShaderType &selected, Ciri::Shader
 
             library->BindShader(selected);
             library->SetMat4f("u_MVP", glm::value_ptr(mvp));
-            library->SetInt1i("u_DiffuseTexture", 0);
 
+            Ciri::Material *material = node->NodeMaterial;
+            library->SetInt1i("u_BaseColorTexture", 0);
+            library->SetVec3f("u_BaseColor", material->baseColor);
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, 0);
+            glBindTexture(GL_TEXTURE_2D, material->baseColorTextureID);
+            /**
+            library->SetInt1i("u_NormalTexture", 1);
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, material->normalTextureID);
+            library->SetInt1i("u_MetallicTexture", 2);
+            glActiveTexture(GL_TEXTURE2);
+            glBindTexture(GL_TEXTURE_2D, material->metallicTextureID);
+            library->SetInt1i("u_RoughnessTexture", 3);
+            glActiveTexture(GL_TEXTURE3);
+            glBindTexture(GL_TEXTURE_2D, material->roughnessTextureID);
+            library->SetInt1i("u_EmissiveTexture", 4);
+            glActiveTexture(GL_TEXTURE4);
+            glBindTexture(GL_TEXTURE_2D, material->emissiveTextureID);
+            library->SetInt1i("u_OcclusionTexture", 5);
+            glActiveTexture(GL_TEXTURE5);
+            glBindTexture(GL_TEXTURE_2D, material->occlusionTextureID);
+            **/
 
             Ciri::Mesh *mesh = node->NodeMesh;
             glBindVertexArray(mesh->m_VAO);

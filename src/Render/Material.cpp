@@ -13,24 +13,33 @@ namespace Ciri
         stbi_set_flip_vertically_on_load(true);
     }
 
-    void MaterialLibrary::CreateMaterial(const char *name, glm::vec3 baseColor,
-                                         MaterialSettings settings,
-                                         const char *baseColorTexture,
-                                         const char *normalTexture,
-                                         const char *metallicTexture,
-                                         const char *roughnessTexture,
-                                         const char *emissiveTexture,
-                                         const char *occlusionTexture,
-                                         float subsurface,
-                                         float metallic,
-                                         float specular,
-                                         float specularTint,
-                                         float roughness,
-                                         float anisotropic,
-                                         float sheen,
-                                         float sheenTint,
-                                         float clearcoat,
-                                         float clearcoatGloss)
+    Material *MaterialLibrary::GetMaterial(const char *name)
+    {
+        if (m_MaterialList.find(name) != m_MaterialList.end())
+        {
+            return m_MaterialList[name];
+        }
+        return nullptr;
+    }
+
+    Material *MaterialLibrary::CreateMaterial(const char *name, glm::vec3 baseColor,
+                                              MaterialSettings settings,
+                                              const char *baseColorTexture,
+                                              const char *normalTexture,
+                                              const char *metallicTexture,
+                                              const char *roughnessTexture,
+                                              const char *emissiveTexture,
+                                              const char *occlusionTexture,
+                                              float subsurface,
+                                              float metallic,
+                                              float specular,
+                                              float specularTint,
+                                              float roughness,
+                                              float anisotropic,
+                                              float sheen,
+                                              float sheenTint,
+                                              float clearcoat,
+                                              float clearcoatGloss)
     {
         Material *material = new Material();
 
@@ -55,6 +64,7 @@ namespace Ciri
         material->settings = settings;
 
         m_MaterialList[name] = material;
+        return material;
     }
 
     void MaterialLibrary::RegisterTexture(const char *filepath, uint32_t texture_index, uint32_t *texture_id, MaterialSettings settings)

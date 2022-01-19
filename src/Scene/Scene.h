@@ -41,14 +41,17 @@ namespace Ciri
         uint32_t m_MeshCount = 0;
         uint32_t m_TotalTriCount = 0;
 
+        Material *m_DefaultMaterial;
+
     public:
         Scene(const char *name);
         ~Scene();
 
     public:
-        SceneNode *AddMesh(const char *name, Mesh *mesh);
-        SceneNode *AddContainer(const char *name);                    // Create empty scene node
-        SceneNode *LoadModel(const char *name, const char *filepath); // Load .obj file
+        SceneNode *AddMesh(const char *name, Mesh *mesh, Material *material = nullptr);
+        SceneNode *AddContainer(const char *name); // Create empty scene node
+        // `custom_material` allows you to override the obj file materials
+        SceneNode *LoadModel(const char *name, const char *filepath, Material *custom_material = nullptr); // Load .obj file
 
         SceneNode *GetRoot() const
         {

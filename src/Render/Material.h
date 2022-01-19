@@ -57,24 +57,26 @@ namespace Ciri
         MaterialLibrary();
         ~MaterialLibrary() = default;
 
-        void CreateMaterial(const char *name, glm::vec3 base_color,
-                            MaterialSettings settings,
-                            const char *baseColorTexture = nullptr,
-                            const char *normalTexture = nullptr,
-                            const char *metallicTexture = nullptr,
-                            const char *roughnessTexture = nullptr,
-                            const char *emissiveTexture = nullptr,
-                            const char *occlusionTexture = nullptr,
-                            float subsurface = 0.0f,
-                            float metallic = 0.0f,
-                            float specular = 0.0f,
-                            float specularTint = 0.0f,
-                            float roughness = 0.0f,
-                            float anisotropic = 0.0f,
-                            float sheen = 0.0f,
-                            float sheenTint = 0.0f,
-                            float clearcoat = 0.0f,
-                            float clearcoatGloss = 0.0f);
+        Material *GetMaterial(const char *name);
+
+        Material *CreateMaterial(const char *name, glm::vec3 base_color,
+                                 MaterialSettings settings,
+                                 const char *baseColorTexture = nullptr,
+                                 const char *normalTexture = nullptr,
+                                 const char *metallicTexture = nullptr,
+                                 const char *roughnessTexture = nullptr,
+                                 const char *emissiveTexture = nullptr,
+                                 const char *occlusionTexture = nullptr,
+                                 float subsurface = 0.0f,
+                                 float metallic = 0.0f,
+                                 float specular = 0.0f,
+                                 float specularTint = 0.0f,
+                                 float roughness = 0.0f,
+                                 float anisotropic = 0.0f,
+                                 float sheen = 0.0f,
+                                 float sheenTint = 0.0f,
+                                 float clearcoat = 0.0f,
+                                 float clearcoatGloss = 0.0f);
 
     private:
         // Add new texture to `m_TextureList`, calls `CompileTexture`

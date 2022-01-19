@@ -31,6 +31,12 @@ namespace Ciri
         glUniform1i(loc, int1);
     }
 
+    void ShaderLibrary::SetVec3f(const char *name, glm::vec3 vec3)
+    {
+        uint32_t loc = glGetUniformLocation(m_CurrentShader->program_id, name);
+        glUniform3fv(loc, 1, &vec3.x);
+    }
+
     void ShaderLibrary::BindShader(ShaderType type)
     {
         Shader *shader = m_ShaderList[type];

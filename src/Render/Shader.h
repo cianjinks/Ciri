@@ -9,6 +9,8 @@
 #include <iostream>
 #include <fstream>
 
+#include <glm/glm.hpp>
+
 namespace Ciri
 {
 
@@ -54,6 +56,7 @@ namespace Ciri
         // Uniforms
         void SetMat4f(const char *name, float *mat4);
         void SetInt1i(const char *name, int32_t int1);
+        void SetVec3f(const char *name, glm::vec3 vec3);
 
     private:
         void RegisterShaders();

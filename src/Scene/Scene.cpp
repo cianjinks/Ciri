@@ -2,6 +2,7 @@
 
 #include "tiny_obj_loader.h"
 #include <cstring>
+#include <algorithm>
 
 namespace Ciri
 {
@@ -15,6 +16,9 @@ namespace Ciri
     {
         m_Root = new SceneNode();
         m_Root->Name = std::string(name);
+
+        // Default Material
+        m_DefaultMaterial = MatLib.CreateMaterial("default", glm::vec3(1.0f, 0.0f, 1.0f), {false});
     }
 
     Scene::~Scene()
@@ -33,12 +37,13 @@ namespace Ciri
         root->m_Children.clear(); // Destroys all elements in vector?
     }
 
-    SceneNode *Scene::AddMesh(const char *name, Mesh *mesh)
+    SceneNode *Scene::AddMesh(const char *name, Mesh *mesh, Material *material)
     {
         SceneNode *node = new SceneNode();
 
         node->Name = name;
         node->NodeMesh = mesh;
+        node->NodeMaterial = material ? material : m_DefaultMaterial;
         m_Root->AddChild(node);
 
         m_TotalTriCount += mesh->TriCount;
@@ -57,7 +62,7 @@ namespace Ciri
         return node;
     }
 
-    SceneNode *Scene::LoadModel(const char *name, const char *filepath)
+    SceneNode *Scene::LoadModel(const char *name, const char *filepath, Material *custom_material)
     {
         tinyobj::attrib_t attrib;
         std::vector<tinyobj::shape_t> shapes;
@@ -79,26 +84,53 @@ namespace Ciri
         }
         materialpath[i + 1] = '\0';
 
-        // ^TODO: Remove, find better solution
+        // ^TODO: Remove, find better solution (`find_last_of` ?)
 
+        // Load OBJ
         bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filepath, materialpath);
         if (!ret)
         {
             std::cout << "Failed to load object!" << std::endl;
             std::cout << err << std::endl;
         }
-
         printf("Successfully loaded %s - Shapes: %d | Materials: %d\n", filepath, shapes.size(), materials.size());
+
+        // Warnings
         if (!warn.empty())
         {
             std::cout << warn << std::endl;
         }
 
+        // List shapes
         for (size_t i = 0; i < shapes.size(); i++)
         {
             printf("Shape %d: %s\n", i, shapes[i].name.c_str());
         }
         printf("\n");
+
+        // List materials
+        materials.push_back(tinyobj::material_t());
+        for (size_t i = 0; i < materials.size(); i++)
+        {
+            printf("Material %d: %s\n", i, materials[i].name.c_str());
+            if (materials[i].diffuse_texname.length() > 0)
+            {
+                printf("    Diffuse Texture: %s\n", materials[i].diffuse_texname.c_str());
+            }
+        }
+
+        // Add materials to material library
+        for (size_t m = 0; m < materials.size(); m++)
+        {
+            if (materials[m].diffuse_texname.length() > 0)
+            {
+                std::string texture_name = materials[m].diffuse_texname;
+                std::replace(texture_name.begin(), texture_name.end(), '\\', '/');
+                std::string full_material_path = std::string(materialpath) + texture_name;
+                // TODO: The c_str value is inserted into a map so becomes invalid memory when string goes out of scope :(
+                MatLib.CreateMaterial(materials[m].name.c_str(), glm::vec3(1.0f), {true}, full_material_path.c_str());
+            }
+        }
 
         SceneNode *container = AddContainer(name);
 
@@ -111,22 +143,6 @@ namespace Ciri
             int offset = 0;
             for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++)
             {
-                glm::vec3 color = glm::vec3(0.0f);
-
-                int currentMaterialID = shapes[s].mesh.material_ids[f];
-                if ((currentMaterialID < 0) || (currentMaterialID >= static_cast<int>(materials.size())))
-                {
-                    // currentMaterialID = materials.size() - 1;
-                    // std::cout << "Invalid current material id for mesh" << std::endl;
-                    // color = default_color;
-                }
-                else
-                {
-                    color.x = materials[currentMaterialID].diffuse[0] * materials[currentMaterialID].ambient[0];
-                    color.y = materials[currentMaterialID].diffuse[1] * materials[currentMaterialID].ambient[1];
-                    color.z = materials[currentMaterialID].diffuse[2] * materials[currentMaterialID].ambient[2];
-                }
-
                 for (int v = 0; v < 3; v++)
                 {
                     tinyobj::index_t index = shapes[s].mesh.indices[offset + v];
@@ -182,6 +198,33 @@ namespace Ciri
             SceneNode *node = new SceneNode();
             node->Name = shapes[s].name;
             node->NodeMesh = mesh;
+
+            // Set material
+            if (custom_material)
+            {
+                node->NodeMaterial = custom_material;
+            }
+            else if (!shapes[s].mesh.material_ids.empty())
+            {
+                int materialID = shapes[s].mesh.material_ids[0];
+                if ((materialID < 0) || (materialID >= static_cast<int>(materials.size())))
+                {
+                    materialID = materials.size() - 1;
+                    std::cout << "Invalid material id for mesh: " << shapes[s].name << std::endl;
+                }
+
+                Material *material = MatLib.GetMaterial(materials[materialID].name.c_str());
+                if (material)
+                {
+                    node->NodeMaterial = material;
+                }
+            }
+
+            if (!node->NodeMaterial)
+            {
+                node->NodeMaterial = m_DefaultMaterial;
+            }
+            //
 
             container->AddChild(node);
 
