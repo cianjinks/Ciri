@@ -292,9 +292,9 @@ int main()
 
     // Scene
     Ciri::Scene *mainScene = new Ciri::Scene("Main Scene");
-    Ciri::Mesh *cube1 = new Ciri::Cube(glm::vec3(1.0f, 0.0f, 0.0f));
-    Ciri::Mesh *cube2 = new Ciri::Cube(glm::vec3(0.0f, 1.0f, 0.0f));
-    Ciri::Mesh *cube3 = new Ciri::Cube(glm::vec3(0.0f, 0.0f, 1.0f));
+    Ciri::Mesh *cube1 = new Ciri::Cube();
+    Ciri::Mesh *cube2 = new Ciri::Cube();
+    Ciri::Mesh *cube3 = new Ciri::Cube();
     cube1->Construct();
     cube2->Construct();
     cube3->Construct();
@@ -307,8 +307,8 @@ int main()
     cube2Node->Scale = glm::vec3(0.75f);
     cube3Node->Position = glm::vec3(3.0f, 10.0f, 0.0f);
 
-    Ciri::SceneNode *sponzaNode = mainScene->LoadModel("sponza", "resources/mesh/sponza/sponza.obj", glm::vec3(0.25f, 0.41f, 1.0f));
-    Ciri::SceneNode *dragonNode = mainScene->LoadModel("dragon", "resources/mesh/dragon/dragon.obj", glm::vec3(0.25f, 0.41f, 1.0f));
+    Ciri::SceneNode *sponzaNode = mainScene->LoadModel("sponza", "resources/mesh/sponza/sponza.obj");
+    Ciri::SceneNode *dragonNode = mainScene->LoadModel("dragon", "resources/mesh/dragon/dragon.obj");
     sponzaNode->Scale = glm::vec3(0.05f);
     dragonNode->Position = glm::vec3(10.0f, 10.0f, 0.0f);
     dragonNode->Scale = glm::vec3(10.0f);
@@ -317,7 +317,6 @@ int main()
     char *addmesh_name = new char[20]();
     glm::vec3 addmesh_position = glm::vec3(0.0f);
     glm::vec3 addmesh_scale = glm::vec3(1.0f);
-    glm::vec3 addmesh_color = glm::vec3(1.0f);
     char *addmesh_filepath = new char[100];
     const char *default_filepath = "resources/mesh/dragon/dragon.obj";
     std::strcpy(addmesh_filepath, default_filepath);
@@ -381,11 +380,7 @@ int main()
             ImGui::InputText("Name", addmesh_name, 20);
             ImGui::InputFloat3("Position", &addmesh_position.x);
             ImGui::InputFloat3("Scale", &addmesh_scale.x);
-            if (type != 2) // Can't select color for model
-            {
-                ImGui::InputFloat3("Color", &addmesh_color.x);
-            }
-            else
+            if (type == 2)
             {
                 ImGui::InputText("File Path", addmesh_filepath, 100);
             }
@@ -397,7 +392,7 @@ int main()
                 {
                 case 0:
                 {
-                    Ciri::Mesh *cube = new Ciri::Cube(addmesh_color);
+                    Ciri::Mesh *cube = new Ciri::Cube();
                     cube->Construct();
                     Ciri::SceneNode *cubeNode = mainScene->AddMesh(addmesh_name, cube);
                     cubeNode->Position = addmesh_position;
@@ -406,7 +401,7 @@ int main()
                 }
                 case 1:
                 {
-                    Ciri::Mesh *quad = new Ciri::Quad(addmesh_color);
+                    Ciri::Mesh *quad = new Ciri::Quad();
                     quad->Construct();
                     Ciri::SceneNode *quadNode = mainScene->AddMesh(addmesh_name, quad);
                     quadNode->Position = addmesh_position;
@@ -415,7 +410,7 @@ int main()
                 }
                 case 2:
                 {
-                    Ciri::SceneNode *dragonNode = mainScene->LoadModel(addmesh_name, addmesh_filepath, glm::vec3(0.25f, 0.41f, 1.0f));
+                    Ciri::SceneNode *dragonNode = mainScene->LoadModel(addmesh_name, addmesh_filepath);
                     dragonNode->Position = addmesh_position;
                     dragonNode->Scale = addmesh_scale;
                     break;
@@ -427,7 +422,6 @@ int main()
                 std::memset(addmesh_name, 0, 20);
                 addmesh_position = glm::vec3(0.0f);
                 addmesh_scale = glm::vec3(1.0f);
-                addmesh_color = glm::vec3(1.0f);
                 std::strcpy(addmesh_filepath, default_filepath);
             }
             ImGui::SetItemDefaultFocus();

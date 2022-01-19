@@ -11,14 +11,12 @@ namespace Ciri
     {
     public:
         Cube();
-        Cube(glm::vec3 color);
     };
 
     class Quad : public Mesh
     {
     public:
         Quad();
-        Quad(glm::vec3 color);
     };
 
     class Sphere : public Mesh

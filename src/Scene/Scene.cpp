@@ -57,8 +57,7 @@ namespace Ciri
         return node;
     }
 
-    // `default_color` for now since there is no material support
-    SceneNode *Scene::LoadModel(const char *name, const char *filepath, glm::vec3 default_color)
+    SceneNode *Scene::LoadModel(const char *name, const char *filepath)
     {
         tinyobj::attrib_t attrib;
         std::vector<tinyobj::shape_t> shapes;
@@ -105,7 +104,6 @@ namespace Ciri
 
         std::vector<glm::vec3> positionData;
         std::vector<glm::vec3> normalData;
-        std::vector<glm::vec3> colorData;
         std::vector<glm::vec2> texCoordData;
 
         for (size_t s = 0; s < shapes.size(); s++)
@@ -113,15 +111,14 @@ namespace Ciri
             int offset = 0;
             for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++)
             {
-                // color = diffuse * ambient
-                glm::vec3 color;
+                glm::vec3 color = glm::vec3(0.0f);
 
                 int currentMaterialID = shapes[s].mesh.material_ids[f];
                 if ((currentMaterialID < 0) || (currentMaterialID >= static_cast<int>(materials.size())))
                 {
                     // currentMaterialID = materials.size() - 1;
                     // std::cout << "Invalid current material id for mesh" << std::endl;
-                    color = default_color;
+                    // color = default_color;
                 }
                 else
                 {
@@ -172,7 +169,6 @@ namespace Ciri
 
                     positionData.push_back(position);
                     normalData.push_back(normal);
-                    colorData.push_back(color);
                     texCoordData.push_back(texCoord);
                 }
 
@@ -180,7 +176,7 @@ namespace Ciri
             }
 
             // TODO: This is a memory leak, mesh pointer is lost
-            Mesh *mesh = new Mesh(positionData, normalData, colorData, texCoordData);
+            Mesh *mesh = new Mesh(positionData, normalData, texCoordData);
             mesh->Construct();
 
             SceneNode *node = new SceneNode();
@@ -194,7 +190,6 @@ namespace Ciri
 
             positionData.clear();
             normalData.clear();
-            colorData.clear();
             texCoordData.clear();
         }
 

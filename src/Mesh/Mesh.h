@@ -22,12 +22,11 @@ namespace Ciri
     protected:
         std::vector<glm::vec3> m_PositionData;
         std::vector<glm::vec3> m_NormalData;
-        std::vector<glm::vec3> m_ColorData;
         std::vector<glm::vec2> m_TexCoordData;
 
     public:
         Mesh();
-        Mesh(std::vector<glm::vec3> position_data, std::vector<glm::vec3> normal_data, std::vector<glm::vec3> color_data, std::vector<glm::vec2> texcoord_data);
+        Mesh(std::vector<glm::vec3> position_data, std::vector<glm::vec3> normal_data, std::vector<glm::vec2> texcoord_data);
         ~Mesh() = default;
 
         // Upload mesh data to GPU (generate VAO, VBO)
