@@ -54,10 +54,15 @@ namespace Ciri
         m_CurrentShaderType = ShaderType::NONE;
         m_CurrentShader = none;
 
-        AddShader("Diffuse", ShaderType::DIFFUSE, "resources/shader/base.vert", "resources/shader/diffuse.frag");
         AddShader("Flat Normal", ShaderType::FLAT_NORMAL, "resources/shader/base.vert", "resources/shader/flat_normal.frag");
         AddShader("Smooth Normal", ShaderType::SMOOTH_NORMAL, "resources/shader/base.vert", "resources/shader/normal.frag");
-        AddShader("Texture", ShaderType::TEXTURE, "resources/shader/base.vert", "resources/shader/texture.frag");
+        AddShader("Albedo", ShaderType::ALBEDO, "resources/shader/base.vert", "resources/shader/albedo.frag");
+        AddShader("Albedo Texture", ShaderType::ALBEDO_TEXTURE, "resources/shader/base.vert", "resources/shader/albedo_texture.frag");
+        AddShader("Normal Texture", ShaderType::NORMAL_TEXTURE, "resources/shader/base.vert", "resources/shader/normal_texture.frag");
+        AddShader("Metallic Texture", ShaderType::METALLIC_TEXTURE, "resources/shader/base.vert", "resources/shader/metallic_texture.frag");
+        AddShader("Roughness Texture", ShaderType::ROUGHNESS_TEXTURE, "resources/shader/base.vert", "resources/shader/roughness_texture.frag");
+        AddShader("Emissive Texture", ShaderType::EMISSIVE_TEXTURE, "resources/shader/base.vert", "resources/shader/emissive_texture.frag");
+        AddShader("Occlusion Texture", ShaderType::OCCLUSION_TEXTURE, "resources/shader/base.vert", "resources/shader/occlusion_texture.frag");
     }
 
     void ShaderLibrary::CompileShaders()

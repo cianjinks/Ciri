@@ -17,10 +17,18 @@ namespace Ciri
     enum class ShaderType
     {
         NONE = 0,
-        DIFFUSE,
         FLAT_NORMAL,
         SMOOTH_NORMAL,
-        TEXTURE
+        ALBEDO,
+
+        // Raw PBR Textures
+        ALBEDO_TEXTURE,
+        NORMAL_TEXTURE,
+        METALLIC_TEXTURE,
+        ROUGHNESS_TEXTURE,
+        EMISSIVE_TEXTURE,
+        OCCLUSION_TEXTURE
+
     };
 
     struct Shader

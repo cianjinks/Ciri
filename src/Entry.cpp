@@ -222,7 +222,6 @@ void RenderScene(Ciri::SceneNode *root, Ciri::ShaderType &selected, Ciri::Shader
             library->SetVec3f("u_BaseColor", material->baseColor);
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, material->baseColorTextureID);
-            /**
             library->SetInt1i("u_NormalTexture", 1);
             glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, material->normalTextureID);
@@ -238,7 +237,6 @@ void RenderScene(Ciri::SceneNode *root, Ciri::ShaderType &selected, Ciri::Shader
             library->SetInt1i("u_OcclusionTexture", 5);
             glActiveTexture(GL_TEXTURE5);
             glBindTexture(GL_TEXTURE_2D, material->occlusionTextureID);
-            **/
 
             Ciri::Mesh *mesh = node->NodeMesh;
             glBindVertexArray(mesh->m_VAO);
