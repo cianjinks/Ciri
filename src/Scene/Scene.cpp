@@ -128,7 +128,7 @@ namespace Ciri
                 std::replace(texture_name.begin(), texture_name.end(), '\\', '/');
                 std::string full_material_path = std::string(materialpath) + texture_name;
                 // TODO: The c_str value is inserted into a map so becomes invalid memory when string goes out of scope :(
-                MatLib.CreateMaterial(materials[m].name.c_str(), glm::vec3(1.0f), {true}, full_material_path.c_str());
+                MatLib.CreateMaterial(materials[m].name, glm::vec3(1.0f), {true}, full_material_path.c_str());
             }
         }
 

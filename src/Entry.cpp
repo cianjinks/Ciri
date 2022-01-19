@@ -181,7 +181,7 @@ void SceneUI(Ciri::SceneNode *root, int ptr_id)
 
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2.0f, 2.0f));
     // TODO: Blank root name is buggy and icon handling is rough
-    bool node_open = ImGui::TreeNodeEx((void *)(intptr_t)ptr_id, node_flags, "%s %s", root->NodeMesh ? ICON_FK_CUBE "" : ICON_FK_SQUARE_O "", root->Name.c_str());
+    bool node_open = ImGui::TreeNodeEx((void *)(intptr_t)ptr_id, node_flags, "%s %s", root->NodeMesh ? ICON_FK_CUBE : ICON_FK_SQUARE_O, root->Name.c_str());
 
     // Update selected node on click but not expand toggle click
     if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
@@ -252,6 +252,18 @@ void RenderScene(Ciri::SceneNode *root, Ciri::ShaderType &selected, Ciri::Shader
 
         RenderScene(node, selected, library, proj, view, accumulateModel);
     }
+}
+
+void MaterialUI(Ciri::MaterialLibrary &library)
+{
+    ImGui::Begin("Materials");
+    for (auto &pair : library.GetMaterials())
+    {
+        std::string name = pair.first;
+        Ciri::Material *material = pair.second;
+        ImGui::Text(ICON_FK_CODEPEN "%s", name.c_str());
+    }
+    ImGui::End();
 }
 
 int main()
@@ -481,6 +493,8 @@ int main()
             ImGui::InputFloat3("Scale", &selected_node->Scale.x);
         }
         ImGui::End();
+
+        MaterialUI(mainScene->MatLib);
 
         ImGui::PopStyleColor(1);
         ImGui::Render();

@@ -5,6 +5,7 @@
 #include <map>
 #include <unordered_map>
 #include <iostream>
+#include <string>
 
 #include <glm/glm.hpp>
 
@@ -50,23 +51,24 @@ namespace Ciri
     class MaterialLibrary
     {
     private:
-        std::map<const char *, Material *> m_MaterialList;        // name -> material
-        std::unordered_map<const char *, uint32_t> m_TextureList; // filepath -> texture id
+        std::map<std::string, Material *> m_MaterialList;        // name -> material
+        std::unordered_map<std::string, uint32_t> m_TextureList; // filepath -> texture id
 
     public:
         MaterialLibrary();
         ~MaterialLibrary() = default;
 
-        Material *GetMaterial(const char *name);
+        Material *GetMaterial(std::string name);
+        const std::map<std::string, Material *> &GetMaterials() const { return m_MaterialList; };
 
-        Material *CreateMaterial(const char *name, glm::vec3 base_color,
+        Material *CreateMaterial(std::string name, glm::vec3 base_color,
                                  MaterialSettings settings,
-                                 const char *baseColorTexture = nullptr,
-                                 const char *normalTexture = nullptr,
-                                 const char *metallicTexture = nullptr,
-                                 const char *roughnessTexture = nullptr,
-                                 const char *emissiveTexture = nullptr,
-                                 const char *occlusionTexture = nullptr,
+                                 std::string baseColorTexture = "",
+                                 std::string normalTexture = "",
+                                 std::string metallicTexture = "",
+                                 std::string roughnessTexture = "",
+                                 std::string emissiveTexture = "",
+                                 std::string occlusionTexture = "",
                                  float subsurface = 0.0f,
                                  float metallic = 0.0f,
                                  float specular = 0.0f,
@@ -80,9 +82,9 @@ namespace Ciri
 
     private:
         // Add new texture to `m_TextureList`, calls `CompileTexture`
-        void RegisterTexture(const char *filepath, uint32_t texture_index, uint32_t *texture_id, MaterialSettings settings);
+        void RegisterTexture(std::string filepath, uint32_t texture_index, uint32_t *texture_id, MaterialSettings settings);
         // Load texture from filepath and upload to GPU, assigning `texture_id` with active index `texture_index`
-        bool CompileTexture(const char *filepath, uint32_t texture_index, uint32_t *texture_id, MaterialSettings settings);
+        bool CompileTexture(std::string filepath, uint32_t texture_index, uint32_t *texture_id, MaterialSettings settings);
     };
 }
 

@@ -13,7 +13,7 @@ namespace Ciri
         stbi_set_flip_vertically_on_load(true);
     }
 
-    Material *MaterialLibrary::GetMaterial(const char *name)
+    Material *MaterialLibrary::GetMaterial(std::string name)
     {
         if (m_MaterialList.find(name) != m_MaterialList.end())
         {
@@ -22,14 +22,14 @@ namespace Ciri
         return nullptr;
     }
 
-    Material *MaterialLibrary::CreateMaterial(const char *name, glm::vec3 baseColor,
+    Material *MaterialLibrary::CreateMaterial(std::string name, glm::vec3 baseColor,
                                               MaterialSettings settings,
-                                              const char *baseColorTexture,
-                                              const char *normalTexture,
-                                              const char *metallicTexture,
-                                              const char *roughnessTexture,
-                                              const char *emissiveTexture,
-                                              const char *occlusionTexture,
+                                              std::string baseColorTexture,
+                                              std::string normalTexture,
+                                              std::string metallicTexture,
+                                              std::string roughnessTexture,
+                                              std::string emissiveTexture,
+                                              std::string occlusionTexture,
                                               float subsurface,
                                               float metallic,
                                               float specular,
@@ -67,9 +67,9 @@ namespace Ciri
         return material;
     }
 
-    void MaterialLibrary::RegisterTexture(const char *filepath, uint32_t texture_index, uint32_t *texture_id, MaterialSettings settings)
+    void MaterialLibrary::RegisterTexture(std::string filepath, uint32_t texture_index, uint32_t *texture_id, MaterialSettings settings)
     {
-        if (filepath)
+        if (!filepath.empty())
         {
             if (m_TextureList.find(filepath) == m_TextureList.end())
             {
@@ -85,12 +85,12 @@ namespace Ciri
         }
     }
 
-    bool MaterialLibrary::CompileTexture(const char *filepath, uint32_t texture_index, uint32_t *texture_id, MaterialSettings settings)
+    bool MaterialLibrary::CompileTexture(std::string filepath, uint32_t texture_index, uint32_t *texture_id, MaterialSettings settings)
     {
         int32_t w, h;
         int32_t nrChannels;
 
-        uint8_t *image = stbi_load(filepath, &w, &h, &nrChannels, STBI_default);
+        uint8_t *image = stbi_load(filepath.c_str(), &w, &h, &nrChannels, STBI_default);
         if (!image)
         {
             std::cerr << "Failed to read texture: " << filepath << std::endl;
