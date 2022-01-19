@@ -18,7 +18,7 @@ namespace Ciri
         std::string Name = "";
 
         Mesh *NodeMesh = nullptr;
-        Material *Material = nullptr; // Reference to a material in the Scene's MaterialLibrary
+        Material *NodeMaterial = nullptr; // Reference to a material in the Scene's MaterialLibrary
 
         glm::vec3 Position = glm::vec3(0.0f);
         glm::vec3 Scale = glm::vec3(1.0f);
@@ -34,7 +34,7 @@ namespace Ciri
     {
     public:
         const char *Name;
-        MaterialLibrary MaterialLibrary;
+        MaterialLibrary MatLib;
 
     private:
         SceneNode *m_Root = nullptr;

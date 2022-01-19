@@ -55,7 +55,7 @@ namespace Ciri
 
     public:
         MaterialLibrary();
-        ~MaterialLibrary();
+        ~MaterialLibrary() = default;
 
         void CreateMaterial(const char *name, glm::vec3 base_color,
                             MaterialSettings settings,

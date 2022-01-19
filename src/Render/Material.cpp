@@ -15,22 +15,22 @@ namespace Ciri
 
     void MaterialLibrary::CreateMaterial(const char *name, glm::vec3 baseColor,
                                          MaterialSettings settings,
-                                         const char *baseColorTexture = nullptr,
-                                         const char *normalTexture = nullptr,
-                                         const char *metallicTexture = nullptr,
-                                         const char *roughnessTexture = nullptr,
-                                         const char *emissiveTexture = nullptr,
-                                         const char *occlusionTexture = nullptr,
-                                         float subsurface = 0.0f,
-                                         float metallic = 0.0f,
-                                         float specular = 0.0f,
-                                         float specularTint = 0.0f,
-                                         float roughness = 0.0f,
-                                         float anisotropic = 0.0f,
-                                         float sheen = 0.0f,
-                                         float sheenTint = 0.0f,
-                                         float clearcoat = 0.0f,
-                                         float clearcoatGloss = 0.0f)
+                                         const char *baseColorTexture,
+                                         const char *normalTexture,
+                                         const char *metallicTexture,
+                                         const char *roughnessTexture,
+                                         const char *emissiveTexture,
+                                         const char *occlusionTexture,
+                                         float subsurface,
+                                         float metallic,
+                                         float specular,
+                                         float specularTint,
+                                         float roughness,
+                                         float anisotropic,
+                                         float sheen,
+                                         float sheenTint,
+                                         float clearcoat,
+                                         float clearcoatGloss)
     {
         Material *material = new Material();
 
