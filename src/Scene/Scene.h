@@ -8,6 +8,7 @@
 #include <string>
 
 #include "Mesh/Mesh.h"
+#include "Render/Material.h"
 
 namespace Ciri
 {
@@ -15,7 +16,10 @@ namespace Ciri
     {
     public:
         std::string Name = "";
+
         Mesh *NodeMesh = nullptr;
+        Material *Material = nullptr; // Reference to a material in the Scene's MaterialLibrary
+
         glm::vec3 Position = glm::vec3(0.0f);
         glm::vec3 Scale = glm::vec3(1.0f);
 
@@ -30,6 +34,7 @@ namespace Ciri
     {
     public:
         const char *Name;
+        MaterialLibrary MaterialLibrary;
 
     private:
         SceneNode *m_Root = nullptr;
