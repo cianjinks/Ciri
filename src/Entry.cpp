@@ -25,6 +25,7 @@
 #include "Render/Material.h"
 #include "Scene/Scene.h"
 #include "Mesh/Primitive.h"
+#include "Util/Log.h"
 
 // Window
 const int WINDOW_WIDTH = 1600;
@@ -326,6 +327,9 @@ void MaterialSettingsUI(Ciri::Material *material, Ciri::Scene *scene, ImGuiWindo
 
 int main()
 {
+	Ciri::Log::Init();
+	CIRI_LOG("Logger Initialised!");
+
 	GLFWwindow *window;
 
 	// GLFW and Glad

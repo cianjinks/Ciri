@@ -13,7 +13,7 @@ namespace Ciri
 
     struct MaterialInfo
     {
-        std::string name = "";
+        std::string name = "null";
         bool mipmap = false;
 
         std::string baseColorFilepath;

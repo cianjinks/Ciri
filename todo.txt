@@ -5,7 +5,7 @@
 [X] - Create add primitive UI
     [] - Sphere primitive
 [X] - Materials
-    [] - Texture/TextureLibrary classes
+    [X (sort of, I fixed the problem anyway)] - Texture/TextureLibrary classes
 [] - Camera
     [] - Fly Camera
     [] - Orbital Camera
