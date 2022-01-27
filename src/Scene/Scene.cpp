@@ -84,31 +84,31 @@ namespace Ciri
 		bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filepath, materialpath.c_str());
 		if (!ret)
 		{
-			CIRI_LOG("Failed to load object!");
-			CIRI_LOG(err);
+			CIRI_ERROR("Failed to load object!");
+			CIRI_ERROR(err);
 		}
-		CIRI_LOG("Successfully loaded %s - Shapes: %llu | Materials: %llu", filepath, shapes.size(), materials.size());
+		CIRI_LOG("Successfully loaded {} - Shapes: {} | Materials: {}", filepath, shapes.size(), materials.size());
 
 		// Warnings
 		if (!warn.empty())
 		{
-			CIRI_LOG(warn);
+			CIRI_WARN(warn);
 		}
 
 		// List shapes
 		for (size_t i = 0; i < shapes.size(); i++)
 		{
-			CIRI_LOG("Shape %llu: %s", i, shapes[i].name.c_str());
+			CIRI_LOG("Shape {}: {}", i, shapes[i].name.c_str());
 		}
 
 		// List materials
 		materials.push_back(tinyobj::material_t());
 		for (size_t i = 0; i < materials.size(); i++)
 		{
-			CIRI_LOG("Material %llu: %s", i, materials[i].name.c_str());
+			CIRI_LOG("Material {}: {}", i, materials[i].name.c_str());
 			if (materials[i].diffuse_texname.length() > 0)
 			{
-				CIRI_LOG("    Diffuse Texture: %s", materials[i].diffuse_texname.c_str());
+				CIRI_LOG("    Diffuse Texture: {}", materials[i].diffuse_texname.c_str());
 			}
 		}
 
@@ -204,7 +204,7 @@ namespace Ciri
 				if ((materialID < 0) || (materialID >= static_cast<int>(materials.size())))
 				{
 					materialID = (int)materials.size() - 1;
-					CIRI_LOG("Invalid material id for mesh: ", shapes[s].name);
+					CIRI_WARN("Invalid material id for mesh: {}", shapes[s].name);
 				}
 
 				Material *material = MatLib.GetMaterial(materials[materialID].name.c_str());

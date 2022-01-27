@@ -157,9 +157,16 @@ void GLAPIENTRY MessageCallback(GLenum source,
 								const GLchar *message,
 								const void *userParam)
 {
-	CIRI_LOG("GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s",
-			 (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
-			 type, severity, message);
+	if (type == GL_DEBUG_TYPE_ERROR)
+	{
+		CIRI_ERROR("GL ERROR: type = 0x{:x}, severity = 0x{:x}, message = {}",
+				   type, severity, message);
+	}
+	else
+	{
+		CIRI_WARN("GL CALLBACK: type = 0x{:x}, severity = 0x{:x}, message = {}",
+				  type, severity, message);
+	}
 }
 
 static Ciri::SceneNode *selected_node = nullptr;
@@ -335,7 +342,7 @@ int main()
 	// GLFW and Glad
 	if (!glfwInit())
 	{
-		CIRI_LOG("GLFW Initialization Failed");
+		CIRI_ERROR("GLFW Initialization Failed");
 		return 0;
 	}
 
@@ -346,7 +353,7 @@ int main()
 	if (!window)
 	{
 		glfwTerminate();
-		CIRI_LOG("GLFW Window Creation Failed");
+		CIRI_ERROR("GLFW Window Creation Failed");
 		return 0;
 	}
 
@@ -356,7 +363,7 @@ int main()
 	int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 	if (!status)
 	{
-		CIRI_LOG("GLAD Initialization Failed");
+		CIRI_ERROR("GLAD Initialization Failed");
 		return 0;
 	}
 

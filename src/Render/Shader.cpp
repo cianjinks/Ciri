@@ -133,7 +133,7 @@ namespace Ciri
             std::string vert_code = ParseFile(vert_src);
             if (vert_code == "")
             {
-                CIRI_LOG("Failed to vertex shader from file: %s", vert_src);
+                CIRI_ERROR("Failed to vertex shader from file: {}", vert_src);
             }
             m_SourceMap[vert_src] = vert_code;
         }
@@ -143,7 +143,7 @@ namespace Ciri
             std::string frag_code = ParseFile(frag_src);
             if (frag_code == "")
             {
-                CIRI_LOG("Failed to parse fragment shader from file: %s", frag_src);
+                CIRI_ERROR("Failed to parse fragment shader from file: {}", frag_src);
             }
             m_SourceMap[frag_src] = frag_code;
         }
@@ -173,12 +173,12 @@ namespace Ciri
         glGetShaderiv(shader_object, GL_COMPILE_STATUS, &result);
         if (result == GL_FALSE)
         {
-            CIRI_LOG("Shader %llu failed:", shader_object);
+            CIRI_ERROR("Shader {} failed:", shader_object);
             int32_t length;
             glGetShaderiv(shader_object, GL_INFO_LOG_LENGTH, &length);
             char *log = new char[length];
             glGetShaderInfoLog(shader_object, length, &length, log);
-            CIRI_LOG(log);
+            CIRI_ERROR(log);
             delete[] log;
             glDeleteShader(shader_object);
         }

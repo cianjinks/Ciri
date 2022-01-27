@@ -72,7 +72,7 @@ namespace Ciri
             {
                 if (!CompileTexture(filepath, texture_index, texture_id, info))
                 {
-                    CIRI_LOG("Failed to compile texture: %s", filepath);
+                    CIRI_WARN("Failed to compile texture: {}", filepath);
                 }
             }
             else
@@ -90,10 +90,10 @@ namespace Ciri
         uint8_t *image = stbi_load(filepath.c_str(), &w, &h, &nrChannels, STBI_default);
         if (!image)
         {
-            CIRI_LOG("Failed to read texture: %s", filepath);
+            CIRI_WARN("Failed to read texture: {}", filepath);
             return false;
         }
-        CIRI_LOG("Read texture: %s, w = %d, h = %d, nrChannels = %d", filepath, w, h, nrChannels);
+        CIRI_LOG("Read texture: {}, w = {:d}, h = {:d}, nrChannels = {:d}", filepath, w, h, nrChannels);
 
         glGenTextures(1, texture_id);
         glActiveTexture(texture_index);
@@ -125,7 +125,7 @@ namespace Ciri
         }
         else
         {
-            CIRI_LOG("Invalid number of channels for texture!");
+            CIRI_WARN("Invalid number of channels for texture!");
             return false;
         }
         glBindTexture(GL_TEXTURE_2D, 0);
