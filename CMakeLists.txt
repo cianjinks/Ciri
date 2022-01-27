@@ -12,6 +12,10 @@ if (UNIX)
 	set (CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
 endif()
 
+# Define DEBUG and RELEASE flags
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DCIRI_DEBUG")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DCIRI_RELEASE")
+
 # Compile Commands
 add_definitions(-DCMAKE_EXPORT_COMPILE_COMMANDS=ON)
 

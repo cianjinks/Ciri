@@ -19,8 +19,14 @@ namespace Ciri
     };
 }
 
+#ifdef CIRI_DEBUG
 #define CIRI_LOG(...) ::Ciri::Log::GetLogger()->trace(__VA_ARGS__)
 #define CIRI_WARN(...) ::Ciri::Log::GetLogger()->warn(__VA_ARGS__)
 #define CIRI_ERROR(...) ::Ciri::Log::GetLogger()->error(__VA_ARGS__)
+#else
+#define CIRI_LOG(...)
+#define CIRI_WARN(...)
+#define CIRI_ERROR(...)
+#endif
 
 #endif
