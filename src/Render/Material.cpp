@@ -22,14 +22,8 @@ namespace Ciri
         return nullptr;
     }
 
-    Material *MaterialLibrary::CreateMaterial(std::string name, glm::vec3 baseColor,
-                                              MaterialSettings settings,
-                                              std::string baseColorTexture,
-                                              std::string normalTexture,
-                                              std::string metallicTexture,
-                                              std::string roughnessTexture,
-                                              std::string emissiveTexture,
-                                              std::string occlusionTexture,
+    Material *MaterialLibrary::CreateMaterial(MaterialInfo &info,
+                                              glm::vec3 baseColor,
                                               float subsurface,
                                               float metallic,
                                               float specular,
@@ -44,12 +38,12 @@ namespace Ciri
         Material *material = new Material();
 
         material->baseColor = baseColor;
-        RegisterTexture(baseColorTexture, GL_TEXTURE0, &material->baseColorTextureID, settings);
-        RegisterTexture(normalTexture, GL_TEXTURE1, &material->normalTextureID, settings);
-        RegisterTexture(metallicTexture, GL_TEXTURE2, &material->metallicTextureID, settings);
-        RegisterTexture(roughnessTexture, GL_TEXTURE3, &material->roughnessTextureID, settings);
-        RegisterTexture(emissiveTexture, GL_TEXTURE4, &material->emissiveTextureID, settings);
-        RegisterTexture(occlusionTexture, GL_TEXTURE5, &material->occlusionTextureID, settings);
+        RegisterTexture(info.baseColorFilepath, GL_TEXTURE0, &material->baseColorTextureID, info);
+        RegisterTexture(info.normalFilepath, GL_TEXTURE1, &material->normalTextureID, info);
+        RegisterTexture(info.metallicFilepath, GL_TEXTURE2, &material->metallicTextureID, info);
+        RegisterTexture(info.roughnessFilepath, GL_TEXTURE3, &material->roughnessTextureID, info);
+        RegisterTexture(info.emissiveFilepath, GL_TEXTURE4, &material->emissiveTextureID, info);
+        RegisterTexture(info.occlusionFilepath, GL_TEXTURE5, &material->occlusionTextureID, info);
 
         material->subsurface = subsurface;
         material->metallic = metallic;
@@ -62,20 +56,19 @@ namespace Ciri
         material->clearcoat = clearcoat;
         material->clearcoatGloss = clearcoatGloss;
 
-        material->settings = settings;
-        material->name = name;
+        material->info = info;
 
-        m_MaterialList[name] = material;
+        m_MaterialList[info.name] = material;
         return material;
     }
 
-    void MaterialLibrary::RegisterTexture(std::string filepath, uint32_t texture_index, uint32_t *texture_id, MaterialSettings settings)
+    void MaterialLibrary::RegisterTexture(std::string filepath, uint32_t texture_index, uint32_t *texture_id, MaterialInfo &info)
     {
         if (!filepath.empty())
         {
             if (m_TextureList.find(filepath) == m_TextureList.end())
             {
-                if (!CompileTexture(filepath, texture_index, texture_id, settings))
+                if (!CompileTexture(filepath, texture_index, texture_id, info))
                 {
                     std::cout << "Failed to compile texture: " << filepath << std::endl;
                 }
@@ -87,7 +80,7 @@ namespace Ciri
         }
     }
 
-    bool MaterialLibrary::CompileTexture(std::string filepath, uint32_t texture_index, uint32_t *texture_id, MaterialSettings settings)
+    bool MaterialLibrary::CompileTexture(std::string filepath, uint32_t texture_index, uint32_t *texture_id, MaterialInfo &info)
     {
         int32_t w, h;
         int32_t nrChannels;
@@ -106,7 +99,7 @@ namespace Ciri
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        if (settings.mipmap)
+        if (info.mipmap)
         {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         }
@@ -119,13 +112,13 @@ namespace Ciri
         if (nrChannels == 3)
         {
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-            if (settings.mipmap)
+            if (info.mipmap)
                 glGenerateMipmap(GL_TEXTURE_2D);
         }
         else if (nrChannels == 4)
         {
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-            if (settings.mipmap)
+            if (info.mipmap)
                 glGenerateMipmap(GL_TEXTURE_2D);
         }
         else

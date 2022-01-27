@@ -268,15 +268,12 @@ void MaterialLibraryUI(Ciri::MaterialLibrary &library, Ciri::Material *&selected
 	ImGui::End();
 }
 
-void CreateTextureCombo(const char *name, uint32_t &material_tex_id, Ciri::Scene *scene)
+void CreateTextureCombo(const char *name, std::string &material_tex_name, uint32_t &material_tex_id, Ciri::Scene *scene)
 {
 	std::string texture_name = "None";
-	for (auto &pair : scene->MatLib.GetTextures())
+	if (!material_tex_name.empty())
 	{
-		if (material_tex_id == pair.second)
-		{
-			texture_name = pair.first;
-		}
+		texture_name = material_tex_name;
 	}
 
 	if (ImGui::BeginCombo(name, texture_name.c_str(), 0))
@@ -287,7 +284,10 @@ void CreateTextureCombo(const char *name, uint32_t &material_tex_id, Ciri::Scene
 			uint32_t texture_id = pair.second;
 			const bool is_selected = (material_tex_id == texture_id);
 			if (ImGui::Selectable(tex_name.c_str(), is_selected))
+			{
 				material_tex_id = texture_id;
+				material_tex_name = tex_name;
+			}
 			if (is_selected)
 				ImGui::SetItemDefaultFocus();
 		}
@@ -301,14 +301,14 @@ void MaterialSettingsUI(Ciri::Material *material, Ciri::Scene *scene, ImGuiWindo
 
 	if (material)
 	{
-		ImGui::Text(material->name.c_str());
+		ImGui::Text(material->info.name.c_str());
 		ImGui::InputFloat3("Base Color", &material->baseColor.x);
-		CreateTextureCombo("Albedo Texture", material->baseColorTextureID, scene);
-		CreateTextureCombo("Normal Texture", material->normalTextureID, scene);
-		CreateTextureCombo("Metallic Texture", material->metallicTextureID, scene);
-		CreateTextureCombo("Roughness Texture", material->roughnessTextureID, scene);
-		CreateTextureCombo("Emissive Texture", material->emissiveTextureID, scene);
-		CreateTextureCombo("Occlusion Texture", material->occlusionTextureID, scene);
+		CreateTextureCombo("Albedo Texture", material->info.baseColorFilepath, material->baseColorTextureID, scene);
+		CreateTextureCombo("Normal Texture", material->info.normalFilepath, material->normalTextureID, scene);
+		CreateTextureCombo("Metallic Texture", material->info.metallicFilepath, material->metallicTextureID, scene);
+		CreateTextureCombo("Roughness Texture", material->info.roughnessFilepath, material->roughnessTextureID, scene);
+		CreateTextureCombo("Emissive Texture", material->info.emissiveFilepath, material->emissiveTextureID, scene);
+		CreateTextureCombo("Occlusion Texture", material->info.occlusionFilepath, material->occlusionTextureID, scene);
 		ImGui::InputFloat("Subsurface", &material->subsurface);
 		ImGui::InputFloat("Metallic", &material->metallic);
 		ImGui::InputFloat("Specular", &material->specular);
@@ -555,13 +555,13 @@ int main()
 			// Material setting
 			if (selected_node->NodeMesh)
 			{
-				if (ImGui::BeginCombo("Material", selected_node->NodeMaterial->name.c_str(), 0))
+				if (ImGui::BeginCombo("Material", selected_node->NodeMaterial->info.name.c_str(), 0))
 				{
 					for (auto &pair : mainScene->MatLib.GetMaterials())
 					{
 						Ciri::Material *material = pair.second;
 						const bool is_selected = (selected_node->NodeMaterial == material);
-						if (ImGui::Selectable(material->name.c_str(), is_selected))
+						if (ImGui::Selectable(material->info.name.c_str(), is_selected))
 							selected_node->NodeMaterial = material;
 						if (is_selected)
 							ImGui::SetItemDefaultFocus();

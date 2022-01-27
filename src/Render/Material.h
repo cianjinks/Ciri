@@ -11,9 +11,17 @@
 namespace Ciri
 {
 
-    struct MaterialSettings
+    struct MaterialInfo
     {
+        std::string name = "";
         bool mipmap = false;
+
+        std::string baseColorFilepath;
+        std::string normalFilepath;
+        std::string metallicFilepath;
+        std::string roughnessFilepath;
+        std::string emissiveFilepath;
+        std::string occlusionFilepath;
     };
 
     class Material
@@ -40,9 +48,7 @@ namespace Ciri
         uint32_t emissiveTextureID = 0;
         uint32_t occlusionTextureID = 0; // ambient occlusion
 
-        // Settings
-        MaterialSettings settings;
-        std::string name;
+        MaterialInfo info;
 
     public:
         Material();
@@ -62,14 +68,8 @@ namespace Ciri
         const std::map<std::string, Material *> &GetMaterials() const { return m_MaterialList; };
         const std::map<std::string, uint32_t> &GetTextures() const { return m_TextureList; };
 
-        Material *CreateMaterial(std::string name, glm::vec3 base_color,
-                                 MaterialSettings settings,
-                                 std::string baseColorTexture = "",
-                                 std::string normalTexture = "",
-                                 std::string metallicTexture = "",
-                                 std::string roughnessTexture = "",
-                                 std::string emissiveTexture = "",
-                                 std::string occlusionTexture = "",
+        Material *CreateMaterial(MaterialInfo &info,
+                                 glm::vec3 base_color,
                                  float subsurface = 0.0f,
                                  float metallic = 0.0f,
                                  float specular = 0.0f,
@@ -83,9 +83,9 @@ namespace Ciri
 
     private:
         // Add new texture to `m_TextureList`, calls `CompileTexture`
-        void RegisterTexture(std::string filepath, uint32_t texture_index, uint32_t *texture_id, MaterialSettings settings);
+        void RegisterTexture(std::string filepath, uint32_t texture_index, uint32_t *texture_id, MaterialInfo &info);
         // Load texture from filepath and upload to GPU, assigning `texture_id` with active index `texture_index`
-        bool CompileTexture(std::string filepath, uint32_t texture_index, uint32_t *texture_id, MaterialSettings settings);
+        bool CompileTexture(std::string filepath, uint32_t texture_index, uint32_t *texture_id, MaterialInfo &info);
     };
 }
 

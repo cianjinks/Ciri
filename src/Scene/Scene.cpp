@@ -7,19 +7,20 @@
 
 namespace Ciri
 {
-	void SceneNode::AddChild(SceneNode* child)
+	void SceneNode::AddChild(SceneNode *child)
 	{
 		m_Children.push_back(child);
 	}
 
-	Scene::Scene(const char* name)
+	Scene::Scene(const char *name)
 		: Name(name)
 	{
 		m_Root = new SceneNode();
 		m_Root->Name = std::string(name);
 
 		// Default Material
-		m_DefaultMaterial = MatLib.CreateMaterial("default", glm::vec3(1.0f, 0.0f, 1.0f), { false });
+		MaterialInfo info = {"default", false};
+		m_DefaultMaterial = MatLib.CreateMaterial(info, glm::vec3(1.0f, 0.0f, 1.0f));
 	}
 
 	Scene::~Scene()
@@ -29,18 +30,18 @@ namespace Ciri
 		delete m_Root;
 	}
 
-	void Scene::DestroyTree(SceneNode* root)
+	void Scene::DestroyTree(SceneNode *root)
 	{
-		for (SceneNode* node : root->m_Children)
+		for (SceneNode *node : root->m_Children)
 		{
 			DestroyTree(node);
 		}
 		root->m_Children.clear(); // Destroys all elements in vector?
 	}
 
-	SceneNode* Scene::AddMesh(const char* name, Mesh* mesh, Material* material)
+	SceneNode *Scene::AddMesh(const char *name, Mesh *mesh, Material *material)
 	{
-		SceneNode* node = new SceneNode();
+		SceneNode *node = new SceneNode();
 
 		node->Name = name;
 		node->NodeMesh = mesh;
@@ -53,9 +54,9 @@ namespace Ciri
 		return node;
 	}
 
-	SceneNode* Scene::AddContainer(const char* name)
+	SceneNode *Scene::AddContainer(const char *name)
 	{
-		SceneNode* node = new SceneNode();
+		SceneNode *node = new SceneNode();
 
 		node->Name = name;
 		m_Root->AddChild(node);
@@ -63,7 +64,7 @@ namespace Ciri
 		return node;
 	}
 
-	SceneNode* Scene::LoadModel(const char* name, const char* filepath, Material* custom_material)
+	SceneNode *Scene::LoadModel(const char *name, const char *filepath, Material *custom_material)
 	{
 		tinyobj::attrib_t attrib;
 		std::vector<tinyobj::shape_t> shapes;
@@ -118,12 +119,13 @@ namespace Ciri
 				std::string texture_name = materials[m].diffuse_texname;
 				std::replace(texture_name.begin(), texture_name.end(), '\\', '/');
 				std::string full_material_path = std::string(materialpath) + texture_name;
-				// TODO: The c_str value is inserted into a map so becomes invalid memory when string goes out of scope :(
-				MatLib.CreateMaterial(materials[m].name, glm::vec3(1.0f), { true }, full_material_path.c_str());
+
+				MaterialInfo info = {materials[m].name, true, full_material_path};
+				MatLib.CreateMaterial(info, glm::vec3(1.0f));
 			}
 		}
 
-		SceneNode* container = AddContainer(name);
+		SceneNode *container = AddContainer(name);
 
 		std::vector<glm::vec3> positionData;
 		std::vector<glm::vec3> normalData;
@@ -183,10 +185,10 @@ namespace Ciri
 			}
 
 			// TODO: This is a memory leak, mesh pointer is lost
-			Mesh* mesh = new Mesh(positionData, normalData, texCoordData);
+			Mesh *mesh = new Mesh(positionData, normalData, texCoordData);
 			mesh->Construct();
 
-			SceneNode* node = new SceneNode();
+			SceneNode *node = new SceneNode();
 			node->Name = shapes[s].name;
 			node->NodeMesh = mesh;
 
@@ -204,7 +206,7 @@ namespace Ciri
 					std::cout << "Invalid material id for mesh: " << shapes[s].name << std::endl;
 				}
 
-				Material* material = MatLib.GetMaterial(materials[materialID].name.c_str());
+				Material *material = MatLib.GetMaterial(materials[materialID].name.c_str());
 				if (material)
 				{
 					node->NodeMaterial = material;
