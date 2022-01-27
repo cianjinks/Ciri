@@ -2,6 +2,8 @@
 
 #include <glad/glad.h>
 
+#include "Util/Log.h"
+
 namespace Ciri
 {
     ShaderLibrary::ShaderLibrary()
@@ -131,7 +133,7 @@ namespace Ciri
             std::string vert_code = ParseFile(vert_src);
             if (vert_code == "")
             {
-                std::cout << "Failed to vertex shader from file: " << vert_src << std::endl;
+                CIRI_LOG("Failed to vertex shader from file: %s", vert_src);
             }
             m_SourceMap[vert_src] = vert_code;
         }
@@ -141,7 +143,7 @@ namespace Ciri
             std::string frag_code = ParseFile(frag_src);
             if (frag_code == "")
             {
-                std::cout << "Failed to parse fragment shader from file: " << frag_src << std::endl;
+                CIRI_LOG("Failed to parse fragment shader from file: %s", frag_src);
             }
             m_SourceMap[frag_src] = frag_code;
         }
@@ -171,12 +173,12 @@ namespace Ciri
         glGetShaderiv(shader_object, GL_COMPILE_STATUS, &result);
         if (result == GL_FALSE)
         {
-            std::cout << "Shader " << shader_object << " failed:" << std::endl;
+            CIRI_LOG("Shader %llu failed:", shader_object);
             int32_t length;
             glGetShaderiv(shader_object, GL_INFO_LOG_LENGTH, &length);
             char *log = new char[length];
             glGetShaderInfoLog(shader_object, length, &length, log);
-            std::cout << log << std::endl;
+            CIRI_LOG(log);
             delete[] log;
             glDeleteShader(shader_object);
         }

@@ -157,9 +157,9 @@ void GLAPIENTRY MessageCallback(GLenum source,
 								const GLchar *message,
 								const void *userParam)
 {
-	fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
-			(type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
-			type, severity, message);
+	CIRI_LOG("GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s",
+			 (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
+			 type, severity, message);
 }
 
 static Ciri::SceneNode *selected_node = nullptr;
@@ -328,14 +328,14 @@ void MaterialSettingsUI(Ciri::Material *material, Ciri::Scene *scene, ImGuiWindo
 int main()
 {
 	Ciri::Log::Init();
-	CIRI_LOG("Logger Initialised!");
+	CIRI_LOG("Logger Initialised");
 
 	GLFWwindow *window;
 
 	// GLFW and Glad
 	if (!glfwInit())
 	{
-		std::cout << "GLFW Initialization Failed" << std::endl;
+		CIRI_LOG("GLFW Initialization Failed");
 		return 0;
 	}
 
@@ -346,7 +346,7 @@ int main()
 	if (!window)
 	{
 		glfwTerminate();
-		std::cout << "GLFW Window Creation Failed" << std::endl;
+		CIRI_LOG("GLFW Window Creation Failed");
 		return 0;
 	}
 
@@ -356,7 +356,7 @@ int main()
 	int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 	if (!status)
 	{
-		std::cout << "GLAD Initialization Failed" << std::endl;
+		CIRI_LOG("GLAD Initialization Failed");
 		return 0;
 	}
 

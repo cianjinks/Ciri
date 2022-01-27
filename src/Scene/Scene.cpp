@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <inttypes.h>
 
+#include "Util/Log.h"
+
 namespace Ciri
 {
 	void SceneNode::AddChild(SceneNode *child)
@@ -82,32 +84,31 @@ namespace Ciri
 		bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filepath, materialpath.c_str());
 		if (!ret)
 		{
-			std::cout << "Failed to load object!" << std::endl;
-			std::cout << err << std::endl;
+			CIRI_LOG("Failed to load object!");
+			CIRI_LOG(err);
 		}
-		printf("Successfully loaded %s - Shapes: %llu | Materials: %llu\n", filepath, shapes.size(), materials.size());
+		CIRI_LOG("Successfully loaded %s - Shapes: %llu | Materials: %llu", filepath, shapes.size(), materials.size());
 
 		// Warnings
 		if (!warn.empty())
 		{
-			std::cout << warn << std::endl;
+			CIRI_LOG(warn);
 		}
 
 		// List shapes
 		for (size_t i = 0; i < shapes.size(); i++)
 		{
-			printf("Shape %llu: %s\n", i, shapes[i].name.c_str());
+			CIRI_LOG("Shape %llu: %s", i, shapes[i].name.c_str());
 		}
-		printf("\n");
 
 		// List materials
 		materials.push_back(tinyobj::material_t());
 		for (size_t i = 0; i < materials.size(); i++)
 		{
-			printf("Material %llu: %s\n", i, materials[i].name.c_str());
+			CIRI_LOG("Material %llu: %s", i, materials[i].name.c_str());
 			if (materials[i].diffuse_texname.length() > 0)
 			{
-				printf("    Diffuse Texture: %s\n", materials[i].diffuse_texname.c_str());
+				CIRI_LOG("    Diffuse Texture: %s", materials[i].diffuse_texname.c_str());
 			}
 		}
 
@@ -203,7 +204,7 @@ namespace Ciri
 				if ((materialID < 0) || (materialID >= static_cast<int>(materials.size())))
 				{
 					materialID = (int)materials.size() - 1;
-					std::cout << "Invalid material id for mesh: " << shapes[s].name << std::endl;
+					CIRI_LOG("Invalid material id for mesh: ", shapes[s].name);
 				}
 
 				Material *material = MatLib.GetMaterial(materials[materialID].name.c_str());

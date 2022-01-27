@@ -4,6 +4,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+#include "Util/Log.h"
+
 namespace Ciri
 {
     Material::Material() {}
@@ -70,7 +72,7 @@ namespace Ciri
             {
                 if (!CompileTexture(filepath, texture_index, texture_id, info))
                 {
-                    std::cout << "Failed to compile texture: " << filepath << std::endl;
+                    CIRI_LOG("Failed to compile texture: %s", filepath);
                 }
             }
             else
@@ -88,10 +90,10 @@ namespace Ciri
         uint8_t *image = stbi_load(filepath.c_str(), &w, &h, &nrChannels, STBI_default);
         if (!image)
         {
-            std::cerr << "Failed to read texture: " << filepath << std::endl;
+            CIRI_LOG("Failed to read texture: %s", filepath);
             return false;
         }
-        std::cout << "Read texture: " << filepath << ", w = " << w << ", h = " << h << ", nrChannels = " << nrChannels << std::endl;
+        CIRI_LOG("Read texture: %s, w = %d, h = %d, nrChannels = %d", filepath, w, h, nrChannels);
 
         glGenTextures(1, texture_id);
         glActiveTexture(texture_index);
@@ -123,7 +125,7 @@ namespace Ciri
         }
         else
         {
-            std::cout << "Invalid number of channels for texture!" << std::endl;
+            CIRI_LOG("Invalid number of channels for texture!");
             return false;
         }
         glBindTexture(GL_TEXTURE_2D, 0);
