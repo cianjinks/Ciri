@@ -46,16 +46,17 @@ set(imgui-source ${imgui-directory}/imconfig.h
 	${imgui-directory}/backends/imgui_impl_opengl3.cpp
 )
 
-# stb_image
-set(stb_image-include dependencies/stb_image/include)
-
 # fork_awesome icons
 set(fork_awesome-include dependencies/fork_awesome/include)
+
+# pch
+set(ciri-pch src/PCH.h)
 
 add_subdirectory(dependencies/glfw)
 add_subdirectory(dependencies/glad)
 add_subdirectory(dependencies/glm)
 add_subdirectory(dependencies/spdlog)
+add_subdirectory(dependencies/stb_image)
 add_subdirectory(dependencies/tinyobjloader)
 
 file(GLOB_RECURSE source CONFIGURE_DEPENDS "src/*.h" "src/*.hpp" "src/*.cpp")
@@ -64,8 +65,9 @@ file(GLOB_RECURSE source CONFIGURE_DEPENDS "src/*.h" "src/*.hpp" "src/*.cpp")
 file(COPY resources/ DESTINATION ${PROJECT_BINARY_DIR}/resources/)
 
 add_executable(Ciri ${source} ${imgui-source})
-target_link_libraries(Ciri ${OPENGL_LIBRARIES} glfw glad glm spdlog tinyobjloader)
+target_link_libraries(Ciri ${OPENGL_LIBRARIES} glfw glad glm spdlog stb_image tinyobjloader)
 target_include_directories(Ciri PRIVATE ${imgui-directory} ${stb_image-include} ${fork_awesome-include})
+target_precompile_headers(Ciri PRIVATE ${ciri-pch})
 
 # Visual Studio Startup Project
 if(WIN32)

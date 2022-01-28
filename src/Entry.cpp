@@ -1,9 +1,3 @@
-#include <iostream>
-#include <fstream>
-#include <map>
-#include <algorithm>
-#include <cstring>
-
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "backends/imgui_impl_glfw.h"
@@ -25,7 +19,6 @@
 #include "Render/Material.h"
 #include "Scene/Scene.h"
 #include "Mesh/Primitive.h"
-#include "Util/Log.h"
 
 // Window
 const int WINDOW_WIDTH = 1600;

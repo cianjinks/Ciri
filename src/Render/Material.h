@@ -1,11 +1,6 @@
 #ifndef CIRI_MATERIAL_H
 #define CIRI_MATERIAL_H
 
-#include <cstdint>
-#include <map>
-#include <iostream>
-#include <string>
-
 #include <glm/glm.hpp>
 
 namespace Ciri

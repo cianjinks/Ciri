@@ -1,8 +1,6 @@
 #ifndef CIRI_LOG_H
 #define CIRI_LOG_H
 
-#include <memory>
-
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 

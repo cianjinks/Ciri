@@ -1,9 +1,6 @@
 #include "Shader.h"
 
 #include <glad/glad.h>
-
-#include "Util/Log.h"
-
 namespace Ciri
 {
     ShaderLibrary::ShaderLibrary()

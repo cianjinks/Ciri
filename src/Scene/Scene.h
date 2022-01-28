@@ -1,11 +1,7 @@
 #ifndef CIRI_SCENE_H
 #define CIRI_SCENE_H
 
-#include <vector>
-#include <unordered_set>
 #include <glm/glm.hpp>
-#include <iostream>
-#include <string>
 
 #include "Mesh/Mesh.h"
 #include "Render/Material.h"

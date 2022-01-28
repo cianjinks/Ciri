@@ -1,11 +1,6 @@
 #include "Scene.h"
 
 #include "tiny_obj_loader.h"
-#include <cstring>
-#include <algorithm>
-#include <inttypes.h>
-
-#include "Util/Log.h"
 
 namespace Ciri
 {

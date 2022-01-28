@@ -1,8 +1,6 @@
 #ifndef CIRI_MESH_H
 #define CIRI_MESH_H
 
-#include <cstdint>
-#include <vector>
 #include <glm/glm.hpp>
 
 namespace Ciri

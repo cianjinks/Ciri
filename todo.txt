@@ -10,8 +10,11 @@
     [] - Fly Camera
     [] - Orbital Camera
 [] - std::string replacing char*
+[X] - Precompiled headers
 [] - ImGUIzmo
 [] - Logging
 [] - Abstract UI
 [] - Abstract application
+[] - Speedup texture loading (use a fast png loader)
 [] - Renderer
+[] - gltf scene support

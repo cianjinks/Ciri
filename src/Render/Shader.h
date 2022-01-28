@@ -1,14 +1,6 @@
 #ifndef CIRI_SHADER_H
 #define CIRI_SHADER_H
 
-#include <cstdint>
-#include <vector>
-#include <map>
-#include <unordered_map>
-#include <string>
-#include <iostream>
-#include <fstream>
-
 #include <glm/glm.hpp>
 
 namespace Ciri
