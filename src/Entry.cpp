@@ -26,7 +26,7 @@ const int WINDOW_HEIGHT = 900;
 bool mouseCaptured = false;
 
 // Camera
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 2.0f);
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 10.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 float deltaTime = 0.0f;
@@ -37,8 +37,8 @@ float lastY = (float)WINDOW_HEIGHT / 2;
 float yaw = -90.0f;
 float pitch = 0.0f;
 
-float cameraSpeedHigh = 5.0f;
-float cameraSpeedLow = 1.0f;
+float cameraSpeedHigh = 30.0f;
+float cameraSpeedLow = 15.0f;
 float renderDistance = 10000.0f;
 
 bool debug = false;
@@ -400,15 +400,7 @@ int main()
 	// Scene
 	Ciri::Scene *mainScene = new Ciri::Scene("Main Scene");
 
-	Ciri::Mesh *sphere = new Ciri::Sphere(100, 100, true);
-	sphere->Construct();
-	Ciri::MaterialInfo info = {"roof", false, "resources/mesh/sponza/textures/sponza_ceiling_a_diff.png"};
-	Ciri::Material *mat = mainScene->MatLib.CreateMaterial(info, glm::vec3(0.0f, 1.0f, 0.0f));
-	Ciri::SceneNode *sphereNode = mainScene->AddMesh("sphere", sphere);
-	sphereNode->NodeMaterial = mat;
-
-	/**
-	Ciri::Mesh *sphere = new Ciri::Sphere(50, 50, false);
+	Ciri::Mesh *sphere = new Ciri::Sphere(100, 100, false);
 	Ciri::Mesh *cube1 = new Ciri::Cube();
 	Ciri::Mesh *cube2 = new Ciri::Cube();
 	Ciri::Mesh *cube3 = new Ciri::Cube();
@@ -421,6 +413,7 @@ int main()
 	Ciri::SceneNode *cube2Node = mainScene->AddMesh("cube2", cube2);
 	Ciri::SceneNode *cube3Node = mainScene->AddMesh("cube3", cube3);
 	sphereNode->Position = glm::vec3(0.0f, 15.0f, 0.0f);
+	sphereNode->Scale = glm::vec3(3.0f);
 	cube1Node->Position = glm::vec3(-3.0f, 10.0f, 0.0f);
 	cube1Node->Scale = glm::vec3(0.5f);
 	cube2Node->Position = glm::vec3(0.0f, 10.0f, 0.0f);
@@ -432,7 +425,6 @@ int main()
 	sponzaNode->Scale = glm::vec3(0.05f);
 	dragonNode->Position = glm::vec3(10.0f, 10.0f, 0.0f);
 	dragonNode->Scale = glm::vec3(10.0f);
-	**/
 
 	// UI
 	char *addmesh_name = new char[20]();
@@ -440,6 +432,9 @@ int main()
 	glm::vec3 addmesh_scale = glm::vec3(1.0f);
 	char *addmesh_filepath = new char[100];
 	const char *default_filepath = "resources/mesh/dragon/dragon.obj";
+	int h_segments = 4;
+	int v_segments = 4;
+	bool flat_shade = false; // UV spherer
 	std::strcpy(addmesh_filepath, default_filepath);
 
 	Ciri::Material *selected_material = nullptr;
@@ -495,7 +490,7 @@ int main()
 
 		if (ImGui::BeginPopupModal("Add Mesh", NULL, ImGuiWindowFlags_AlwaysAutoResize))
 		{
-			const char *mesh_types[] = {"Cube", "Quad", "Load Model.."};
+			const char *mesh_types[] = {"Cube", "Quad", "Sphere", "Load Model.."};
 			static int type = 0;
 			ImGui::Combo("Type", &type, mesh_types, IM_ARRAYSIZE(mesh_types));
 			ImGui::Separator();
@@ -504,6 +499,12 @@ int main()
 			ImGui::InputFloat3("Position", &addmesh_position.x);
 			ImGui::InputFloat3("Scale", &addmesh_scale.x);
 			if (type == 2)
+			{
+				ImGui::InputInt("H Segments", &h_segments);
+				ImGui::InputInt("V Segments", &v_segments);
+				ImGui::Checkbox("Flat Shade", &flat_shade);
+			}
+			else if (type == 3)
 			{
 				ImGui::InputText("File Path", addmesh_filepath, 100);
 			}
@@ -533,6 +534,15 @@ int main()
 				}
 				case 2:
 				{
+					Ciri::Mesh *sphere = new Ciri::Sphere(h_segments, v_segments, flat_shade);
+					sphere->Construct();
+					Ciri::SceneNode *sphereNode = mainScene->AddMesh(addmesh_name, sphere);
+					sphereNode->Position = addmesh_position;
+					sphereNode->Scale = addmesh_scale;
+					break;
+				}
+				case 3:
+				{
 					Ciri::SceneNode *dragonNode = mainScene->LoadModel(addmesh_name, addmesh_filepath);
 					dragonNode->Position = addmesh_position;
 					dragonNode->Scale = addmesh_scale;
@@ -546,6 +556,9 @@ int main()
 				addmesh_position = glm::vec3(0.0f);
 				addmesh_scale = glm::vec3(1.0f);
 				std::strcpy(addmesh_filepath, default_filepath);
+				h_segments = 4;
+				v_segments = 4;
+				flat_shade = false;
 			}
 			ImGui::SetItemDefaultFocus();
 			ImGui::SameLine();

@@ -3,7 +3,9 @@
     [] - File browser
     [X] - UI for loading and setting position + scale
 [X] - Create add primitive UI
-    [] - Sphere primitive
+    [X] - Sphere primitive
+    [] - Icosphere primitive
+    [] - Improve UI code (no big switch block with global vars)
 [X] - Materials
     [X (sort of, I fixed the problem anyway)] - Texture/TextureLibrary classes
 [] - Camera
