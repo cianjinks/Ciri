@@ -26,7 +26,7 @@ const int WINDOW_HEIGHT = 900;
 bool mouseCaptured = false;
 
 // Camera
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 10.0f);
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 2.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 float deltaTime = 0.0f;
@@ -37,8 +37,8 @@ float lastY = (float)WINDOW_HEIGHT / 2;
 float yaw = -90.0f;
 float pitch = 0.0f;
 
-float cameraSpeedHigh = 30.0f;
-float cameraSpeedLow = 15.0f;
+float cameraSpeedHigh = 5.0f;
+float cameraSpeedLow = 1.0f;
 float renderDistance = 10000.0f;
 
 bool debug = false;
@@ -395,19 +395,32 @@ int main()
 	// Shaders
 	Ciri::ShaderLibrary *shaderLibrary = new Ciri::ShaderLibrary();
 	auto &shaders = shaderLibrary->GetShaderList();
-	Ciri::ShaderType selected_shader = Ciri::ShaderType::ALBEDO_TEXTURE;
+	Ciri::ShaderType selected_shader = Ciri::ShaderType::FLAT_NORMAL;
 
 	// Scene
 	Ciri::Scene *mainScene = new Ciri::Scene("Main Scene");
+
+	Ciri::Mesh *sphere = new Ciri::Sphere(100, 100, true);
+	sphere->Construct();
+	Ciri::MaterialInfo info = {"roof", false, "resources/mesh/sponza/textures/sponza_ceiling_a_diff.png"};
+	Ciri::Material *mat = mainScene->MatLib.CreateMaterial(info, glm::vec3(0.0f, 1.0f, 0.0f));
+	Ciri::SceneNode *sphereNode = mainScene->AddMesh("sphere", sphere);
+	sphereNode->NodeMaterial = mat;
+
+	/**
+	Ciri::Mesh *sphere = new Ciri::Sphere(50, 50, false);
 	Ciri::Mesh *cube1 = new Ciri::Cube();
 	Ciri::Mesh *cube2 = new Ciri::Cube();
 	Ciri::Mesh *cube3 = new Ciri::Cube();
+	sphere->Construct();
 	cube1->Construct();
 	cube2->Construct();
 	cube3->Construct();
+	Ciri::SceneNode *sphereNode = mainScene->AddMesh("sphere", sphere);
 	Ciri::SceneNode *cube1Node = mainScene->AddMesh("cube1", cube1);
 	Ciri::SceneNode *cube2Node = mainScene->AddMesh("cube2", cube2);
 	Ciri::SceneNode *cube3Node = mainScene->AddMesh("cube3", cube3);
+	sphereNode->Position = glm::vec3(0.0f, 15.0f, 0.0f);
 	cube1Node->Position = glm::vec3(-3.0f, 10.0f, 0.0f);
 	cube1Node->Scale = glm::vec3(0.5f);
 	cube2Node->Position = glm::vec3(0.0f, 10.0f, 0.0f);
@@ -419,6 +432,7 @@ int main()
 	sponzaNode->Scale = glm::vec3(0.05f);
 	dragonNode->Position = glm::vec3(10.0f, 10.0f, 0.0f);
 	dragonNode->Scale = glm::vec3(10.0f);
+	**/
 
 	// UI
 	char *addmesh_name = new char[20]();
