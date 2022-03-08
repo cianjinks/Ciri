@@ -1,0 +1,43 @@
+#ifndef CIRI_CAMERA_H
+#define CIRI_CAMERA_H
+
+#include <glm/glm.hpp>
+
+namespace Ciri
+{
+    class Camera
+    {
+    public:
+        glm::vec3 Position = glm::vec3(0.0f, 0.0f, 10.0f);
+        glm::vec3 Front = glm::vec3(0.0f, 0.0f, -1.0f);
+        glm::vec3 Up = glm::vec3(0.0f, 1.0f, 0.0f);
+
+        float Yaw = 0.0f;
+        float Pitch = 0.0f;
+
+        float SpeedHigh = 30.0f;
+        float SpeedLow = 15.0f;
+        float RenderDist = 10000.0f;
+        float FOV = 45.0f;
+
+    private:
+        float m_Width, m_Height;
+
+        glm::mat4 m_ProjectionMat;
+        glm::mat4 m_ViewMat;
+        glm::mat4 m_ModelMat;
+
+    public:
+        Camera(glm::vec3 pos, glm::vec3 direction, float yaw, float pitch, float screenWidth, float screenHeight);
+        ~Camera() = default;
+
+        void RecalcDirection();
+        void RecalcMVP();
+
+        glm::mat4 &GetProjectionMat() { return m_ProjectionMat; }
+        glm::mat4 &GetViewMat() { return m_ViewMat; }
+        glm::mat4 &GetModelMat() { return m_ModelMat; }
+    };
+}
+
+#endif

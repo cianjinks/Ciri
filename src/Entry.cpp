@@ -18,6 +18,7 @@
 #include "Render/Shader.h"
 #include "Render/Material.h"
 #include "Scene/Scene.h"
+#include "Scene/Camera.h"
 #include "Mesh/Primitive.h"
 
 // Window
@@ -26,17 +27,11 @@ const int WINDOW_HEIGHT = 900;
 bool mouseCaptured = false;
 
 // Camera
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 10.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 bool firstMouse = true;
 float lastX = (float)WINDOW_WIDTH / 2;
 float lastY = (float)WINDOW_HEIGHT / 2;
-float yaw = -90.0f;
-float pitch = 0.0f;
-
 float cameraSpeedHigh = 30.0f;
 float cameraSpeedLow = 15.0f;
 float renderDistance = 10000.0f;
@@ -48,7 +43,7 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 {
 }
 
-void poll_input(GLFWwindow *window)
+void poll_input(Ciri::Camera *camera, GLFWwindow *window)
 {
 	if (glfwGetInputMode(window, GLFW_CURSOR) != GLFW_CURSOR_DISABLED)
 	{
@@ -67,19 +62,19 @@ void poll_input(GLFWwindow *window)
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		cameraPos += cameraSpeed * cameraFront;
+		camera->Position += cameraSpeed * camera->Front;
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		cameraPos -= cameraSpeed * cameraFront;
+		camera->Position -= cameraSpeed * camera->Front;
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		camera->Position -= glm::normalize(glm::cross(camera->Front, camera->Up)) * cameraSpeed;
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		camera->Position += glm::normalize(glm::cross(camera->Front, camera->Up)) * cameraSpeed;
 	}
 }
 
@@ -89,6 +84,8 @@ void cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
 	{
 		return;
 	}
+
+	Ciri::Camera *camera = (Ciri::Camera *)glfwGetWindowUserPointer(window);
 
 	if (firstMouse)
 	{
@@ -106,19 +103,15 @@ void cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
 	xoffset *= sensitivity;
 	yoffset *= sensitivity;
 
-	yaw += xoffset;
-	pitch += yoffset;
+	camera->Yaw += xoffset;
+	camera->Pitch += yoffset;
 
-	if (pitch > 89.0f)
-		pitch = 89.0f;
-	if (pitch < -89.0f)
-		pitch = -89.0f;
+	if (camera->Pitch > 89.0f)
+		camera->Pitch = 89.0f;
+	if (camera->Pitch < -89.0f)
+		camera->Pitch = -89.0f;
 
-	glm::vec3 direction;
-	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	direction.y = sin(glm::radians(pitch));
-	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-	cameraFront = glm::normalize(direction);
+	camera->RecalcDirection();
 }
 
 void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
@@ -366,10 +359,6 @@ int main()
 		glDebugMessageCallback(MessageCallback, 0);
 	}
 
-	glfwSetKeyCallback(window, key_callback);
-	glfwSetCursorPosCallback(window, cursor_position_callback);
-	glfwSetMouseButtonCallback(window, mouse_button_callback);
-
 	// ImGUI
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -391,6 +380,19 @@ int main()
 	ImGui_ImplOpenGL3_Init("#version 460 core");
 
 	glEnable(GL_DEPTH_TEST);
+
+	// Camera
+	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 10.0f);
+	glm::vec3 cameraDir = glm::vec3(0.0f, 0.0f, -1.0f);
+	int width, height;
+	glfwGetFramebufferSize(window, &width, &height);
+	Ciri::Camera *camera = new Ciri::Camera(cameraPos, cameraDir, -90.0f, 0.0f, float(width), float(height));
+
+	// GLFW Callbacks
+	glfwSetWindowUserPointer(window, camera);
+	glfwSetKeyCallback(window, key_callback);
+	glfwSetCursorPosCallback(window, cursor_position_callback);
+	glfwSetMouseButtonCallback(window, mouse_button_callback);
 
 	// Shaders
 	Ciri::ShaderLibrary *shaderLibrary = new Ciri::ShaderLibrary();
@@ -610,27 +612,20 @@ int main()
 		ImGui::Render();
 
 		// Input
-		poll_input(window);
+		poll_input(camera, window);
 
 		// Rendering
 		float currentFrame = (float)glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		int width, height;
-		glfwGetFramebufferSize(window, &width, &height);
-
 		glViewport(0, 0, width, height);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
 
-		glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, renderDistance);
-
-		glm::mat4 view = glm::mat4(1.0f);
-		view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-
-		glm::mat4 model = glm::mat4(1.0f);
-		RenderScene(mainScene->GetRoot(), selected_shader, shaderLibrary, projection, view, model);
+		camera->RecalcMVP();
+		RenderScene(mainScene->GetRoot(), selected_shader, shaderLibrary,
+					camera->GetProjectionMat(), camera->GetViewMat(), camera->GetModelMat());
 
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		glfwSwapBuffers(window);
