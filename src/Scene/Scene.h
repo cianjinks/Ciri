@@ -19,8 +19,7 @@ namespace Ciri
         glm::vec3 Position = glm::vec3(0.0f);
         glm::vec3 Scale = glm::vec3(1.0f);
 
-        // Public for basic rendering tests
-        std::vector<SceneNode *> m_Children;
+        std::vector<SceneNode *> Children;
 
     public:
         void AddChild(SceneNode *child);

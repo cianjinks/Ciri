@@ -6,7 +6,7 @@ namespace Ciri
 {
 	void SceneNode::AddChild(SceneNode *child)
 	{
-		m_Children.push_back(child);
+		Children.push_back(child);
 	}
 
 	Scene::Scene(const char *name)
@@ -29,11 +29,11 @@ namespace Ciri
 
 	void Scene::DestroyTree(SceneNode *root)
 	{
-		for (SceneNode *node : root->m_Children)
+		for (SceneNode *node : root->Children)
 		{
 			DestroyTree(node);
 		}
-		root->m_Children.clear(); // Destroys all elements in vector?
+		root->Children.clear(); // Destroys all elements in vector?
 	}
 
 	SceneNode *Scene::AddMesh(const char *name, Mesh *mesh, Material *material)

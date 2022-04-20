@@ -15,6 +15,7 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Render/Renderer.h"
 #include "Render/Shader.h"
 #include "Render/Material.h"
 #include "Scene/Scene.h"
@@ -161,7 +162,7 @@ void SceneUI(Ciri::SceneNode *root, int ptr_id)
 	ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
 
 	// Leaf
-	bool leaf = root->m_Children.empty();
+	bool leaf = root->Children.empty();
 	if (leaf)
 	{
 		node_flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
@@ -185,7 +186,7 @@ void SceneUI(Ciri::SceneNode *root, int ptr_id)
 
 	if (node_open && !leaf)
 	{
-		for (Ciri::SceneNode *node : root->m_Children)
+		for (Ciri::SceneNode *node : root->Children)
 		{
 			SceneUI(node, ptr_id++);
 		}
@@ -193,57 +194,6 @@ void SceneUI(Ciri::SceneNode *root, int ptr_id)
 		ImGui::TreePop();
 	}
 	ImGui::PopStyleVar();
-}
-
-void RenderScene(Ciri::SceneNode *root, Ciri::ShaderType &selected, Ciri::ShaderLibrary *library, glm::mat4 &proj, glm::mat4 &view, glm::mat4 model)
-{
-	for (Ciri::SceneNode *node : root->m_Children)
-	{
-		glm::mat4 accumulateModel = model;
-		accumulateModel = glm::translate(accumulateModel, node->Position);
-		accumulateModel = glm::scale(accumulateModel, node->Scale); // Accumulative scaling doesnt work correctly
-
-		// No mesh means this is just a container
-		if (node->NodeMesh)
-		{
-			glm::mat4 mvp = proj * view * accumulateModel;
-
-			library->BindShader(selected);
-			library->SetMat4f("u_MVP", glm::value_ptr(mvp));
-
-			Ciri::Material *material = node->NodeMaterial;
-			library->SetInt1i("u_BaseColorTexture", 0);
-			library->SetVec3f("u_BaseColor", material->baseColor);
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, material->baseColorTextureID);
-			library->SetInt1i("u_NormalTexture", 1);
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, material->normalTextureID);
-			library->SetInt1i("u_MetallicTexture", 2);
-			glActiveTexture(GL_TEXTURE2);
-			glBindTexture(GL_TEXTURE_2D, material->metallicTextureID);
-			library->SetInt1i("u_RoughnessTexture", 3);
-			glActiveTexture(GL_TEXTURE3);
-			glBindTexture(GL_TEXTURE_2D, material->roughnessTextureID);
-			library->SetInt1i("u_EmissiveTexture", 4);
-			glActiveTexture(GL_TEXTURE4);
-			glBindTexture(GL_TEXTURE_2D, material->emissiveTextureID);
-			library->SetInt1i("u_OcclusionTexture", 5);
-			glActiveTexture(GL_TEXTURE5);
-			glBindTexture(GL_TEXTURE_2D, material->occlusionTextureID);
-
-			Ciri::Mesh *mesh = node->NodeMesh;
-			glBindVertexArray(mesh->m_VAO);
-
-			glDrawArrays(GL_TRIANGLES, 0, 3 * mesh->TriCount);
-
-			glBindVertexArray(0);
-			glBindTexture(GL_TEXTURE_2D, 0);
-			library->BindShader(Ciri::ShaderType::NONE);
-		}
-
-		RenderScene(node, selected, library, proj, view, accumulateModel);
-	}
 }
 
 void MaterialLibraryUI(Ciri::MaterialLibrary &library, Ciri::Material *&selected_material, ImGuiWindowFlags &flags)
@@ -380,6 +330,9 @@ int main()
 	ImGui_ImplOpenGL3_Init("#version 460 core");
 
 	glEnable(GL_DEPTH_TEST);
+
+	// Renderer
+	Ciri::Renderer *renderer = new Ciri::Renderer();
 
 	// Camera
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 10.0f);
@@ -623,9 +576,7 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
 
-		camera->RecalcMVP();
-		RenderScene(mainScene->GetRoot(), selected_shader, shaderLibrary,
-					camera->GetProjectionMat(), camera->GetViewMat(), camera->GetModelMat());
+		renderer->Render(mainScene, camera);
 
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		glfwSwapBuffers(window);

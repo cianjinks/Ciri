@@ -34,9 +34,9 @@ namespace Ciri
         void RecalcDirection();
         void RecalcMVP();
 
-        glm::mat4 &GetProjectionMat() { return m_ProjectionMat; }
-        glm::mat4 &GetViewMat() { return m_ViewMat; }
-        glm::mat4 &GetModelMat() { return m_ModelMat; }
+        glm::mat4 GetProjectionMat() { return m_ProjectionMat; }
+        glm::mat4 GetViewMat() { return m_ViewMat; }
+        glm::mat4 GetModelMat() { return m_ModelMat; }
     };
 }
 
