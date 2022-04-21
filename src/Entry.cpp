@@ -332,7 +332,7 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 
 	// Renderer
-	Ciri::Renderer *renderer = new Ciri::Renderer();
+	Ciri::Renderer *renderer = new Ciri::Renderer(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	// Camera
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 10.0f);
@@ -350,7 +350,7 @@ int main()
 	// Shaders
 	Ciri::ShaderLibrary *shaderLibrary = new Ciri::ShaderLibrary();
 	auto &shaders = shaderLibrary->GetShaderList();
-	Ciri::ShaderType selected_shader = Ciri::ShaderType::FLAT_NORMAL;
+	Ciri::ShaderType selected_shader = Ciri::ShaderType::NONE;
 
 	// Scene
 	Ciri::Scene *mainScene = new Ciri::Scene("Main Scene");
@@ -573,9 +573,6 @@ int main()
 		lastFrame = currentFrame;
 
 		glViewport(0, 0, width, height);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
-
 		renderer->Render(mainScene, camera);
 
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

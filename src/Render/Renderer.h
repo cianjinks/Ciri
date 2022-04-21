@@ -18,18 +18,31 @@ namespace Ciri
     class Renderer
     {
     public:
-        ShaderType CurrentShader = ShaderType::FLAT_NORMAL;
+        int TargetWidth, TargetHeight;
 
     private:
         ShaderLibrary *m_ShaderLib;
+        uint32_t m_GBuffer;
+        uint32_t m_GDepthBuffer;
+        uint32_t m_GPositionTexture;
+        uint32_t m_GNormalTexture;
+        uint32_t *m_RenderTargets;
+
+        uint32_t m_ScreenQuadVAO;
+        uint32_t m_ScreenQuadVBO;
 
     public:
-        Renderer();
+        Renderer(int targetWidth, int targetHeight);
         ~Renderer();
         void Render(Scene *scene, Camera *camera);
 
     private:
-        void DrawScene(Scene *scene, Camera *camera);
+        void RenderSingleTarget(uint32_t target);
+        void RenderMultipleTarget();
+        void RenderSceneGeometry(Scene *scene, Camera *camera);
+        void RenderScreenQuad();
+
+        void BlitDepthBuffer();
     };
 }
 

@@ -19,4 +19,6 @@
 [] - Abstract application
 [] - Speedup texture loading (use a fast png loader)
 [] - Renderer
+    [] - Deferred rendering pipeline
+    [] - Calculate position from depth
 [] - gltf scene support

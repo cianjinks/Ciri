@@ -53,15 +53,9 @@ namespace Ciri
         m_CurrentShaderType = ShaderType::NONE;
         m_CurrentShader = none;
 
-        AddShader("Flat Normal", ShaderType::FLAT_NORMAL, "resources/shader/base.vert", "resources/shader/flat_normal.frag");
-        AddShader("Smooth Normal", ShaderType::SMOOTH_NORMAL, "resources/shader/base.vert", "resources/shader/normal.frag");
-        AddShader("Albedo", ShaderType::ALBEDO, "resources/shader/base.vert", "resources/shader/albedo.frag");
-        AddShader("Albedo Texture", ShaderType::ALBEDO_TEXTURE, "resources/shader/base.vert", "resources/shader/albedo_texture.frag");
-        AddShader("Normal Texture", ShaderType::NORMAL_TEXTURE, "resources/shader/base.vert", "resources/shader/normal_texture.frag");
-        AddShader("Metallic Texture", ShaderType::METALLIC_TEXTURE, "resources/shader/base.vert", "resources/shader/metallic_texture.frag");
-        AddShader("Roughness Texture", ShaderType::ROUGHNESS_TEXTURE, "resources/shader/base.vert", "resources/shader/roughness_texture.frag");
-        AddShader("Emissive Texture", ShaderType::EMISSIVE_TEXTURE, "resources/shader/base.vert", "resources/shader/emissive_texture.frag");
-        AddShader("Occlusion Texture", ShaderType::OCCLUSION_TEXTURE, "resources/shader/base.vert", "resources/shader/occlusion_texture.frag");
+        AddShader("Geometry Buffer", ShaderType::GEOMETRY_BUFFER, "resources/shader/gbuffer.vert", "resources/shader/gbuffer.frag");
+        AddShader("Single Target", ShaderType::SINGLE_TARGET, "resources/shader/screen_quad.vert", "resources/shader/single_texture.frag");
+        AddShader("Multiple Target", ShaderType::MULTIPLE_TARGET, "resources/shader/screen_quad.vert", "resources/shader/multiple_texture.frag");
     }
 
     void ShaderLibrary::CompileShaders()
@@ -130,7 +124,7 @@ namespace Ciri
             std::string vert_code = ParseFile(vert_src);
             if (vert_code == "")
             {
-                CIRI_ERROR("Failed to vertex shader from file: {}", vert_src);
+                CIRI_ERROR("Failed to parse vertex shader from file: {}", vert_src);
             }
             m_SourceMap[vert_src] = vert_code;
         }
