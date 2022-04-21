@@ -27,6 +27,9 @@ namespace Ciri
         Renderer();
         ~Renderer();
         void Render(Scene *scene, Camera *camera);
+
+    private:
+        void DrawScene(Scene *scene, Camera *camera);
     };
 }
 

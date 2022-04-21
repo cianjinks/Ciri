@@ -20,6 +20,21 @@ namespace Ciri
 
     void Renderer::Render(Scene *scene, Camera *camera)
     {
+        // Render Pipeline
+        // 1. Geometry Buffer
+        uint32_t gBuffer;
+        glGenFramebuffers(1, &gBuffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
+
+        // TODO: Implement multiple render targets
+
+        uint32_t buffers[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
+        glDrawBuffers(3, buffers);
+        DrawScene(scene, camera);
+    }
+
+    void Renderer::DrawScene(Scene *scene, Camera *camera)
+    {
         camera->RecalcMVP();
         glm::mat4 proj = camera->GetProjectionMat();
         glm::mat4 view = camera->GetViewMat();
@@ -87,5 +102,4 @@ namespace Ciri
             }
         }
     }
-
 }
