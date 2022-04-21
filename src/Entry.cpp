@@ -37,6 +37,9 @@ float lastY = (float)WINDOW_HEIGHT / 2;
 bool debug = false;
 bool mipmap = true;
 
+// UI
+bool hideUI = false;
+
 // Camera & Renderer Struct (REMOVE)
 struct TempCR
 {
@@ -56,6 +59,11 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 			static_cast<Ciri::ShaderType>(
 				(static_cast<int>(renderer->GetCurrentShader()) + 1) % renderer->GetShaderLibrary()->GetShaderCount());
 		renderer->SetCurrentShader(next);
+	}
+
+	if (key == GLFW_KEY_F1 && action == GLFW_PRESS)
+	{
+		hideUI = !hideUI;
 	}
 }
 
@@ -411,173 +419,179 @@ int main()
 
 	while (!glfwWindowShouldClose(window))
 	{
-		// Start the Dear ImGui frame
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
 
-		// ImGui::ShowDemoWindow();
-
-		// Options
-		ImGuiWindowFlags flags = mouseCaptured ? ImGuiWindowFlags_NoInputs : 0;
-		ImGui::PushStyleColor(ImGuiCol_ResizeGrip, 0);
-
-		ImGui::Begin("Debug Info", NULL, flags);
-		ImGui::Text("Version: OpenGL %s", glGetString(GL_VERSION));
-		ImGui::Text("Vendor: %s", glGetString(GL_VENDOR));
-		ImGui::Text("Renderer: %s", glGetString(GL_RENDERER));
-		ImGui::Separator();
-		ImGui::Text("Mesh Count: %d", mainScene->GetMeshCount());
-		ImGui::Text("Triangles: %d", mainScene->GetTotalTriCount());
-		ImGui::Text("Frame Time: %fms", deltaTime * 1000);
-		ImGui::Text("FPS: %f", 1.0f / deltaTime);
-		ImGui::Separator();
-		ImGui::Text("Camera Position: %.3f, %.3f, %.3f", cameraPos.x, cameraPos.y, cameraPos.z);
-		ImGui::SliderFloat("Camera Speed High", &camera->SpeedHigh, 1.0f, 1000.0f);
-		ImGui::SliderFloat("Camera Speed Low", &camera->SpeedLow, 1.0f, 500.0f);
-		ImGui::SliderFloat("Render Distance", &camera->Far, 10.0f, 1000.0f);
-		if (ImGui::BeginCombo("Shading", shaders[renderer->GetCurrentShader()]->name, 0))
+		if (!hideUI)
 		{
-			for (auto &pair : shaders)
+			// Start the Dear ImGui frame
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
+
+			// ImGui::ShowDemoWindow();
+
+			// Options
+			ImGuiWindowFlags flags = mouseCaptured ? ImGuiWindowFlags_NoInputs : 0;
+			ImGui::PushStyleColor(ImGuiCol_ResizeGrip, 0);
+
+			ImGui::Begin("Debug Info", NULL, flags);
+			ImGui::Text("Version: OpenGL %s", glGetString(GL_VERSION));
+			ImGui::Text("Vendor: %s", glGetString(GL_VENDOR));
+			ImGui::Text("Renderer: %s", glGetString(GL_RENDERER));
+			ImGui::Separator();
+			ImGui::Text("Mesh Count: %d", mainScene->GetMeshCount());
+			ImGui::Text("Triangles: %d", mainScene->GetTotalTriCount());
+			ImGui::Text("Frame Time: %fms", deltaTime * 1000);
+			ImGui::Text("FPS: %f", 1.0f / deltaTime);
+			ImGui::Separator();
+			ImGui::Text("Camera Position: %.3f, %.3f, %.3f", cameraPos.x, cameraPos.y, cameraPos.z);
+			ImGui::SliderFloat("Camera Speed High", &camera->SpeedHigh, 1.0f, 1000.0f);
+			ImGui::SliderFloat("Camera Speed Low", &camera->SpeedLow, 1.0f, 500.0f);
+			ImGui::SliderFloat("Render Distance", &camera->Far, 10.0f, 1000.0f);
+			if (ImGui::BeginCombo("Shading", shaders[renderer->GetCurrentShader()]->name, 0))
 			{
-				Ciri::Shader *shader = pair.second;
-				const bool is_selected = (renderer->GetCurrentShader() == shader->type);
-				if (ImGui::Selectable(shader->name, is_selected))
-					renderer->SetCurrentShader(shader->type);
-				if (is_selected)
-					ImGui::SetItemDefaultFocus();
+				for (auto &pair : shaders)
+				{
+					Ciri::Shader *shader = pair.second;
+					const bool is_selected = (renderer->GetCurrentShader() == shader->type);
+					if (ImGui::Selectable(shader->name, is_selected))
+						renderer->SetCurrentShader(shader->type);
+					if (is_selected)
+						ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndCombo();
 			}
-			ImGui::EndCombo();
-		}
+			ImGui::Text("[Z]  - Cycle Shader");
+			ImGui::Text("[F1] - Hide UI");
 
-		ImGui::Separator();
-
-		if (ImGui::Button("Add Mesh.."))
-			ImGui::OpenPopup("Add Mesh");
-
-		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-		ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-
-		if (ImGui::BeginPopupModal("Add Mesh", NULL, ImGuiWindowFlags_AlwaysAutoResize))
-		{
-			const char *mesh_types[] = {"Cube", "Quad", "Sphere", "Load Model.."};
-			static int type = 0;
-			ImGui::Combo("Type", &type, mesh_types, IM_ARRAYSIZE(mesh_types));
 			ImGui::Separator();
 
-			ImGui::InputText("Name", addmesh_name, 20);
-			ImGui::InputFloat3("Position", &addmesh_position.x);
-			ImGui::InputFloat3("Scale", &addmesh_scale.x);
-			if (type == 2)
+			if (ImGui::Button("Add Mesh.."))
+				ImGui::OpenPopup("Add Mesh");
+
+			ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+			ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+			if (ImGui::BeginPopupModal("Add Mesh", NULL, ImGuiWindowFlags_AlwaysAutoResize))
 			{
-				ImGui::InputInt("H Segments", &h_segments);
-				ImGui::InputInt("V Segments", &v_segments);
-				ImGui::Checkbox("Flat Shade", &flat_shade);
-			}
-			else if (type == 3)
-			{
-				ImGui::InputText("File Path", addmesh_filepath, 100);
-			}
-			ImGui::Separator();
+				const char *mesh_types[] = {"Cube", "Quad", "Sphere", "Load Model.."};
+				static int type = 0;
+				ImGui::Combo("Type", &type, mesh_types, IM_ARRAYSIZE(mesh_types));
+				ImGui::Separator();
 
-			if (ImGui::Button("OK", ImVec2(120, 0)))
-			{
-				switch (type)
+				ImGui::InputText("Name", addmesh_name, 20);
+				ImGui::InputFloat3("Position", &addmesh_position.x);
+				ImGui::InputFloat3("Scale", &addmesh_scale.x);
+				if (type == 2)
 				{
-				case 0:
-				{
-					Ciri::Mesh *cube = new Ciri::Cube();
-					cube->Construct();
-					Ciri::SceneNode *cubeNode = mainScene->AddMesh(addmesh_name, cube);
-					cubeNode->Position = addmesh_position;
-					cubeNode->Scale = addmesh_scale;
-					break;
+					ImGui::InputInt("H Segments", &h_segments);
+					ImGui::InputInt("V Segments", &v_segments);
+					ImGui::Checkbox("Flat Shade", &flat_shade);
 				}
-				case 1:
+				else if (type == 3)
 				{
-					Ciri::Mesh *quad = new Ciri::Quad();
-					quad->Construct();
-					Ciri::SceneNode *quadNode = mainScene->AddMesh(addmesh_name, quad);
-					quadNode->Position = addmesh_position;
-					quadNode->Scale = addmesh_scale;
-					break;
+					ImGui::InputText("File Path", addmesh_filepath, 100);
 				}
-				case 2:
+				ImGui::Separator();
+
+				if (ImGui::Button("OK", ImVec2(120, 0)))
 				{
-					Ciri::Mesh *sphere = new Ciri::Sphere(h_segments, v_segments, flat_shade);
-					sphere->Construct();
-					Ciri::SceneNode *sphereNode = mainScene->AddMesh(addmesh_name, sphere);
-					sphereNode->Position = addmesh_position;
-					sphereNode->Scale = addmesh_scale;
-					break;
-				}
-				case 3:
-				{
-					Ciri::SceneNode *dragonNode = mainScene->LoadModel(addmesh_name, addmesh_filepath);
-					dragonNode->Position = addmesh_position;
-					dragonNode->Scale = addmesh_scale;
-					break;
-				}
-				}
-				ImGui::CloseCurrentPopup();
-
-				// Reset values as opposed to saving them
-				std::memset(addmesh_name, 0, 20);
-				addmesh_position = glm::vec3(0.0f);
-				addmesh_scale = glm::vec3(1.0f);
-				std::strcpy(addmesh_filepath, default_filepath);
-				h_segments = 4;
-				v_segments = 4;
-				flat_shade = false;
-			}
-			ImGui::SetItemDefaultFocus();
-			ImGui::SameLine();
-			if (ImGui::Button("Cancel", ImVec2(120, 0)))
-			{
-				ImGui::CloseCurrentPopup();
-			}
-
-			ImGui::EndPopup();
-		}
-
-		ImGui::End();
-
-		ImGui::Begin("Scene", NULL, flags);
-		SceneUI(mainScene->GetRoot(), 0);
-		ImGui::End();
-
-		ImGui::Begin("Mesh Settings", NULL, flags);
-		if (selected_node)
-		{
-			ImGui::Text(selected_node->Name.c_str());
-			ImGui::InputFloat3("Position", &selected_node->Position.x);
-			ImGui::InputFloat3("Scale", &selected_node->Scale.x);
-
-			// Material setting
-			if (selected_node->NodeMesh)
-			{
-				if (ImGui::BeginCombo("Material", selected_node->NodeMaterial->info.name.c_str(), 0))
-				{
-					for (auto &pair : mainScene->MatLib.GetMaterials())
+					switch (type)
 					{
-						Ciri::Material *material = pair.second;
-						const bool is_selected = (selected_node->NodeMaterial == material);
-						if (ImGui::Selectable(material->info.name.c_str(), is_selected))
-							selected_node->NodeMaterial = material;
-						if (is_selected)
-							ImGui::SetItemDefaultFocus();
+					case 0:
+					{
+						Ciri::Mesh *cube = new Ciri::Cube();
+						cube->Construct();
+						Ciri::SceneNode *cubeNode = mainScene->AddMesh(addmesh_name, cube);
+						cubeNode->Position = addmesh_position;
+						cubeNode->Scale = addmesh_scale;
+						break;
 					}
-					ImGui::EndCombo();
+					case 1:
+					{
+						Ciri::Mesh *quad = new Ciri::Quad();
+						quad->Construct();
+						Ciri::SceneNode *quadNode = mainScene->AddMesh(addmesh_name, quad);
+						quadNode->Position = addmesh_position;
+						quadNode->Scale = addmesh_scale;
+						break;
+					}
+					case 2:
+					{
+						Ciri::Mesh *sphere = new Ciri::Sphere(h_segments, v_segments, flat_shade);
+						sphere->Construct();
+						Ciri::SceneNode *sphereNode = mainScene->AddMesh(addmesh_name, sphere);
+						sphereNode->Position = addmesh_position;
+						sphereNode->Scale = addmesh_scale;
+						break;
+					}
+					case 3:
+					{
+						Ciri::SceneNode *dragonNode = mainScene->LoadModel(addmesh_name, addmesh_filepath);
+						dragonNode->Position = addmesh_position;
+						dragonNode->Scale = addmesh_scale;
+						break;
+					}
+					}
+					ImGui::CloseCurrentPopup();
+
+					// Reset values as opposed to saving them
+					std::memset(addmesh_name, 0, 20);
+					addmesh_position = glm::vec3(0.0f);
+					addmesh_scale = glm::vec3(1.0f);
+					std::strcpy(addmesh_filepath, default_filepath);
+					h_segments = 4;
+					v_segments = 4;
+					flat_shade = false;
+				}
+				ImGui::SetItemDefaultFocus();
+				ImGui::SameLine();
+				if (ImGui::Button("Cancel", ImVec2(120, 0)))
+				{
+					ImGui::CloseCurrentPopup();
+				}
+
+				ImGui::EndPopup();
+			}
+
+			ImGui::End();
+
+			ImGui::Begin("Scene", NULL, flags);
+			SceneUI(mainScene->GetRoot(), 0);
+			ImGui::End();
+
+			ImGui::Begin("Mesh Settings", NULL, flags);
+			if (selected_node)
+			{
+				ImGui::Text(selected_node->Name.c_str());
+				ImGui::InputFloat3("Position", &selected_node->Position.x);
+				ImGui::InputFloat3("Scale", &selected_node->Scale.x);
+
+				// Material setting
+				if (selected_node->NodeMesh)
+				{
+					if (ImGui::BeginCombo("Material", selected_node->NodeMaterial->info.name.c_str(), 0))
+					{
+						for (auto &pair : mainScene->MatLib.GetMaterials())
+						{
+							Ciri::Material *material = pair.second;
+							const bool is_selected = (selected_node->NodeMaterial == material);
+							if (ImGui::Selectable(material->info.name.c_str(), is_selected))
+								selected_node->NodeMaterial = material;
+							if (is_selected)
+								ImGui::SetItemDefaultFocus();
+						}
+						ImGui::EndCombo();
+					}
 				}
 			}
+			ImGui::End();
+
+			MaterialLibraryUI(mainScene->MatLib, selected_material, flags);
+			MaterialSettingsUI(selected_material, mainScene, flags);
+
+			ImGui::PopStyleColor(1);
+			ImGui::Render();
 		}
-		ImGui::End();
-
-		MaterialLibraryUI(mainScene->MatLib, selected_material, flags);
-		MaterialSettingsUI(selected_material, mainScene, flags);
-
-		ImGui::PopStyleColor(1);
-		ImGui::Render();
 
 		// Input
 		poll_input(camera, window);
@@ -590,7 +604,11 @@ int main()
 		glViewport(0, 0, width, height);
 		renderer->Render(mainScene, camera);
 
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		if (!hideUI)
+		{
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		}
+
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
