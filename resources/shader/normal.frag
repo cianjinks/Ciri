@@ -8,5 +8,5 @@ uniform sampler2D u_NormalTexture;
 
 void main()
 {
-    a_Color = texture(u_NormalTexture, v_TexCoord);
+    a_Color = abs(texture(u_NormalTexture, v_TexCoord));
 }

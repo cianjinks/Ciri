@@ -17,7 +17,7 @@ namespace Ciri
 
         float SpeedHigh = 30.0f;
         float SpeedLow = 15.0f;
-        float Far = 100.0f; // Render Distance
+        float Far = 250.0f; // Render Distance
         float Near = 0.1f;
         float FOV = 45.0f;
 

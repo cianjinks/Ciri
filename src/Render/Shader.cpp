@@ -56,6 +56,7 @@ namespace Ciri
         Shader *none = new Shader("None", ShaderType::NONE, "", "");
         none->program_id = 0;
         m_ShaderList[ShaderType::NONE] = none;
+        m_ShaderCount++;
         m_CurrentShaderType = ShaderType::NONE;
         m_CurrentShader = none;
 
@@ -149,6 +150,7 @@ namespace Ciri
 
         Shader *shader = new Shader(name, type, vert_src, frag_src);
         m_ShaderList[type] = shader;
+        m_ShaderCount++;
     }
 
     std::string ShaderLibrary::ParseFile(const char *file_path)

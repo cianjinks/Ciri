@@ -37,8 +37,26 @@ float lastY = (float)WINDOW_HEIGHT / 2;
 bool debug = false;
 bool mipmap = true;
 
+// Camera & Renderer Struct (REMOVE)
+struct TempCR
+{
+	Ciri::Renderer *renderer;
+	Ciri::Camera *camera;
+};
+
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
+	TempCR *ptr = (TempCR *)glfwGetWindowUserPointer(window);
+	Ciri::Renderer *renderer = ptr->renderer;
+
+	if (key == GLFW_KEY_Z && action == GLFW_PRESS)
+	{
+		// Yikes :(
+		Ciri::ShaderType next =
+			static_cast<Ciri::ShaderType>(
+				(static_cast<int>(renderer->GetCurrentShader()) + 1) % renderer->GetShaderLibrary()->GetShaderCount());
+		renderer->SetCurrentShader(next);
+	}
 }
 
 void poll_input(Ciri::Camera *camera, GLFWwindow *window)
@@ -83,7 +101,8 @@ void cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
 		return;
 	}
 
-	Ciri::Camera *camera = (Ciri::Camera *)glfwGetWindowUserPointer(window);
+	TempCR *ptr = (TempCR *)glfwGetWindowUserPointer(window);
+	Ciri::Camera *camera = ptr->camera;
 
 	if (firstMouse)
 	{
@@ -339,7 +358,8 @@ int main()
 	Ciri::Camera *camera = new Ciri::Camera(cameraPos, cameraDir, -90.0f, 0.0f, float(width), float(height));
 
 	// GLFW Callbacks
-	glfwSetWindowUserPointer(window, camera);
+	TempCR *windowPTR = new TempCR{renderer, camera};
+	glfwSetWindowUserPointer(window, windowPTR);
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetCursorPosCallback(window, cursor_position_callback);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
@@ -574,6 +594,8 @@ int main()
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
+
+	delete windowPTR;
 
 	glfwDestroyWindow(window);
 	glfwTerminate();

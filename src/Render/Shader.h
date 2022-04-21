@@ -31,6 +31,7 @@ namespace Ciri
     class ShaderLibrary
     {
     private:
+        uint32_t m_ShaderCount = 0;
         std::map<ShaderType, Shader *> m_ShaderList;
         std::unordered_map<const char *, std::string> m_SourceMap; // File Path -> Source Code
         std::unordered_map<const char *, uint32_t> m_ObjectMap;    // File Path -> Shader Object
@@ -45,6 +46,7 @@ namespace Ciri
         void BindShader(ShaderType type);
         ShaderType GetShaderType() { return m_CurrentShaderType; }
         Shader *GetShader() { return m_CurrentShader; }
+        uint32_t GetShaderCount() { return m_ShaderCount; }
         std::map<ShaderType, Shader *> &GetShaderList() { return m_ShaderList; }
 
         // Uniforms
