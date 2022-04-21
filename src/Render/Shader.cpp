@@ -30,6 +30,12 @@ namespace Ciri
         glUniform1i(loc, int1);
     }
 
+    void ShaderLibrary::SetFloat1f(const char *name, float float1)
+    {
+        uint32_t loc = glGetUniformLocation(m_CurrentShader->program_id, name);
+        glUniform1f(loc, float1);
+    }
+
     void ShaderLibrary::SetVec3f(const char *name, glm::vec3 vec3)
     {
         uint32_t loc = glGetUniformLocation(m_CurrentShader->program_id, name);
@@ -54,8 +60,10 @@ namespace Ciri
         m_CurrentShader = none;
 
         AddShader("Geometry Buffer", ShaderType::GEOMETRY_BUFFER, "resources/shader/gbuffer.vert", "resources/shader/gbuffer.frag");
-        AddShader("Single Target", ShaderType::SINGLE_TARGET, "resources/shader/screen_quad.vert", "resources/shader/single_texture.frag");
-        AddShader("Multiple Target", ShaderType::MULTIPLE_TARGET, "resources/shader/screen_quad.vert", "resources/shader/multiple_texture.frag");
+        AddShader("Normal", ShaderType::NORMAL, "resources/shader/screen_quad.vert", "resources/shader/normal.frag");
+        AddShader("Linear Depth", ShaderType::LINEAR_DEPTH, "resources/shader/screen_quad.vert", "resources/shader/linear_depth.frag");
+        AddShader("World Position", ShaderType::WORLD_POSITION, "resources/shader/screen_quad.vert", "resources/shader/world_position.frag");
+        AddShader("Origin Distance", ShaderType::ORIGIN_DISTANCE, "resources/shader/screen_quad.vert", "resources/shader/dist_origin.frag");
     }
 
     void ShaderLibrary::CompileShaders()

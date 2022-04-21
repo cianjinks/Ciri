@@ -17,7 +17,8 @@ namespace Ciri
 
         float SpeedHigh = 30.0f;
         float SpeedLow = 15.0f;
-        float RenderDist = 10000.0f;
+        float Far = 100.0f; // Render Distance
+        float Near = 0.1f;
         float FOV = 45.0f;
 
     private:
@@ -25,18 +26,20 @@ namespace Ciri
 
         glm::mat4 m_ProjectionMat;
         glm::mat4 m_ViewMat;
-        glm::mat4 m_ModelMat;
+        glm::mat4 m_InvProjMat;
+        glm::mat4 m_InvViewMat;
 
     public:
         Camera(glm::vec3 pos, glm::vec3 direction, float yaw, float pitch, float screenWidth, float screenHeight);
         ~Camera() = default;
 
         void RecalcDirection();
-        void RecalcMVP();
+        void RecalcVP();
 
         glm::mat4 GetProjectionMat() { return m_ProjectionMat; }
         glm::mat4 GetViewMat() { return m_ViewMat; }
-        glm::mat4 GetModelMat() { return m_ModelMat; }
+        glm::mat4 GetInvProjMat() { return m_InvProjMat; }
+        glm::mat4 GetInvViewMat() { return m_InvViewMat; }
     };
 }
 

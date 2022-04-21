@@ -33,9 +33,6 @@ float lastFrame = 0.0f;
 bool firstMouse = true;
 float lastX = (float)WINDOW_WIDTH / 2;
 float lastY = (float)WINDOW_HEIGHT / 2;
-float cameraSpeedHigh = 30.0f;
-float cameraSpeedLow = 15.0f;
-float renderDistance = 10000.0f;
 
 bool debug = false;
 bool mipmap = true;
@@ -51,14 +48,14 @@ void poll_input(Ciri::Camera *camera, GLFWwindow *window)
 		return;
 	}
 
-	float cameraSpeed = cameraSpeedLow;
+	float cameraSpeed = camera->SpeedLow;
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 	{
-		cameraSpeed = cameraSpeedHigh * deltaTime;
+		cameraSpeed = camera->SpeedHigh * deltaTime;
 	}
 	else
 	{
-		cameraSpeed = cameraSpeedLow * deltaTime;
+		cameraSpeed = camera->SpeedLow * deltaTime;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -348,9 +345,7 @@ int main()
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 
 	// Shaders
-	Ciri::ShaderLibrary *shaderLibrary = new Ciri::ShaderLibrary();
-	auto &shaders = shaderLibrary->GetShaderList();
-	Ciri::ShaderType selected_shader = Ciri::ShaderType::NONE;
+	auto &shaders = renderer->GetShaderLibrary()->GetShaderList();
 
 	// Scene
 	Ciri::Scene *mainScene = new Ciri::Scene("Main Scene");
@@ -418,17 +413,17 @@ int main()
 		ImGui::Text("FPS: %f", 1.0f / deltaTime);
 		ImGui::Separator();
 		ImGui::Text("Camera Position: %.3f, %.3f, %.3f", cameraPos.x, cameraPos.y, cameraPos.z);
-		ImGui::SliderFloat("Camera Speed High", &cameraSpeedHigh, 1.0f, 1000.0f);
-		ImGui::SliderFloat("Camera Speed Low", &cameraSpeedLow, 1.0f, 500.0f);
-		ImGui::SliderFloat("Render Distance", &renderDistance, 10.0f, 10000.0f);
-		if (ImGui::BeginCombo("Shading", shaders[selected_shader]->name, 0))
+		ImGui::SliderFloat("Camera Speed High", &camera->SpeedHigh, 1.0f, 1000.0f);
+		ImGui::SliderFloat("Camera Speed Low", &camera->SpeedLow, 1.0f, 500.0f);
+		ImGui::SliderFloat("Render Distance", &camera->Far, 10.0f, 1000.0f);
+		if (ImGui::BeginCombo("Shading", shaders[renderer->GetCurrentShader()]->name, 0))
 		{
 			for (auto &pair : shaders)
 			{
 				Ciri::Shader *shader = pair.second;
-				const bool is_selected = (selected_shader == shader->type);
+				const bool is_selected = (renderer->GetCurrentShader() == shader->type);
 				if (ImGui::Selectable(shader->name, is_selected))
-					selected_shader = shader->type;
+					renderer->SetCurrentShader(shader->type);
 				if (is_selected)
 					ImGui::SetItemDefaultFocus();
 			}

@@ -18,10 +18,11 @@ namespace Ciri
         Front = glm::normalize(Front);
     }
 
-    void Camera::RecalcMVP()
+    void Camera::RecalcVP()
     {
-        m_ProjectionMat = glm::perspective(glm::radians(FOV), m_Width / m_Height, 0.1f, RenderDist);
+        m_ProjectionMat = glm::perspective(glm::radians(FOV), m_Width / m_Height, Near, Far);
         m_ViewMat = glm::lookAt(Position, Position + Front, Up);
-        m_ModelMat = glm::mat4(1.0f);
+        m_InvProjMat = glm::inverse(m_ProjectionMat);
+        m_InvViewMat = glm::inverse(m_ViewMat);
     }
 }

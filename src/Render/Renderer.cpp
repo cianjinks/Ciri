@@ -26,30 +26,22 @@ namespace Ciri
         glGenFramebuffers(1, &m_GBuffer);
         glBindFramebuffer(GL_FRAMEBUFFER, m_GBuffer);
 
-        glGenTextures(1, &m_GPositionTexture);
-        glBindTexture(GL_TEXTURE_2D, m_GPositionTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, TargetWidth, TargetHeight, 0, GL_RGBA, GL_FLOAT, NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_GPositionTexture, 0);
-
         glGenTextures(1, &m_GNormalTexture);
         glBindTexture(GL_TEXTURE_2D, m_GNormalTexture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, TargetWidth, TargetHeight, 0, GL_RGBA, GL_FLOAT, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_GNormalTexture, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_GNormalTexture, 0);
 
-        // Color Attachments
-        m_RenderTargets = new uint32_t[2]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-        glDrawBuffers(2, m_RenderTargets);
+        glGenTextures(1, &m_GDepthTexture);
+        glBindTexture(GL_TEXTURE_2D, m_GDepthTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, TargetWidth, TargetHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_GDepthTexture, 0);
 
-        // Depth Attachment
-        glGenRenderbuffers(1, &m_GDepthBuffer);
-        glBindRenderbuffer(GL_RENDERBUFFER, m_GDepthBuffer);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, TargetWidth, TargetHeight);
-        glBindRenderbuffer(GL_RENDERBUFFER, 0);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_GDepthBuffer);
+        m_RenderTargets = new uint32_t[1]{GL_COLOR_ATTACHMENT0};
+        glDrawBuffers(1, m_RenderTargets);
 
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         {
@@ -89,9 +81,9 @@ namespace Ciri
         // 1. Geometry Buffer
         glBindFramebuffer(GL_FRAMEBUFFER, m_GBuffer);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glBindTexture(GL_TEXTURE_2D, m_GPositionTexture);
+        glBindTexture(GL_TEXTURE_2D, m_GDepthTexture);
         glBindTexture(GL_TEXTURE_2D, m_GNormalTexture);
-        glDrawBuffers(3, m_RenderTargets);
+        glDrawBuffers(1, m_RenderTargets);
 
         m_ShaderLib->BindShader(ShaderType::GEOMETRY_BUFFER);
         RenderSceneGeometry(scene, camera);
@@ -102,12 +94,29 @@ namespace Ciri
         // 2. Lighting?
 
         // 3. Output Result
-        RenderSingleTarget(m_GNormalTexture);
+        m_ShaderLib->BindShader(m_CurrentShader);
+        camera->RecalcVP();
+        glm::mat4 invProjMat = camera->GetInvProjMat();
+        glm::mat4 invViewMat = camera->GetInvViewMat();
+        m_ShaderLib->SetMat4f("u_InvProjMat", glm::value_ptr(invProjMat));
+        m_ShaderLib->SetMat4f("u_InvViewMat", glm::value_ptr(invViewMat));
+        m_ShaderLib->SetFloat1f("u_CameraFar", camera->Far);
+        m_ShaderLib->SetFloat1f("u_CameraNear", camera->Near);
+        m_ShaderLib->SetInt1i("u_DepthTexture", 0);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, m_GDepthTexture);
+        m_ShaderLib->SetInt1i("u_NormalTexture", 1);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, m_GNormalTexture);
+        RenderScreenQuad();
+        glBindTexture(GL_TEXTURE_2D, 0);
+        m_ShaderLib->BindShader(ShaderType::NONE);
+        BlitDepthBuffer();
     }
 
     void Renderer::RenderSceneGeometry(Scene *scene, Camera *camera)
     {
-        camera->RecalcMVP();
+        camera->RecalcVP();
         glm::mat4 proj = camera->GetProjectionMat();
         glm::mat4 view = camera->GetViewMat();
 
@@ -171,33 +180,6 @@ namespace Ciri
                 renderStack.push({node, currentNodePosition + node->Position, currentNodeScale * node->Scale});
             }
         }
-    }
-
-    void Renderer::RenderSingleTarget(uint32_t target)
-    {
-        m_ShaderLib->BindShader(ShaderType::SINGLE_TARGET);
-        m_ShaderLib->SetInt1i("u_TargetTexture", 0);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, target);
-        RenderScreenQuad();
-        glBindTexture(GL_TEXTURE_2D, 0);
-        m_ShaderLib->BindShader(ShaderType::NONE);
-        BlitDepthBuffer();
-    }
-
-    void Renderer::RenderMultipleTarget()
-    {
-        m_ShaderLib->BindShader(ShaderType::MULTIPLE_TARGET);
-        m_ShaderLib->SetInt1i("u_PositionTexture", 0);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, m_GPositionTexture);
-        m_ShaderLib->SetInt1i("u_NormalTexture", 1);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, m_GNormalTexture);
-        RenderScreenQuad();
-        glBindTexture(GL_TEXTURE_2D, 0);
-        m_ShaderLib->BindShader(ShaderType::NONE);
-        BlitDepthBuffer();
     }
 
     void Renderer::RenderScreenQuad()

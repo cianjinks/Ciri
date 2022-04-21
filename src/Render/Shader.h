@@ -10,8 +10,11 @@ namespace Ciri
     {
         NONE = 0,
         GEOMETRY_BUFFER,
-        SINGLE_TARGET,
-        MULTIPLE_TARGET
+
+        NORMAL,
+        LINEAR_DEPTH,
+        WORLD_POSITION,
+        ORIGIN_DISTANCE
     };
 
     struct Shader
@@ -47,6 +50,7 @@ namespace Ciri
         // Uniforms
         void SetMat4f(const char *name, float *mat4);
         void SetInt1i(const char *name, int32_t int1);
+        void SetFloat1f(const char *name, float float1);
         void SetVec3f(const char *name, glm::vec3 vec3);
 
     private:

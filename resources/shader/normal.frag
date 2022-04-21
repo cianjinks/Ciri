@@ -4,9 +4,9 @@ layout(location = 0) out vec4 a_Color;
 
 in vec2 v_TexCoord;
 
-uniform sampler2D u_TargetTexture;
+uniform sampler2D u_NormalTexture;
 
 void main()
 {
-    a_Color = texture(u_TargetTexture, v_TexCoord);
+    a_Color = texture(u_NormalTexture, v_TexCoord);
 }

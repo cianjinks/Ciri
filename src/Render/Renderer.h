@@ -22,9 +22,10 @@ namespace Ciri
 
     private:
         ShaderLibrary *m_ShaderLib;
+        ShaderType m_CurrentShader = ShaderType::NORMAL;
+
         uint32_t m_GBuffer;
-        uint32_t m_GDepthBuffer;
-        uint32_t m_GPositionTexture;
+        uint32_t m_GDepthTexture;
         uint32_t m_GNormalTexture;
         uint32_t *m_RenderTargets;
 
@@ -34,11 +35,14 @@ namespace Ciri
     public:
         Renderer(int targetWidth, int targetHeight);
         ~Renderer();
+
         void Render(Scene *scene, Camera *camera);
 
+        void SetCurrentShader(ShaderType shader) { m_CurrentShader = shader; }
+        ShaderType GetCurrentShader() const { return m_CurrentShader; }
+        ShaderLibrary *GetShaderLibrary() const { return m_ShaderLib; }
+
     private:
-        void RenderSingleTarget(uint32_t target);
-        void RenderMultipleTarget();
         void RenderSceneGeometry(Scene *scene, Camera *camera);
         void RenderScreenQuad();
 
