@@ -152,17 +152,14 @@ namespace Ciri
                 m_ShaderLib->SetInt1i("u_NormalTexture", 1);
                 glActiveTexture(GL_TEXTURE1);
                 glBindTexture(GL_TEXTURE_2D, material->normalTextureID);
-                m_ShaderLib->SetInt1i("u_MetallicTexture", 2);
+                m_ShaderLib->SetInt1i("u_MetallicRoughnessTexture", 2);
                 glActiveTexture(GL_TEXTURE2);
-                glBindTexture(GL_TEXTURE_2D, material->metallicTextureID);
-                m_ShaderLib->SetInt1i("u_RoughnessTexture", 3);
+                glBindTexture(GL_TEXTURE_2D, material->metallicRoughnessTextureID);
+                m_ShaderLib->SetInt1i("u_EmissiveTexture", 3);
                 glActiveTexture(GL_TEXTURE3);
-                glBindTexture(GL_TEXTURE_2D, material->roughnessTextureID);
-                m_ShaderLib->SetInt1i("u_EmissiveTexture", 4);
-                glActiveTexture(GL_TEXTURE4);
                 glBindTexture(GL_TEXTURE_2D, material->emissiveTextureID);
-                m_ShaderLib->SetInt1i("u_OcclusionTexture", 5);
-                glActiveTexture(GL_TEXTURE5);
+                m_ShaderLib->SetInt1i("u_OcclusionTexture", 4);
+                glActiveTexture(GL_TEXTURE4);
                 glBindTexture(GL_TEXTURE_2D, material->occlusionTextureID);
 
                 Mesh *mesh = currentNode->NodeMesh;

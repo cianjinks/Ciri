@@ -13,8 +13,7 @@ namespace Ciri
 
         std::string baseColorFilepath;
         std::string normalFilepath;
-        std::string metallicFilepath;
-        std::string roughnessFilepath;
+        std::string metallicRoughnessFilepath;
         std::string emissiveFilepath;
         std::string occlusionFilepath;
     };
@@ -38,8 +37,7 @@ namespace Ciri
         // PBR textures (https://learnopengl.com/PBR/Theory, https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html)
         uint32_t baseColorTextureID = 0; // diffuse, albedo
         uint32_t normalTextureID = 0;
-        uint32_t metallicTextureID = 0;
-        uint32_t roughnessTextureID = 0;
+        uint32_t metallicRoughnessTextureID = 0;
         uint32_t emissiveTextureID = 0;
         uint32_t occlusionTextureID = 0; // ambient occlusion
 

@@ -273,8 +273,7 @@ void MaterialSettingsUI(Ciri::Material *material, Ciri::Scene *scene, ImGuiWindo
 		ImGui::InputFloat3("Base Color", &material->baseColor.x);
 		CreateTextureCombo("Albedo Texture", material->info.baseColorFilepath, material->baseColorTextureID, scene);
 		CreateTextureCombo("Normal Texture", material->info.normalFilepath, material->normalTextureID, scene);
-		CreateTextureCombo("Metallic Texture", material->info.metallicFilepath, material->metallicTextureID, scene);
-		CreateTextureCombo("Roughness Texture", material->info.roughnessFilepath, material->roughnessTextureID, scene);
+		CreateTextureCombo("Metallic Texture", material->info.metallicRoughnessFilepath, material->metallicRoughnessTextureID, scene);
 		CreateTextureCombo("Emissive Texture", material->info.emissiveFilepath, material->emissiveTextureID, scene);
 		CreateTextureCombo("Occlusion Texture", material->info.occlusionFilepath, material->occlusionTextureID, scene);
 		ImGui::InputFloat("Subsurface", &material->subsurface);
