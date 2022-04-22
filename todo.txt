@@ -19,6 +19,8 @@
 [] - Abstract application
 [] - Speedup texture loading (use a fast png loader)
 [] - Renderer
-    [] - Deferred rendering pipeline
-    [] - Calculate position from depth
+    [X] - Deferred rendering pipeline
+    [X] - Calculate position from depth
+    [] - Normal mapping (TBN matrix construction, tanget vectors in mesh data)
+    [] - Support textures with any number of channels (up to a max)
 [] - gltf scene support

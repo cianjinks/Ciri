@@ -107,13 +107,7 @@ namespace Ciri
         }
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        if (nrChannels == 1)
-        {
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_R, w, h, 0, GL_R, GL_UNSIGNED_BYTE, image);
-            if (info.mipmap)
-                glGenerateMipmap(GL_TEXTURE_2D);
-        }
-        else if (nrChannels == 3)
+        if (nrChannels == 3)
         {
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
             if (info.mipmap)
