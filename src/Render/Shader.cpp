@@ -61,8 +61,14 @@ namespace Ciri
         m_CurrentShader = none;
 
         AddShader("Geometry Buffer", ShaderType::GEOMETRY_BUFFER, "resources/shader/gbuffer.vert", "resources/shader/gbuffer.frag");
-        AddShader("Normal", ShaderType::NORMAL, "resources/shader/screen_quad.vert", "resources/shader/normal.frag");
+
+        AddShader("Base Color", ShaderType::BASE_COLOR, "resources/shader/screen_quad.vert", "resources/shader/base_color.frag");
         AddShader("Linear Depth", ShaderType::LINEAR_DEPTH, "resources/shader/screen_quad.vert", "resources/shader/linear_depth.frag");
+        AddShader("Normal", ShaderType::NORMAL, "resources/shader/screen_quad.vert", "resources/shader/normal.frag");
+        AddShader("Occlusion", ShaderType::OCCLUSION, "resources/shader/screen_quad.vert", "resources/shader/occlusion.frag");
+        AddShader("Metallic & Roughness", ShaderType::METALLIC_ROUGHNESS, "resources/shader/screen_quad.vert", "resources/shader/metallic_roughness.frag");
+        AddShader("Emissive", ShaderType::EMISSIVE, "resources/shader/screen_quad.vert", "resources/shader/emissive.frag");
+
         AddShader("World Position", ShaderType::WORLD_POSITION, "resources/shader/screen_quad.vert", "resources/shader/world_position.frag");
         AddShader("Origin Distance", ShaderType::ORIGIN_DISTANCE, "resources/shader/screen_quad.vert", "resources/shader/dist_origin.frag");
     }
@@ -88,7 +94,7 @@ namespace Ciri
                 glShaderSource(vert_object, 1, &vert_raw, NULL);
                 glCompileShader(vert_object);
 
-                if (CheckCompilation(vert_object))
+                if (CheckCompilation(shader->vert_src, vert_object))
                 {
                     m_ObjectMap[shader->vert_src] = vert_object;
                 }
@@ -107,7 +113,7 @@ namespace Ciri
                 glShaderSource(frag_object, 1, &frag_raw, NULL);
                 glCompileShader(frag_object);
 
-                if (CheckCompilation(frag_object))
+                if (CheckCompilation(shader->frag_src, frag_object))
                 {
                     m_ObjectMap[shader->frag_src] = frag_object;
                 }
@@ -168,13 +174,13 @@ namespace Ciri
         return data;
     }
 
-    bool ShaderLibrary::CheckCompilation(uint32_t shader_object)
+    bool ShaderLibrary::CheckCompilation(const char *name, uint32_t shader_object)
     {
         int32_t result;
         glGetShaderiv(shader_object, GL_COMPILE_STATUS, &result);
         if (result == GL_FALSE)
         {
-            CIRI_ERROR("Shader {} failed:", shader_object);
+            CIRI_ERROR("Shader {} failed:", name);
             int32_t length;
             glGetShaderiv(shader_object, GL_INFO_LOG_LENGTH, &length);
             char *log = new char[length];

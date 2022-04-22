@@ -377,6 +377,20 @@ int main()
 	// Scene
 	Ciri::Scene *mainScene = new Ciri::Scene("Main Scene");
 
+#if 0
+	Ciri::MaterialInfo pbrTestMatInfo = {
+		"paving_stones",
+		false,
+		"resources/material/paving_stones/PavingStones114_1K_Color.png",
+		"resources/material/paving_stones/PavingStones114_1K_NormalGL.png",
+		"resources/material/paving_stones/PavingStones114_1K_Roughness.png",
+		"resources/material/paving_stones/PavingStones114_1K_AmbientOcclusion.png",
+		"resources/material/paving_stones/PavingStones114_1K_AmbientOcclusion.png"};
+	Ciri::Material *pbrTestMat = mainScene->MatLib.CreateMaterial(pbrTestMatInfo, glm::vec3(1.0f, 1.0f, 1.0f));
+#else
+	Ciri::Material *pbrTestMat = nullptr;
+#endif
+
 	Ciri::Mesh *sphere = new Ciri::Sphere(100, 100, false);
 	Ciri::Mesh *cube1 = new Ciri::Cube();
 	Ciri::Mesh *cube2 = new Ciri::Cube();
@@ -385,7 +399,7 @@ int main()
 	cube1->Construct();
 	cube2->Construct();
 	cube3->Construct();
-	Ciri::SceneNode *sphereNode = mainScene->AddMesh("sphere", sphere);
+	Ciri::SceneNode *sphereNode = mainScene->AddMesh("sphere", sphere, pbrTestMat);
 	Ciri::SceneNode *cube1Node = mainScene->AddMesh("cube1", cube1);
 	Ciri::SceneNode *cube2Node = mainScene->AddMesh("cube2", cube2);
 	Ciri::SceneNode *cube3Node = mainScene->AddMesh("cube3", cube3);

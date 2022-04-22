@@ -8,5 +8,6 @@ uniform sampler2D u_NormalOcclusionTexture;
 
 void main()
 {
-    a_Color = vec4(abs(texture(u_NormalOcclusionTexture, v_TexCoord).xyz), 1.0f);
+    float occlusion = texture(u_NormalOcclusionTexture, v_TexCoord).a;
+    a_Color = vec4(vec3(occlusion), 1.0f);
 }

@@ -8,6 +8,8 @@
 
 namespace Ciri
 {
+    const uint32_t Renderer::s_NumRenderTargets = 4;
+
     Renderer::Renderer(int targetWidth, int targetHeight)
         : TargetWidth(targetWidth), TargetHeight(targetHeight)
     {
@@ -26,12 +28,33 @@ namespace Ciri
         glGenFramebuffers(1, &m_GBuffer);
         glBindFramebuffer(GL_FRAMEBUFFER, m_GBuffer);
 
-        glGenTextures(1, &m_GNormalTexture);
-        glBindTexture(GL_TEXTURE_2D, m_GNormalTexture);
+        glGenTextures(1, &m_GBaseColorTexture);
+        glBindTexture(GL_TEXTURE_2D, m_GBaseColorTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TargetWidth, TargetHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_GBaseColorTexture, 0);
+
+        glGenTextures(1, &m_GNormalOcclusionTexture);
+        glBindTexture(GL_TEXTURE_2D, m_GNormalOcclusionTexture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, TargetWidth, TargetHeight, 0, GL_RGBA, GL_FLOAT, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_GNormalTexture, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_GNormalOcclusionTexture, 0);
+
+        glGenTextures(1, &m_GMetallicRoughnessTexture);
+        glBindTexture(GL_TEXTURE_2D, m_GMetallicRoughnessTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TargetWidth, TargetHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, m_GMetallicRoughnessTexture, 0);
+
+        glGenTextures(1, &m_GEmissiveTexture);
+        glBindTexture(GL_TEXTURE_2D, m_GEmissiveTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TargetWidth, TargetHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, m_GEmissiveTexture, 0);
 
         glGenTextures(1, &m_GDepthTexture);
         glBindTexture(GL_TEXTURE_2D, m_GDepthTexture);
@@ -40,8 +63,8 @@ namespace Ciri
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_GDepthTexture, 0);
 
-        m_RenderTargets = new uint32_t[1]{GL_COLOR_ATTACHMENT0};
-        glDrawBuffers(1, m_RenderTargets);
+        m_RenderTargets = new uint32_t[s_NumRenderTargets]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
+        glDrawBuffers(s_NumRenderTargets, m_RenderTargets);
 
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         {
@@ -81,9 +104,7 @@ namespace Ciri
         // 1. Geometry Buffer
         glBindFramebuffer(GL_FRAMEBUFFER, m_GBuffer);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glBindTexture(GL_TEXTURE_2D, m_GDepthTexture);
-        glBindTexture(GL_TEXTURE_2D, m_GNormalTexture);
-        glDrawBuffers(1, m_RenderTargets);
+        glDrawBuffers(s_NumRenderTargets, m_RenderTargets);
 
         m_ShaderLib->BindShader(ShaderType::GEOMETRY_BUFFER);
         RenderSceneGeometry(scene, camera);
@@ -102,12 +123,23 @@ namespace Ciri
         m_ShaderLib->SetMat4f("u_InvViewMat", glm::value_ptr(invViewMat));
         m_ShaderLib->SetFloat1f("u_CameraFar", camera->Far);
         m_ShaderLib->SetFloat1f("u_CameraNear", camera->Near);
+        // Render Target Textures
         m_ShaderLib->SetInt1i("u_DepthTexture", 0);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, m_GDepthTexture);
-        m_ShaderLib->SetInt1i("u_NormalTexture", 1);
+        m_ShaderLib->SetInt1i("u_BaseColorTexture", 1);
         glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, m_GNormalTexture);
+        glBindTexture(GL_TEXTURE_2D, m_GBaseColorTexture);
+        m_ShaderLib->SetInt1i("u_NormalOcclusionTexture", 2);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, m_GNormalOcclusionTexture);
+        m_ShaderLib->SetInt1i("u_MetallicRoughnessTexture", 3);
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, m_GMetallicRoughnessTexture);
+        m_ShaderLib->SetInt1i("u_EmissiveTexture", 4);
+        glActiveTexture(GL_TEXTURE4);
+        glBindTexture(GL_TEXTURE_2D, m_GEmissiveTexture);
+
         RenderScreenQuad();
         glBindTexture(GL_TEXTURE_2D, 0);
         m_ShaderLib->BindShader(ShaderType::NONE);
@@ -141,12 +173,11 @@ namespace Ciri
                  */
                 model = glm::scale(model, currentNodeScale);
                 glm::mat4 mvp = proj * view * model;
-
                 m_ShaderLib->SetMat4f("u_MVP", glm::value_ptr(mvp));
 
                 Material *material = currentNode->NodeMaterial;
-                m_ShaderLib->SetInt1i("u_BaseColorTexture", 0);
                 m_ShaderLib->SetVec3f("u_BaseColor", material->baseColor);
+                m_ShaderLib->SetInt1i("u_BaseColorTexture", 0);
                 glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, material->baseColorTextureID);
                 m_ShaderLib->SetInt1i("u_NormalTexture", 1);

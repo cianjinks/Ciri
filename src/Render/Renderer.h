@@ -22,13 +22,20 @@ namespace Ciri
 
     private:
         ShaderLibrary *m_ShaderLib;
-        ShaderType m_CurrentShader = ShaderType::NORMAL;
+        ShaderType m_CurrentShader = ShaderType::BASE_COLOR;
 
         uint32_t m_GBuffer;
-        uint32_t m_GDepthTexture;
-        uint32_t m_GNormalTexture;
-        uint32_t *m_RenderTargets;
 
+        // Render Targets
+        static const uint32_t s_NumRenderTargets;
+        uint32_t *m_RenderTargets;
+        uint32_t m_GDepthTexture;
+        uint32_t m_GBaseColorTexture;
+        uint32_t m_GNormalOcclusionTexture;
+        uint32_t m_GMetallicRoughnessTexture;
+        uint32_t m_GEmissiveTexture;
+
+        // Screen Quad
         uint32_t m_ScreenQuadVAO;
         uint32_t m_ScreenQuadVBO;
 

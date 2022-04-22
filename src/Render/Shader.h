@@ -11,8 +11,13 @@ namespace Ciri
         NONE = 0,
         GEOMETRY_BUFFER,
 
-        NORMAL,
+        BASE_COLOR,
         LINEAR_DEPTH,
+        NORMAL,
+        OCCLUSION,
+        METALLIC_ROUGHNESS,
+        EMISSIVE,
+
         WORLD_POSITION,
         ORIGIN_DISTANCE
     };
@@ -61,7 +66,7 @@ namespace Ciri
         void AddShader(const char *name, ShaderType type, const char *vert_src, const char *frag_src);
 
         std::string ParseFile(const char *file_path);
-        bool CheckCompilation(uint32_t shader_object);
+        bool CheckCompilation(const char *name, uint32_t shader_object);
     };
 
 }
