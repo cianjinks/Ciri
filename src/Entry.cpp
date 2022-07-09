@@ -23,16 +23,14 @@
 #include "Mesh/Primitive.h"
 
 // Window
-const int WINDOW_WIDTH = 1600;
-const int WINDOW_HEIGHT = 900;
 bool mouseCaptured = false;
 
 // Camera
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 bool firstMouse = true;
-float lastX = (float)WINDOW_WIDTH / 2;
-float lastY = (float)WINDOW_HEIGHT / 2;
+float lastX = 0.0f;
+float lastY = 0.0f;
 
 bool debug = false;
 bool mipmap = true;
@@ -308,7 +306,11 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
 
-	window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Ciri", nullptr, nullptr);
+	const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+	int window_width = (mode->width * 2) / 3;
+	int window_height = (mode->height * 2) / 3;
+
+	window = glfwCreateWindow(window_width, window_height, "Ciri", nullptr, nullptr);
 	if (!window)
 	{
 		glfwTerminate();
@@ -355,7 +357,7 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 
 	// Renderer
-	Ciri::Renderer *renderer = new Ciri::Renderer(WINDOW_WIDTH, WINDOW_HEIGHT);
+	Ciri::Renderer *renderer = new Ciri::Renderer(window_width, window_height);
 
 	// Camera
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 10.0f);

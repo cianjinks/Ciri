@@ -1,4 +1,4 @@
-# Ciri Path Tracer
+# Ciri Rendering Engine
 
 ## Media
 
@@ -11,7 +11,7 @@
 
 ## Cloning
 
-This project uses git submodules so make sure to include `--recuse-submodules` when cloning:
+This project uses git submodules so make sure to include `--recurse-submodules` when cloning:
 
     git clone --recurse-submodules https://github.com/cianjinks/Ciri
 
@@ -27,7 +27,7 @@ The executable will be placed in the corresponding build folder.
 
 ### Windows
 
-Running `win_setup.bat` will create a Visual Studio solution in the folder `./build`.
+Running `win_setup.bat` will create a Visual Studio solution in the folder `./build`. VSCode CMake extension will also work out of the box.
 
 ## Resources
 

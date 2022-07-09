@@ -62,9 +62,6 @@ add_subdirectory(dependencies/tinyobjloader)
 
 file(GLOB_RECURSE source CONFIGURE_DEPENDS "src/*.h" "src/*.hpp" "src/*.cpp")
 
-# Copy Resources
-file(COPY resources/ DESTINATION ${PROJECT_BINARY_DIR}/resources/)
-
 add_executable(Ciri ${source} ${imgui-source})
 target_link_libraries(Ciri ${OPENGL_LIBRARIES} glfw glad glm spdlog stb_image tinyobjloader)
 target_include_directories(Ciri PRIVATE ${imgui-directory} ${stb_image-include} ${fork_awesome-include})
@@ -74,3 +71,6 @@ target_precompile_headers(Ciri PRIVATE ${ciri-pch})
 if(WIN32)
 	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Ciri)
 endif()
+
+# Symlink Resources
+add_custom_command(TARGET Ciri PRE_BUILD COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/resources $<TARGET_FILE_DIR:Ciri>/resources)
