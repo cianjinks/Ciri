@@ -40,8 +40,8 @@ namespace Ciri
         RegisterTexture(info.baseColorFilepath, GL_TEXTURE0, &material->baseColorTextureID, info);
         RegisterTexture(info.normalFilepath, GL_TEXTURE1, &material->normalTextureID, info);
         RegisterTexture(info.metallicRoughnessFilepath, GL_TEXTURE2, &material->metallicRoughnessTextureID, info);
+        RegisterTexture(info.occlusionFilepath, GL_TEXTURE3, &material->occlusionTextureID, info);
         RegisterTexture(info.emissiveFilepath, GL_TEXTURE4, &material->emissiveTextureID, info);
-        RegisterTexture(info.occlusionFilepath, GL_TEXTURE5, &material->occlusionTextureID, info);
 
         material->subsurface = subsurface;
         material->metallic = metallic;

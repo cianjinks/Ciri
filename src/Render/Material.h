@@ -14,8 +14,8 @@ namespace Ciri
         std::string baseColorFilepath;
         std::string normalFilepath;
         std::string metallicRoughnessFilepath;
-        std::string emissiveFilepath;
         std::string occlusionFilepath;
+        std::string emissiveFilepath;
     };
 
     class Material
@@ -38,8 +38,8 @@ namespace Ciri
         uint32_t baseColorTextureID = 0; // diffuse, albedo
         uint32_t normalTextureID = 0;
         uint32_t metallicRoughnessTextureID = 0;
-        uint32_t emissiveTextureID = 0;
         uint32_t occlusionTextureID = 0; // ambient occlusion
+        uint32_t emissiveTextureID = 0;
 
         MaterialInfo info;
 

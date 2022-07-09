@@ -377,7 +377,7 @@ int main()
 	// Scene
 	Ciri::Scene *mainScene = new Ciri::Scene("Main Scene");
 
-#if 0
+#if 1
 	Ciri::MaterialInfo pbrTestMatInfo = {
 		"paving_stones",
 		false,
@@ -385,10 +385,22 @@ int main()
 		"resources/material/paving_stones/PavingStones114_1K_NormalGL.png",
 		"resources/material/paving_stones/PavingStones114_1K_Roughness.png",
 		"resources/material/paving_stones/PavingStones114_1K_AmbientOcclusion.png",
-		"resources/material/paving_stones/PavingStones114_1K_AmbientOcclusion.png"};
+		""};
 	Ciri::Material *pbrTestMat = mainScene->MatLib.CreateMaterial(pbrTestMatInfo, glm::vec3(1.0f, 1.0f, 1.0f));
+
+	Ciri::MaterialInfo pbrTestMat2Info = {
+		"painted_cinderblocks",
+		false,
+		"resources/material/painted_cinderblocks/TexturesCom_Brick_CinderblocksPainted2_1K_albedo.tif",
+		"resources/material/painted_cinderblocks/TexturesCom_Brick_CinderblocksPainted2_1K_height.tif",
+		"resources/material/painted_cinderblocks/TexturesCom_Brick_CinderblocksPainted2_1K_roughness.tif",
+		"resources/material/painted_cinderblocks/TexturesCom_Brick_CinderblocksPainted2_1K_ao.tif",
+		""};
+
+	Ciri::Material *pbrTest2Mat = mainScene->MatLib.CreateMaterial(pbrTestMat2Info, glm::vec3(1.0f, 1.0f, 1.0f));
 #else
 	Ciri::Material *pbrTestMat = nullptr;
+	Ciri::Material *pbrTest2Mat = nullptr;
 #endif
 
 	Ciri::Mesh *sphere = new Ciri::Sphere(100, 100, false);
@@ -402,7 +414,7 @@ int main()
 	Ciri::SceneNode *sphereNode = mainScene->AddMesh("sphere", sphere, pbrTestMat);
 	Ciri::SceneNode *cube1Node = mainScene->AddMesh("cube1", cube1);
 	Ciri::SceneNode *cube2Node = mainScene->AddMesh("cube2", cube2);
-	Ciri::SceneNode *cube3Node = mainScene->AddMesh("cube3", cube3);
+	Ciri::SceneNode *cube3Node = mainScene->AddMesh("cube3", cube3, pbrTest2Mat);
 	sphereNode->Position = glm::vec3(0.0f, 15.0f, 0.0f);
 	sphereNode->Scale = glm::vec3(3.0f);
 	cube1Node->Position = glm::vec3(-3.0f, 10.0f, 0.0f);
@@ -425,7 +437,7 @@ int main()
 	const char *default_filepath = "resources/mesh/dragon/dragon.obj";
 	int h_segments = 4;
 	int v_segments = 4;
-	bool flat_shade = false; // UV spherer
+	bool flat_shade = false; // UV sphere
 	std::strcpy(addmesh_filepath, default_filepath);
 
 	Ciri::Material *selected_material = nullptr;
