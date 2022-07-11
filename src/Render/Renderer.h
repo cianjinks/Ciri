@@ -21,7 +21,7 @@ namespace Ciri
         int TargetWidth, TargetHeight;
 
     private:
-        ShaderLibrary *m_ShaderLib;
+        S<ShaderLibrary> m_ShaderLib;
         ShaderType m_CurrentShader = ShaderType::BASE_COLOR;
 
         uint32_t m_GBuffer;
@@ -43,14 +43,14 @@ namespace Ciri
         Renderer(int targetWidth, int targetHeight);
         ~Renderer();
 
-        void Render(Scene *scene, Camera *camera);
+        void RenderScene(const S<Scene> &scene, const S<Camera> &camera);
 
         void SetCurrentShader(ShaderType shader) { m_CurrentShader = shader; }
         ShaderType GetCurrentShader() const { return m_CurrentShader; }
-        ShaderLibrary *GetShaderLibrary() const { return m_ShaderLib; }
+        const S<ShaderLibrary> &GetShaderLibrary() const { return m_ShaderLib; }
 
     private:
-        void RenderSceneGeometry(Scene *scene, Camera *camera);
+        void RenderSceneGeometry(const S<Scene> &scene, const S<Camera> &camera);
         void RenderScreenQuad();
 
         void BlitDepthBuffer();

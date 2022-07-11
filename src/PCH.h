@@ -19,5 +19,6 @@
 #include <fstream>
 
 #include "Util/Log.h"
+#include "Util/Mem.h"
 
 #endif

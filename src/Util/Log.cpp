@@ -9,5 +9,6 @@ namespace Ciri
         s_Logger = spdlog::stdout_color_mt("Ciri");
         s_Logger->set_level(spdlog::level::trace);
         spdlog::set_pattern("%^[%T][%n] %v%$");
+        CIRI_LOG("Logger Initialised");
     }
 }

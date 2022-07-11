@@ -13,7 +13,7 @@ namespace Ciri
     Renderer::Renderer(int targetWidth, int targetHeight)
         : TargetWidth(targetWidth), TargetHeight(targetHeight)
     {
-        m_ShaderLib = new ShaderLibrary();
+        m_ShaderLib = CreateS<ShaderLibrary>();
 
         // clang-format off
         float quadVertices[] = {
@@ -91,11 +91,10 @@ namespace Ciri
 
     Renderer::~Renderer()
     {
-        delete m_ShaderLib;
         delete m_RenderTargets;
     }
 
-    void Renderer::Render(Scene *scene, Camera *camera)
+    void Renderer::RenderScene(const S<Scene> &scene, const S<Camera> &camera)
     {
         glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -146,7 +145,7 @@ namespace Ciri
         BlitDepthBuffer();
     }
 
-    void Renderer::RenderSceneGeometry(Scene *scene, Camera *camera)
+    void Renderer::RenderSceneGeometry(const S<Scene> &scene, const S<Camera> &camera)
     {
         camera->RecalcVP();
         glm::mat4 proj = camera->GetProjectionMat();
