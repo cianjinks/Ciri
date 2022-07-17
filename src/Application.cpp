@@ -22,11 +22,9 @@ namespace Ciri
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
             
-            m_Camera->OnUpdate(DT);
+            m_Camera->OnUpdate(m_Window->GetTimeStep());
             m_Renderer->RenderScene(m_Scene, m_Camera);
             m_Window->OnUpdate();
-
-            DT = m_Window->CalcDeltaTime();
         }
     }
 

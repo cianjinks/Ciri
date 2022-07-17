@@ -120,6 +120,10 @@ namespace Ciri
 
     void Window::OnUpdate()
     {
+        float currentFrame = (float)glfwGetTime();
+        m_DeltaTime = currentFrame - m_LastFrameTime;
+        m_LastFrameTime = currentFrame;
+
         glfwSwapBuffers(m_Window);
         glfwPollEvents();
     }
@@ -154,14 +158,6 @@ namespace Ciri
     {
         glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		m_CursorCaptured = false;
-    }
-
-    float Window::CalcDeltaTime()
-    {
-        float currentFrame = (float)glfwGetTime();
-        float deltaTime = currentFrame - m_LastFrameTime;
-        m_LastFrameTime = currentFrame;
-        return deltaTime;
     }
 
     glm::ivec2 Window::GetMainMonitorResolution()

@@ -26,6 +26,7 @@ namespace Ciri
         bool m_CursorCaptured = false;
 
         float m_LastFrameTime = 0.0f;
+        float m_DeltaTime = 0.0f;
 
     public:
         Window(std::string name, int32_t width, int32_t height);
@@ -43,11 +44,11 @@ namespace Ciri
         void ReleaseCursor();
         bool IsCursorCaptured() { return m_CursorCaptured; }
 
-        float CalcDeltaTime();
-
         glm::ivec2 GetMainMonitorResolution();
         int GetMainMonitorWidth();
         int GetMainMonitorHeight();
+        
+        float GetTimeStep() { return m_DeltaTime; }
 
     private:
         static Window* s_Instance;

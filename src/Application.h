@@ -15,7 +15,6 @@ namespace Ciri
     {
     public:
         std::string Name = "Ciri";
-        float DT = 0.0f;
 
     private:
         S<Window> m_Window;
