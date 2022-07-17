@@ -3,6 +3,7 @@
 
 #include "Window/Window.h"
 #include "Window/Event.h"
+#include "Window/Input.h"
 #include "Render/Renderer.h"
 #include "Scene/Scene.h"
 #include "Scene/Camera.h"
@@ -14,6 +15,7 @@ namespace Ciri
     {
     public:
         std::string Name = "Ciri";
+        float DT = 0.0f;
 
     private:
         S<Window> m_Window;

@@ -3,6 +3,8 @@
 
 #include <glm/glm.hpp>
 
+#include "Window/Event.h"
+
 namespace Ciri
 {
     class Camera
@@ -15,12 +17,17 @@ namespace Ciri
         float Yaw = 0.0f;
         float Pitch = 0.0f;
 
+        float Speed = 15.0f;
         float SpeedHigh = 30.0f;
         float SpeedLow = 15.0f;
         float Far = 250.0f; // Render Distance
         float Near = 0.1f;
         float FOV = 45.0f;
 
+        bool FirstMouse = true;
+        float LastX = 0.0f;
+        float LastY = 0.0f;
+        
     private:
         float m_Width, m_Height;
 
@@ -32,6 +39,9 @@ namespace Ciri
     public:
         Camera(glm::vec3 pos, glm::vec3 direction, float yaw, float pitch, float screenWidth, float screenHeight);
         ~Camera() = default;
+
+        void OnUpdate(float dt);
+        void OnEvent(Event& event);
 
         void RecalcDirection();
         void RecalcVP();

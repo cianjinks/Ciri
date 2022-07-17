@@ -15,6 +15,8 @@ namespace Ciri
     {
         m_ShaderLib = CreateS<ShaderLibrary>();
 
+        glEnable(GL_DEPTH_TEST);
+
         // clang-format off
         float quadVertices[] = {
             -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,

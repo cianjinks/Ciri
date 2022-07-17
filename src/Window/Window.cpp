@@ -147,4 +147,12 @@ namespace Ciri
         glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		m_CursorCaptured = false;
     }
+
+    float Window::CalcDeltaTime()
+    {
+        float currentFrame = (float)glfwGetTime();
+        float deltaTime = currentFrame - m_LastFrameTime;
+        m_LastFrameTime = currentFrame;
+        return deltaTime;
+    }
 }

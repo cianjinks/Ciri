@@ -23,9 +23,12 @@ namespace Ciri
 
         bool m_CursorCaptured = false;
 
+        float m_LastFrameTime = 0.0f;
+
     public:
         Window(std::string name, int32_t width, int32_t height);
         ~Window();
+        GLFWwindow* GetWindow() { return m_Window; }
 
         void OnUpdate();
         void OnEvent(Event& event);
@@ -36,6 +39,7 @@ namespace Ciri
         void CaptureCursor();
         void ReleaseCursor();
         bool IsCursorCaptured() { return m_CursorCaptured; }
+        float CalcDeltaTime();
     };
 }
 
