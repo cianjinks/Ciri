@@ -7,7 +7,6 @@ namespace Ciri
         Log::Init();
         m_Window = CreateS<Window>(Name, 1280, 720);
         m_Window->SetEventCallback([this](Event& event) { OnEvent(event); });
-        Input::Init(m_Window);
         m_Renderer = CreateS<Renderer>(m_Window->Width, m_Window->Height);
         m_Scene = CreateS<Scene>("Main Scene");
         m_Camera = CreateS<Camera>(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, -1.0f),
@@ -23,7 +22,7 @@ namespace Ciri
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
             
-            if (m_Window->IsCursorCaptured()) { m_Camera->OnUpdate(DT); } // TODO?: Making window static and removing input will simplify this (and in OnEvent)
+            m_Camera->OnUpdate(DT);
             m_Renderer->RenderScene(m_Scene, m_Camera);
             m_Window->OnUpdate();
 
@@ -34,7 +33,7 @@ namespace Ciri
     void Application::OnEvent(Event& event)
     {
         m_Window->OnEvent(event);
-        if (m_Window->IsCursorCaptured()) { m_Camera->OnEvent(event); }
+        m_Camera->OnEvent(event);
         // TODO:
         // Z to Cycle Shader
         // F1 to Hide UI

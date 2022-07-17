@@ -2,9 +2,17 @@
 
 namespace Ciri
 {
+    Window* Window::s_Instance = nullptr;
+
     Window::Window(std::string name, int32_t width, int32_t height)
         : Name(name), Width(width), Height(height)
     {
+        if(s_Instance)
+        {
+            CIRI_ERROR("Only one instance of a Window may exist!");
+        }
+        s_Instance = this;
+
         if (!glfwInit())
         {
             CIRI_ERROR("GLFW Initialization Failed");
@@ -154,5 +162,21 @@ namespace Ciri
         float deltaTime = currentFrame - m_LastFrameTime;
         m_LastFrameTime = currentFrame;
         return deltaTime;
+    }
+
+    glm::ivec2 Window::GetMainMonitorResolution()
+    {
+        const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        return {mode->width, mode->height};
+    }
+
+    int Window::GetMainMonitorWidth()
+    {
+        return GetMainMonitorResolution().x;
+    }
+
+    int Window::GetMainMonitorHeight()
+    {
+        return GetMainMonitorResolution().y;
     }
 }

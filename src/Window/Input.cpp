@@ -4,38 +4,33 @@
 
 namespace Ciri
 {
-    U<Input> Input::s_InputInstance = CreateU<Input>();
-
-    void Input::Init(S<Window> window)
-    {
-        s_InputInstance->WindowRef = window;
-    }
-
     bool Input::IsKeyPressed(int key)
     {
-        GLFWwindow* window = s_InputInstance->WindowRef->GetWindow();
+        GLFWwindow* window = Window::Get()->GetWindow();
         return glfwGetKey(window, key) == GLFW_PRESS;
     }
 
 	bool Input::IsMouseButtonPressed(int button)
     {
-        GLFWwindow* window = s_InputInstance->WindowRef->GetWindow();
+        GLFWwindow* window = Window::Get()->GetWindow();
         return glfwGetMouseButton(window, button) == GLFW_PRESS;
+    }
+
+    glm::dvec2 Input::GetMouseCoord()
+    {
+        GLFWwindow* window = Window::Get()->GetWindow();
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        return {xpos, ypos};
     }
 
 	double Input::GetMouseX()
     {
-        GLFWwindow* window = s_InputInstance->WindowRef->GetWindow();
-        double xpos, ypos;
-        glfwGetCursorPos(window, &xpos, &ypos);
-        return xpos;
+        return GetMouseCoord().x;
     }
 
 	double Input::GetMouseY()
     {
-        GLFWwindow* window = s_InputInstance->WindowRef->GetWindow();
-        double xpos, ypos;
-        glfwGetCursorPos(window, &xpos, &ypos);
-        return ypos;
+        return GetMouseCoord().y;
     }
 }

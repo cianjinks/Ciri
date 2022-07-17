@@ -14,6 +14,11 @@ namespace Ciri
 
     void Camera::OnUpdate(float dt)
     {
+        if (!Window::Get()->IsCursorCaptured())
+        {
+            return;
+        }
+
         if (Input::IsKeyPressed(GLFW_KEY_LEFT_SHIFT))
         {
             Speed = SpeedHigh * dt;
@@ -43,6 +48,11 @@ namespace Ciri
 
     void Camera::OnEvent(Event& event)
     {
+        if(!Window::Get()->IsCursorCaptured())
+        {
+            return;
+        }
+
         EventType type = event.GetEventType();
         switch (type)
         {
@@ -50,7 +60,7 @@ namespace Ciri
                 MousePositionEvent& mouse_pos = static_cast<MousePositionEvent&>(event);
                 double mouseX = mouse_pos.GetXPos();
                 double mouseY = mouse_pos.GetYPos();
-                
+
                 if (FirstMouse)
                 {
                     LastX = (float)mouseX;

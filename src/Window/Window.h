@@ -5,6 +5,8 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
+#include <glm/glm.hpp>
+
 #include "Event.h"
 
 namespace Ciri
@@ -36,10 +38,21 @@ namespace Ciri
         void SetEventCallback(CallbackFunc callback) { m_EventCallback = callback; }
 
         bool ShouldClose() { return glfwWindowShouldClose(m_Window); }
+
         void CaptureCursor();
         void ReleaseCursor();
         bool IsCursorCaptured() { return m_CursorCaptured; }
+
         float CalcDeltaTime();
+
+    private:
+        static Window* s_Instance;
+    public:
+        static Window* Get() { return s_Instance; }
+
+        static glm::ivec2 GetMainMonitorResolution();
+        static int GetMainMonitorWidth();
+        static int GetMainMonitorHeight();
     };
 }
 
