@@ -8,6 +8,7 @@ namespace Ciri
         m_Window = CreateS<Window>(Name, 1280, 720);
         m_Window->SetEventCallback([this](Event& event) { OnEvent(event); });
         m_Renderer = CreateS<Renderer>(m_Window->Width, m_Window->Height);
+        m_Renderer->PrintDeviceInfo();
         m_Scene = CreateS<Scene>("Main Scene");
         m_Camera = CreateS<Camera>(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, -1.0f),
                                    -90.0f, 0.0f, float(m_Window->Width), float(m_Window->Height));
@@ -35,7 +36,6 @@ namespace Ciri
         m_Camera->OnEvent(event);
         m_Renderer->OnEvent(event);
         // TODO:
-        // Z to Cycle Shader --> Renderer OnEvent
         // F1 to Hide UI --> UI OnEvent
     }
 

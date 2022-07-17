@@ -52,6 +52,14 @@ namespace Ciri
         ShaderType GetCurrentShader() const { return m_CurrentShader; }
         const S<ShaderLibrary> &GetShaderLibrary() const { return m_ShaderLib; }
 
+        void PrintDeviceInfo()
+        {
+            CIRI_LOG("Renderer Device Info:");
+            CIRI_LOG("  Vendor - {}", glGetString(GL_VENDOR));
+            CIRI_LOG("  Renderer - {}", glGetString(GL_RENDERER));
+            CIRI_LOG("  Version - {}", glGetString(GL_VERSION));
+        }
+
     private:
         void RenderSceneGeometry(const S<Scene> &scene, const S<Camera> &camera);
         void RenderScreenQuad();
