@@ -45,14 +45,14 @@ namespace Ciri
 
         float CalcDeltaTime();
 
+        glm::ivec2 GetMainMonitorResolution();
+        int GetMainMonitorWidth();
+        int GetMainMonitorHeight();
+
     private:
         static Window* s_Instance;
     public:
         static Window* Get() { return s_Instance; }
-
-        static glm::ivec2 GetMainMonitorResolution();
-        static int GetMainMonitorWidth();
-        static int GetMainMonitorHeight();
     };
 }
 
