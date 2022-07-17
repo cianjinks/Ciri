@@ -1,26 +1,10 @@
-[X] - Scene structure
-[X] - Obj loading into scene
-    [] - File browser
-    [X] - UI for loading and setting position + scale
-[X] - Create add primitive UI
-    [X] - Sphere primitive
-    [] - Icosphere primitive
-    [] - Improve UI code (no big switch block with global vars)
-[X] - Materials
-    [X (sort of, I fixed the problem anyway)] - Texture/TextureLibrary classes
-[] - Camera
-    [] - Fly Camera
-    [] - Orbital Camera
+[] - UI abstraction
+[] - File browser
 [] - std::string replacing char*
-[X] - Precompiled headers
 [] - ImGUIzmo
-[] - Logging
-[] - Abstract UI
-[] - Abstract application
-[] - Speedup texture loading (use a fast png loader)
+[] - Faster texture loading
+[] - GLTF Scenes
 [] - Renderer
-    [X] - Deferred rendering pipeline
-    [X] - Calculate position from depth
     [] - Normal mapping (TBN matrix construction, tanget vectors in mesh data)
     [] - Support textures with any number of channels (up to a max)
-[] - gltf scene support
+    [] - PBR materials (not actually rendering, just loading into memory and GPU memory)
