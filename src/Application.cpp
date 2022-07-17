@@ -26,6 +26,7 @@ namespace Ciri
             m_Renderer->RenderScene(m_Scene, m_Camera);
             m_Window->OnUpdate();
         }
+        m_Window->End();
     }
 
     void Application::OnEvent(Event& event)
@@ -33,8 +34,8 @@ namespace Ciri
         m_Window->OnEvent(event);
         m_Camera->OnEvent(event);
         // TODO:
-        // Z to Cycle Shader
-        // F1 to Hide UI
+        // Z to Cycle Shader --> Renderer OnEvent
+        // F1 to Hide UI --> UI OnEvent
     }
 
     void Application::DefineScene()

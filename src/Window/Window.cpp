@@ -148,6 +148,12 @@ namespace Ciri
         }
     }
 
+    void Window::End()
+    {
+        glfwDestroyWindow(m_Window);
+	    glfwTerminate();
+    }
+
     void Window::CaptureCursor()
     {
         glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);

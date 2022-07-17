@@ -35,6 +35,7 @@ namespace Ciri
 
         void OnUpdate();
         void OnEvent(Event& event);
+        void End();
 
         void SetEventCallback(CallbackFunc callback) { m_EventCallback = callback; }
 
