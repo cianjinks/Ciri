@@ -9,13 +9,13 @@ namespace Ciri
     {
         if(s_Instance)
         {
-            CIRI_ERROR("Only one instance of a Window may exist!");
+            CIRI_ASSERT(false, "Only one instance of a Window may exist!");
         }
         s_Instance = this;
 
         if (!glfwInit())
         {
-            CIRI_ERROR("GLFW Initialization Failed");
+            CIRI_ASSERT(false, "GLFW Initialization Failed");
         }
 
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -25,7 +25,7 @@ namespace Ciri
         if (!m_Window)
         {
             glfwTerminate();
-            CIRI_ERROR("GLFW Window Creation Failed");
+            CIRI_ASSERT(false, "GLFW Window Creation Failed");
         }
 
         glfwMakeContextCurrent(m_Window);
@@ -33,7 +33,7 @@ namespace Ciri
 
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         {
-            CIRI_ERROR("GLAD Initialization Failed");
+            CIRI_ASSERT(false, "GLAD Initialization Failed");
         }
 
         // TODO: Debug callback for OpenGL context
@@ -44,7 +44,7 @@ namespace Ciri
         glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
         {
             CallbackFunc fn = *static_cast<CallbackFunc*>(glfwGetWindowUserPointer(window));
-            if (!fn) { CIRI_ERROR("No Event Callback function is set"); }
+            if (!fn) { CIRI_ASSERT(false, "No Event Callback function is set"); }
             
             switch(action)
             {
@@ -72,7 +72,7 @@ namespace Ciri
         glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xpos, double ypos)
         {
             CallbackFunc fn = *static_cast<CallbackFunc*>(glfwGetWindowUserPointer(window));
-            if (!fn) { CIRI_ERROR("No Event Callback function is set"); }
+            if (!fn) { CIRI_ASSERT(false, "No Event Callback function is set"); }
 
             MousePositionEvent event(xpos, ypos);
             fn(event);
@@ -81,7 +81,7 @@ namespace Ciri
         glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods)
         {
             CallbackFunc fn = *static_cast<CallbackFunc*>(glfwGetWindowUserPointer(window));
-            if (!fn) { CIRI_ERROR("No Event Callback function is set"); }
+            if (!fn) { CIRI_ASSERT(false, "No Event Callback function is set"); }
 
             switch(action)
             {
@@ -103,7 +103,7 @@ namespace Ciri
         glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset)
         {
             CallbackFunc fn = *static_cast<CallbackFunc*>(glfwGetWindowUserPointer(window));
-            if (!fn) { CIRI_ERROR("No Event Callback function is set"); }
+            if (!fn) { CIRI_ASSERT(false, "No Event Callback function is set"); }
 
             MouseScrollEvent event(xOffset, yOffset);
             fn(event);

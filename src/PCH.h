@@ -19,6 +19,7 @@
 #include <iostream>
 #include <fstream>
 
+#include "Util/Assert.h"
 #include "Util/Log.h"
 #include "Util/Mem.h"
 

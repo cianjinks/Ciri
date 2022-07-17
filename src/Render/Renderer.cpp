@@ -70,7 +70,7 @@ namespace Ciri
 
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         {
-            CIRI_ERROR("Geometry Buffer is incomplete!");
+            CIRI_ASSERT(false, "Geometry Buffer is incomplete!");
         }
 
         // Cleanup
