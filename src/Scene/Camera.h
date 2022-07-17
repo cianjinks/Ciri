@@ -3,8 +3,6 @@
 
 #include <glm/glm.hpp>
 
-#include "Window/Event.h"
-
 namespace Ciri
 {
     class Camera

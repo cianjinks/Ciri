@@ -2,8 +2,6 @@
 #define CIRI_APPLICATION_H
 
 #include "Window/Window.h"
-#include "Window/Event.h"
-#include "Window/Input.h"
 #include "Render/Renderer.h"
 #include "Scene/Scene.h"
 #include "Scene/Camera.h"

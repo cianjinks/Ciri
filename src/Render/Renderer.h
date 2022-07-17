@@ -43,9 +43,12 @@ namespace Ciri
         Renderer(int targetWidth, int targetHeight);
         ~Renderer();
 
+        void OnEvent(Event& event);
+
         void RenderScene(const S<Scene> &scene, const S<Camera> &camera);
 
         void SetCurrentShader(ShaderType shader) { m_CurrentShader = shader; }
+        void CycleShader();
         ShaderType GetCurrentShader() const { return m_CurrentShader; }
         const S<ShaderLibrary> &GetShaderLibrary() const { return m_ShaderLib; }
 

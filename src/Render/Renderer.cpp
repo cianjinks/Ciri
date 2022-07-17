@@ -96,6 +96,32 @@ namespace Ciri
         delete m_RenderTargets;
     }
 
+    void Renderer::OnEvent(Event& event)
+    {
+        EventType type = event.GetEventType();
+        switch(type)
+        {
+            case EventType::KEY_PRESS:
+            {
+                KeyEvent& key_event = static_cast<KeyEvent&>(event);
+                if (key_event.GetKey() == GLFW_KEY_Z)
+                {
+                    CycleShader();
+                }
+                break;
+            }
+        }
+    }
+
+    void Renderer::CycleShader()
+    {
+        /* TODO: Fix this. */
+        ShaderType next =
+            static_cast<ShaderType>(
+                (static_cast<int>(GetCurrentShader()) + 1) % GetShaderLibrary()->GetShaderCount());
+        SetCurrentShader(next);
+    }
+
     void Renderer::RenderScene(const S<Scene> &scene, const S<Camera> &camera)
     {
         glClearColor(1.0f, 1.0f, 0.0f, 1.0f);

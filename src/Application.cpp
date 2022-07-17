@@ -33,6 +33,7 @@ namespace Ciri
     {
         m_Window->OnEvent(event);
         m_Camera->OnEvent(event);
+        m_Renderer->OnEvent(event);
         // TODO:
         // Z to Cycle Shader --> Renderer OnEvent
         // F1 to Hide UI --> UI OnEvent
