@@ -12,6 +12,7 @@
 #include <inttypes.h>
 #include <cstdint>
 #include <algorithm>
+#include <functional>
 
 #include <string>
 #include <cstring>
