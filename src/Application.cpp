@@ -1,5 +1,7 @@
 #include "Application.h"
 
+#include "imgui.h"
+
 namespace Ciri
 {
     Application::Application()
@@ -7,6 +9,7 @@ namespace Ciri
         Log::Init();
         m_Window = CreateS<Window>(Name, 1280, 720);
         m_Window->SetEventCallback([this](Event& event) { OnEvent(event); });
+        UI::Init(m_Window);
         m_Renderer = CreateS<Renderer>(m_Window->Width, m_Window->Height);
         m_Renderer->PrintDeviceInfo();
         m_Scene = CreateS<Scene>("Main Scene");
@@ -25,6 +28,9 @@ namespace Ciri
             
             m_Camera->OnUpdate(m_Window->GetTimeStep());
             m_Renderer->RenderScene(m_Scene, m_Camera);
+            UI::PreRender();
+            OnUIRender();
+            UI::PostRender();
             m_Window->OnUpdate();
         }
         m_Window->End();
@@ -37,6 +43,11 @@ namespace Ciri
         m_Renderer->OnEvent(event);
         // TODO:
         // F1 to Hide UI --> UI OnEvent
+    }
+
+    void Application::OnUIRender()
+    {
+        ImGui::ShowDemoWindow();
     }
 
     void Application::DefineScene()

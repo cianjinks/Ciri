@@ -1,5 +1,7 @@
 #include "Window.h"
 
+#include "UI.h"
+
 namespace Ciri
 {
     Window* Window::s_Instance = nullptr;
@@ -130,6 +132,8 @@ namespace Ciri
 
     void Window::OnEvent(Event& event)
     {
+        if (UI::WantInput()) { return; }
+        
         EventType type = event.GetEventType();
         switch (type)
         {

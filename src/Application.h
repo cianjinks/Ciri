@@ -2,6 +2,7 @@
 #define CIRI_APPLICATION_H
 
 #include "Window/Window.h"
+#include "Window/UI.h"
 #include "Render/Renderer.h"
 #include "Scene/Scene.h"
 #include "Scene/Camera.h"
@@ -26,6 +27,7 @@ namespace Ciri
 
         void Run();
         void OnEvent(Event& event);
+        void OnUIRender();
 
         void DefineScene();
     };
