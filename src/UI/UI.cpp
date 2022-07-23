@@ -8,6 +8,8 @@
 
 namespace Ciri
 {
+    bool UI::s_HideUI = false;
+
     void UI::Init(const S<Window>& window)
     {
         IMGUI_CHECKVERSION();
@@ -32,20 +34,42 @@ namespace Ciri
 
     void UI::PreRender()
     {
-        ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
+        if(!s_HideUI)
+        {
+            ImGui_ImplOpenGL3_NewFrame();
+		    ImGui_ImplGlfw_NewFrame();
+		    ImGui::NewFrame();
+        }
     }
 
     void UI::PostRender()
     {
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        if(!s_HideUI)
+        {
+            ImGui::Render();
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        }
     }
 
     bool UI::WantInput()
     {
         ImGuiIO &io = ImGui::GetIO();
         return (io.WantCaptureMouse || io.WantCaptureKeyboard);
+    }
+
+    void UI::OnEvent(Event& event)
+    {
+        EventType type = event.GetEventType();
+        switch (type)
+        {
+            case EventType::KEY_PRESS:
+                KeyEvent& key_event = static_cast<KeyEvent&>(event);
+                int key = key_event.GetKey();
+                if(key == GLFW_KEY_F1)
+                {
+                    ToggleActive();
+                }
+                break;
+        }
     }
 }

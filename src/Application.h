@@ -1,8 +1,8 @@
 #ifndef CIRI_APPLICATION_H
 #define CIRI_APPLICATION_H
 
+#include "UI/UI.h"
 #include "Window/Window.h"
-#include "Window/UI.h"
 #include "Render/Renderer.h"
 #include "Scene/Scene.h"
 #include "Scene/Camera.h"

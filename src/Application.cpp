@@ -38,15 +38,17 @@ namespace Ciri
 
     void Application::OnEvent(Event& event)
     {
+        if (!m_Window->IsCursorCaptured()) { UI::OnEvent(event); }
+        if (UI::WantInput()) { return; }
+
         m_Window->OnEvent(event);
         m_Camera->OnEvent(event);
         m_Renderer->OnEvent(event);
-        // TODO:
-        // F1 to Hide UI --> UI OnEvent
     }
 
     void Application::OnUIRender()
     {
+        if (!UI::IsActive()) { return; }
         ImGui::ShowDemoWindow();
     }
 

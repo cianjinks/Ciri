@@ -1,6 +1,6 @@
 #include "Window.h"
 
-#include "UI.h"
+#include "UI/UI.h"
 
 namespace Ciri
 {
@@ -132,8 +132,6 @@ namespace Ciri
 
     void Window::OnEvent(Event& event)
     {
-        if (UI::WantInput()) { return; }
-        
         EventType type = event.GetEventType();
         switch (type)
         {
@@ -143,10 +141,12 @@ namespace Ciri
                 if (button == GLFW_MOUSE_BUTTON_LEFT)
                 {
                     CaptureCursor();
+                    UI::Disable();
                 }
                 if (button == GLFW_MOUSE_BUTTON_RIGHT)
                 {
                     ReleaseCursor();
+                    UI::Enable();
                 }
                 break;
         }
