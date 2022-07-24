@@ -2,6 +2,7 @@
 #define CIRI_APPLICATION_H
 
 #include "UI/UI.h"
+#include "UI/StatisticsPanel.h"
 #include "UI/SceneHierarchyPanel.h"
 #include "UI/MeshSettingsPanel.h"
 #include "UI/MaterialLibraryPanel.h"
@@ -26,6 +27,7 @@ namespace Ciri
         S<Camera> m_Camera;
 
         // UI Panels
+        U<StatisticsPanel> m_StatisticsPanel;
         U<SceneHierarchyPanel> m_SceneHierarchyPanel;
         U<MeshSettingsPanel> m_MeshSettingsPanel;
         U<MaterialLibraryPanel> m_MaterialLibraryPanel;

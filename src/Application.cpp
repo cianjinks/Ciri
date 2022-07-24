@@ -49,6 +49,7 @@ namespace Ciri
         if (!UI::IsActive()) { return; }
 
         // ImGui::ShowDemoWindow();
+        m_StatisticsPanel->OnUIRender();
         m_SceneHierarchyPanel->OnUIRender();
         m_MeshSettingsPanel->SetSelectedNode(m_SceneHierarchyPanel->GetSelectedNode());
         m_MeshSettingsPanel->OnUIRender();
@@ -59,6 +60,7 @@ namespace Ciri
 
     void Application::DefineUI()
     {
+        m_StatisticsPanel = CreateU<StatisticsPanel>(m_Scene);
         m_SceneHierarchyPanel = CreateU<SceneHierarchyPanel>(m_Scene);
         m_MeshSettingsPanel = CreateU<MeshSettingsPanel>(m_Scene->MatLib);
         m_MaterialLibraryPanel = CreateU<MaterialLibraryPanel>(m_Scene->MatLib);
