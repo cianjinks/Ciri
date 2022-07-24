@@ -1,4 +1,6 @@
-[] - UI abstraction
+[X] - UI abstraction
+    [] - Refactor panels ImGUI code
+[X] - Framebuffer Resizing
 [] - File browser
 [] - std::string replacing char*
 [] - ImGUIzmo

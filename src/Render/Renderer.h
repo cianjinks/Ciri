@@ -18,7 +18,7 @@ namespace Ciri
     class Renderer
     {
     public:
-        int TargetWidth, TargetHeight;
+        int32_t TargetWidth, TargetHeight;
 
     private:
         S<ShaderLibrary> m_ShaderLib;
@@ -40,12 +40,14 @@ namespace Ciri
         uint32_t m_ScreenQuadVBO;
 
     public:
-        Renderer(int targetWidth, int targetHeight);
+        Renderer(int32_t targetWidth, int32_t targetHeight);
         ~Renderer();
 
         void OnEvent(Event& event);
 
         void RenderScene(const S<Scene> &scene, const S<Camera> &camera);
+
+        void Resize(int32_t width, int32_t height);
 
         void SetCurrentShader(ShaderType shader) { m_CurrentShader = shader; }
         void CycleShader();

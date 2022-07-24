@@ -101,6 +101,12 @@ namespace Ciri
         EventType type = event.GetEventType();
         switch(type)
         {
+            case EventType::WINDOW_RESIZE:
+            {
+                WindowResizeEvent& resize_event = static_cast<WindowResizeEvent&>(event);
+                Resize(resize_event.GetWidth(), resize_event.GetHeight());
+                break;
+            }
             case EventType::KEY_PRESS:
             {
                 KeyEvent& key_event = static_cast<KeyEvent&>(event);
@@ -120,6 +126,25 @@ namespace Ciri
             static_cast<ShaderType>(
                 (static_cast<int>(GetCurrentShader()) + 1) % GetShaderLibrary()->GetShaderCount());
         SetCurrentShader(next);
+    }
+
+    void Renderer::Resize(int32_t width, int32_t height)
+    {
+        TargetWidth = width;
+        TargetHeight = height;
+
+        glBindTexture(GL_TEXTURE_2D, m_GBaseColorTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TargetWidth, TargetHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+        glBindTexture(GL_TEXTURE_2D, m_GNormalOcclusionTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, TargetWidth, TargetHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+        glBindTexture(GL_TEXTURE_2D, m_GMetallicRoughnessTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TargetWidth, TargetHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+        glBindTexture(GL_TEXTURE_2D, m_GEmissiveTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TargetWidth, TargetHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+        glBindTexture(GL_TEXTURE_2D, m_GDepthTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, TargetWidth, TargetHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+
+        glViewport(0, 0, TargetWidth, TargetHeight);
     }
 
     void Renderer::RenderScene(const S<Scene> &scene, const S<Camera> &camera)

@@ -43,6 +43,14 @@ namespace Ciri
         // Event Callbacks
         glfwSetWindowUserPointer(m_Window, &m_EventCallback);
 
+        glfwSetFramebufferSizeCallback(m_Window, [](GLFWwindow* window, int width, int height){
+            CallbackFunc fn = *static_cast<CallbackFunc*>(glfwGetWindowUserPointer(window));
+            if (!fn) { CIRI_ASSERT(false, "No Event Callback function is set"); }
+
+            WindowResizeEvent event(width, height);
+            fn(event);
+        });
+
         glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
         {
             CallbackFunc fn = *static_cast<CallbackFunc*>(glfwGetWindowUserPointer(window));

@@ -8,7 +8,8 @@ namespace Ciri
         NONE = 0,
         KEY_PRESS, KEY_RELEASE, KEY_REPEAT,
         MOUSE_PRESS, MOUSE_RELEASE,
-        MOUSE_POSITION, MOUSE_SCROLL
+        MOUSE_POSITION, MOUSE_SCROLL,
+        WINDOW_RESIZE
     };
 
     class Event
@@ -66,6 +67,18 @@ namespace Ciri
 
         double GetXOffset() { return m_XOffset; }
         double GetYOffset() { return m_YOffset; }
+    };
+
+    class WindowResizeEvent : public Event
+    {
+    private:
+        int32_t m_Width, m_Height;
+    
+    public:
+        WindowResizeEvent(int32_t width, int32_t height) : Event(EventType::WINDOW_RESIZE), m_Width(width), m_Height(height) {}
+
+        int32_t GetWidth() { return m_Width; }
+        int32_t GetHeight() { return m_Height; }
     };
 }
 

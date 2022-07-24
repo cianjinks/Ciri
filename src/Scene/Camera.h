@@ -41,6 +41,8 @@ namespace Ciri
         void OnUpdate(float dt);
         void OnEvent(Event& event);
 
+        void Resize(int32_t width, int32_t height);
+        
         void RecalcDirection();
         void RecalcVP();
 

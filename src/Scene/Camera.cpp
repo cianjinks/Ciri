@@ -56,6 +56,12 @@ namespace Ciri
         EventType type = event.GetEventType();
         switch (type)
         {
+            case EventType::WINDOW_RESIZE:
+            {
+                WindowResizeEvent& resize_event = static_cast<WindowResizeEvent&>(event);
+                Resize(resize_event.GetWidth(), resize_event.GetHeight());
+                break;
+            }
             case EventType::MOUSE_POSITION:
                 MousePositionEvent& mouse_pos = static_cast<MousePositionEvent&>(event);
                 double mouseX = mouse_pos.GetXPos();
@@ -87,6 +93,12 @@ namespace Ciri
 
                 RecalcDirection();
         }
+    }
+
+    void Camera::Resize(int32_t width, int32_t height)
+    {
+        m_Width = (float)width;
+        m_Height = (float)height;
     }
 
     void Camera::RecalcDirection()
