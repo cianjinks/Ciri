@@ -15,6 +15,7 @@ namespace Ciri
         m_Scene = CreateS<Scene>("Main Scene");
         m_Camera = CreateS<Camera>(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, -1.0f),
                                    -90.0f, 0.0f, float(m_Window->Width), float(m_Window->Height));
+        DefineUI();
         DefineScene();
         CIRI_LOG("Application Initialised");
     }
@@ -49,7 +50,22 @@ namespace Ciri
     void Application::OnUIRender()
     {
         if (!UI::IsActive()) { return; }
-        ImGui::ShowDemoWindow();
+
+        // ImGui::ShowDemoWindow();
+        m_SceneHierarchyPanel->OnUIRender();
+        m_MeshSettingsPanel->SetSelectedNode(m_SceneHierarchyPanel->GetSelectedNode());
+        m_MeshSettingsPanel->OnUIRender();
+        m_MaterialLibraryPanel->OnUIRender();
+        m_MaterialSettingsPanel->SetSelectedNode(m_MaterialLibraryPanel->GetSelectedMaterial());
+        m_MaterialSettingsPanel->OnUIRender();
+    }
+
+    void Application::DefineUI()
+    {
+        m_SceneHierarchyPanel = CreateU<SceneHierarchyPanel>(m_Scene);
+        m_MeshSettingsPanel = CreateU<MeshSettingsPanel>(m_Scene->MatLib);
+        m_MaterialLibraryPanel = CreateU<MaterialLibraryPanel>(m_Scene->MatLib);
+        m_MaterialSettingsPanel = CreateU<MaterialSettingsPanel>(m_Scene->MatLib);
     }
 
     void Application::DefineScene()

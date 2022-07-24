@@ -2,6 +2,10 @@
 #define CIRI_APPLICATION_H
 
 #include "UI/UI.h"
+#include "UI/SceneHierarchyPanel.h"
+#include "UI/MeshSettingsPanel.h"
+#include "UI/MaterialLibraryPanel.h"
+#include "UI/MaterialSettingsPanel.h"
 #include "Window/Window.h"
 #include "Render/Renderer.h"
 #include "Scene/Scene.h"
@@ -21,6 +25,12 @@ namespace Ciri
         S<Scene> m_Scene;
         S<Camera> m_Camera;
 
+        // UI Panels
+        U<SceneHierarchyPanel> m_SceneHierarchyPanel;
+        U<MeshSettingsPanel> m_MeshSettingsPanel;
+        U<MaterialLibraryPanel> m_MaterialLibraryPanel;
+        U<MaterialSettingsPanel> m_MaterialSettingsPanel;
+
     public:
         Application();
         ~Application() = default;
@@ -29,6 +39,7 @@ namespace Ciri
         void OnEvent(Event& event);
         void OnUIRender();
 
+        void DefineUI();
         void DefineScene();
     };
 }

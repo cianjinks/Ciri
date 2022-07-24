@@ -1,6 +1,11 @@
 #ifndef CIRI_UI_H
 #define CIRI_UI_H
 
+// Include ImGUI before Glad
+#include "imgui.h"
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
+
 #include "Window/Window.h"
 #include "Window/Event.h"
 
