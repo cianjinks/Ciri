@@ -24,6 +24,7 @@ namespace Ciri
         CallbackFunc m_EventCallback;
 
         bool m_CursorCaptured = false;
+        bool m_FirstMouse = true;
 
         float m_LastFrameTime = 0.0f;
         float m_DeltaTime = 0.0f;
@@ -44,6 +45,9 @@ namespace Ciri
         void CaptureCursor();
         void ReleaseCursor();
         bool IsCursorCaptured() { return m_CursorCaptured; }
+
+        void SetMouseStatus(bool status) { m_FirstMouse = status; }
+        bool GetMouseStatus() { return m_FirstMouse; }
 
         glm::ivec2 GetMainMonitorResolution();
         int GetMainMonitorWidth();

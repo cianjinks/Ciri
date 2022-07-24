@@ -144,6 +144,7 @@ namespace Ciri
         switch (type)
         {
             case EventType::MOUSE_PRESS:
+            {
                 MouseButtonEvent& mouse_event = static_cast<MouseButtonEvent&>(event);
                 int button = mouse_event.GetButton();
                 if (button == GLFW_MOUSE_BUTTON_LEFT)
@@ -155,8 +156,10 @@ namespace Ciri
                 {
                     ReleaseCursor();
                     UI::Enable();
+                    SetMouseStatus(true);
                 }
                 break;
+            }
         }
     }
 

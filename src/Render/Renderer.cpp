@@ -133,16 +133,7 @@ namespace Ciri
         TargetWidth = width;
         TargetHeight = height;
 
-        glBindTexture(GL_TEXTURE_2D, m_GBaseColorTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TargetWidth, TargetHeight, 0, GL_RGBA, GL_FLOAT, NULL);
-        glBindTexture(GL_TEXTURE_2D, m_GNormalOcclusionTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, TargetWidth, TargetHeight, 0, GL_RGBA, GL_FLOAT, NULL);
-        glBindTexture(GL_TEXTURE_2D, m_GMetallicRoughnessTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TargetWidth, TargetHeight, 0, GL_RGBA, GL_FLOAT, NULL);
-        glBindTexture(GL_TEXTURE_2D, m_GEmissiveTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TargetWidth, TargetHeight, 0, GL_RGBA, GL_FLOAT, NULL);
-        glBindTexture(GL_TEXTURE_2D, m_GDepthTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, TargetWidth, TargetHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        ResizeBuffers();
 
         glViewport(0, 0, TargetWidth, TargetHeight);
     }
@@ -274,5 +265,19 @@ namespace Ciri
         glBindFramebuffer(GL_READ_FRAMEBUFFER, m_GBuffer);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
         glBlitFramebuffer(0, 0, TargetWidth, TargetHeight, 0, 0, TargetWidth, TargetHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+    }
+
+    void Renderer::ResizeBuffers()
+    {
+        glBindTexture(GL_TEXTURE_2D, m_GBaseColorTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TargetWidth, TargetHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+        glBindTexture(GL_TEXTURE_2D, m_GNormalOcclusionTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, TargetWidth, TargetHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+        glBindTexture(GL_TEXTURE_2D, m_GMetallicRoughnessTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TargetWidth, TargetHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+        glBindTexture(GL_TEXTURE_2D, m_GEmissiveTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TargetWidth, TargetHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+        glBindTexture(GL_TEXTURE_2D, m_GDepthTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, TargetWidth, TargetHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
     }
 }

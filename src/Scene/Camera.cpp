@@ -63,15 +63,16 @@ namespace Ciri
                 break;
             }
             case EventType::MOUSE_POSITION:
+            {
                 MousePositionEvent& mouse_pos = static_cast<MousePositionEvent&>(event);
                 double mouseX = mouse_pos.GetXPos();
                 double mouseY = mouse_pos.GetYPos();
 
-                if (FirstMouse)
+                if (Window::Get()->GetMouseStatus())
                 {
                     LastX = (float)mouseX;
                     LastY = (float)mouseY;
-                    FirstMouse = false;
+                    Window::Get()->SetMouseStatus(false);
                 }
 
                 float xoffset = (float)mouseX - LastX;
@@ -92,6 +93,8 @@ namespace Ciri
                     Pitch = -89.0f;
 
                 RecalcDirection();
+                break;
+            }
         }
     }
 

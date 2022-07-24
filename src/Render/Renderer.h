@@ -67,6 +67,8 @@ namespace Ciri
         void RenderScreenQuad();
 
         void BlitDepthBuffer();
+
+        void ResizeBuffers();
     };
 }
 

@@ -22,7 +22,6 @@ namespace Ciri
         float Near = 0.1f;
         float FOV = 45.0f;
 
-        bool FirstMouse = true;
         float LastX = 0.0f;
         float LastY = 0.0f;
         
