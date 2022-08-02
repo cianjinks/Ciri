@@ -25,7 +25,7 @@ namespace Ciri
                 {
                     for (auto &pair : m_MaterialLibrary.GetMaterials())
                     {
-                        Material *material = pair.second;
+                        S<Material> material = pair.second;
                         const bool is_selected = (m_SelectedNode->NodeMaterial == material);
                         if (ImGui::Selectable(material->info.name.c_str(), is_selected))
                             m_SelectedNode->NodeMaterial = material;

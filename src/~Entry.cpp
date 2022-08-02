@@ -1,3 +1,4 @@
+#if 0
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "backends/imgui_impl_glfw.h"
@@ -289,7 +290,6 @@ void MaterialSettingsUI(Ciri::Material *material, Ciri::Scene *scene, ImGuiWindo
 	ImGui::End();
 }
 
-#if 0
 int main()
 {
 	Ciri::Log::Init();

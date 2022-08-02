@@ -9,7 +9,7 @@ namespace Ciri
     {
     private:
         S<Scene> m_Scene;
-        SceneNode* m_SelectedNode = nullptr;
+        S<SceneNode> m_SelectedNode = nullptr;
 
     public:
         SceneHierarchyPanel(const S<Scene>& scene);
@@ -19,10 +19,10 @@ namespace Ciri
 
         void SetScene(const S<Scene>& scene) { m_Scene = scene; }
 
-        SceneNode* GetSelectedNode() { return m_SelectedNode; }
+        S<SceneNode> GetSelectedNode() { return m_SelectedNode; }
 
     private:
-        void RenderNodeHierarchy(SceneNode *root, int ptr_id);
+        void RenderNodeHierarchy(S<SceneNode> root, int ptr_id);
     };
 }
 

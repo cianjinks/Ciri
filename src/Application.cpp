@@ -71,19 +71,18 @@ namespace Ciri
 
     void Application::DefineScene()
     {
-        // TODO: Use U/S and more in Scene
-        Ciri::Mesh *sphere = new Ciri::Sphere(100, 100, false);
-        Ciri::Mesh *cube1 = new Ciri::Cube();
-        Ciri::Mesh *cube2 = new Ciri::Cube();
-        Ciri::Mesh *cube3 = new Ciri::Cube();
+        S<Sphere> sphere = CreateS<Sphere>(100, 100, false);
+        S<Cube> cube1 = CreateS<Cube>();
+        S<Cube> cube2 = CreateS<Cube>();
+        S<Cube> cube3 = CreateS<Cube>();
         sphere->Construct();
         cube1->Construct();
         cube2->Construct();
         cube3->Construct();
-        SceneNode *sphereNode = m_Scene->AddMesh("sphere", sphere);
-        SceneNode *cube1Node = m_Scene->AddMesh("cube1", cube1);
-        SceneNode *cube2Node = m_Scene->AddMesh("cube2", cube2);
-        SceneNode *cube3Node = m_Scene->AddMesh("cube3", cube3);
+        S<SceneNode> sphereNode = m_Scene->AddMesh("sphere", sphere);
+        S<SceneNode> cube1Node = m_Scene->AddMesh("cube1", cube1);
+        S<SceneNode> cube2Node = m_Scene->AddMesh("cube2", cube2);
+        S<SceneNode> cube3Node = m_Scene->AddMesh("cube3", cube3);
         sphereNode->Position = glm::vec3(0.0f, 15.0f, 0.0f);
         sphereNode->Scale = glm::vec3(3.0f);
         cube1Node->Position = glm::vec3(-3.0f, 10.0f, 0.0f);
@@ -92,8 +91,8 @@ namespace Ciri
         cube2Node->Scale = glm::vec3(0.75f);
         cube3Node->Position = glm::vec3(3.0f, 10.0f, 0.0f);
 
-        SceneNode *sponzaNode = m_Scene->LoadModel("sponza", "resources/mesh/sponza/sponza.obj");
-        SceneNode *dragonNode = m_Scene->LoadModel("dragon", "resources/mesh/dragon/dragon.obj");
+        S<SceneNode> sponzaNode = m_Scene->LoadModel("sponza", "resources/mesh/sponza/sponza.obj");
+        S<SceneNode> dragonNode = m_Scene->LoadModel("dragon", "resources/mesh/dragon/dragon.obj");
         sponzaNode->Scale = glm::vec3(0.05f);
         dragonNode->Position = glm::vec3(10.0f, 10.0f, 0.0f);
         dragonNode->Scale = glm::vec3(10.0f);

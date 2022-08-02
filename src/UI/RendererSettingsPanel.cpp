@@ -11,6 +11,7 @@ namespace Ciri
 
     void RendererSettingsPanel::OnUIRender()
     {
+        ImGui::Begin("Renderer Settings");
         auto &shaders = m_Renderer->GetShaderLibrary()->GetShaderList();
         if (ImGui::BeginCombo("Shading", shaders[m_Renderer->GetCurrentShader()]->name, 0))
         {
@@ -27,5 +28,6 @@ namespace Ciri
         }
         ImGui::Text("[Z]  - Cycle Shader");
         ImGui::Text("[F1] - Hide UI");
+        ImGui::End();
     }
 }

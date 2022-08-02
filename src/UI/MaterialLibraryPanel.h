@@ -9,7 +9,7 @@ namespace Ciri
     {
     private:
         MaterialLibrary& m_MaterialLibrary;
-        Material* m_SelectedMaterial = nullptr;
+        S<Material> m_SelectedMaterial = nullptr;
 
     public:
         MaterialLibraryPanel(MaterialLibrary& matlib);
@@ -19,7 +19,7 @@ namespace Ciri
 
         void SetMaterialLibrary(MaterialLibrary& matlib) { m_MaterialLibrary = matlib; }
 
-        Material* GetSelectedMaterial() { return m_SelectedMaterial; }
+        S<Material> GetSelectedMaterial() { return m_SelectedMaterial; }
     };
 }
 

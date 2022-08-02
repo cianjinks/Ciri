@@ -9,7 +9,7 @@ namespace Ciri
     class MeshSettingsPanel
     {
     private:
-        SceneNode* m_SelectedNode = nullptr;
+        S<SceneNode> m_SelectedNode = nullptr;
         MaterialLibrary& m_MaterialLibrary;
 
     public:
@@ -18,7 +18,7 @@ namespace Ciri
 
         void OnUIRender();
 
-        void SetSelectedNode(SceneNode* node) { m_SelectedNode = node; }
+        void SetSelectedNode(S<SceneNode>  node) { m_SelectedNode = node; }
     };
 }
 

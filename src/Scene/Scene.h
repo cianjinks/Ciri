@@ -13,16 +13,16 @@ namespace Ciri
     public:
         std::string Name = "";
 
-        Mesh *NodeMesh = nullptr;
-        Material *NodeMaterial = nullptr; // Reference to a material in the Scene's MaterialLibrary
+        S<Mesh> NodeMesh = nullptr;
+        S<Material> NodeMaterial = nullptr; // Reference to a material in the Scene's MaterialLibrary
 
         glm::vec3 Position = glm::vec3(0.0f);
         glm::vec3 Scale = glm::vec3(1.0f);
 
-        std::vector<SceneNode *> Children;
+        std::vector<S<SceneNode>> Children;
 
     public:
-        void AddChild(SceneNode *child);
+        void AddChild(S<SceneNode> child);
     };
 
     class Scene
@@ -32,31 +32,28 @@ namespace Ciri
         MaterialLibrary MatLib;
 
     private:
-        SceneNode *m_Root = nullptr;
+        S<SceneNode> m_Root = nullptr;
         uint32_t m_MeshCount = 0;
         uint32_t m_TotalTriCount = 0;
 
-        Material *m_DefaultMaterial;
+        S<Material> m_DefaultMaterial;
 
     public:
         Scene(const char *name);
         ~Scene();
 
     public:
-        SceneNode *AddMesh(const char *name, Mesh *mesh, Material *material = nullptr);
-        SceneNode *AddContainer(const char *name); // Create empty scene node
+        S<SceneNode> AddMesh(const char *name, S<Mesh> mesh, S<Material> material = nullptr);
+        S<SceneNode> AddContainer(const char *name); // Create empty scene node
         // `custom_material` allows you to override the obj file materials
-        SceneNode *LoadModel(const char *name, const char *filepath, Material *custom_material = nullptr); // Load .obj file
+        S<SceneNode> LoadModel(const char *name, const char *filepath, S<Material> custom_material = nullptr); // Load .obj file
 
-        SceneNode *GetRoot() const
-        {
-            return m_Root;
-        }
+        S<SceneNode> GetRoot() const { return m_Root; }
         const uint32_t GetMeshCount() const { return m_MeshCount; }
         const uint32_t GetTotalTriCount() const { return m_TotalTriCount; }
 
     private:
-        void DestroyTree(SceneNode *root);
+        void DestroyTree(S<SceneNode> root);
     };
 }
 

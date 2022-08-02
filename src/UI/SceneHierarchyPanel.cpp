@@ -17,7 +17,7 @@ namespace Ciri
         ImGui::End();
     }
 
-    void SceneHierarchyPanel::RenderNodeHierarchy(SceneNode *root, int ptr_id)
+    void SceneHierarchyPanel::RenderNodeHierarchy(S<SceneNode> root, int ptr_id)
     {   
         ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
 
@@ -44,7 +44,7 @@ namespace Ciri
 
         if (node_open && !is_leaf)
         {
-            for (SceneNode *node : root->Children)
+            for (S<SceneNode> node : root->Children)
             {
                 RenderNodeHierarchy(node, ptr_id++);
             }

@@ -10,7 +10,7 @@ namespace Ciri
 {
     struct RenderStackItem
     {
-        SceneNode *node;
+        S<SceneNode> node;
         glm::vec3 position;
         glm::vec3 scale;
     };

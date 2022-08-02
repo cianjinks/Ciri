@@ -196,13 +196,13 @@ namespace Ciri
         glm::mat4 view = camera->GetViewMat();
 
         std::stack<RenderStackItem> renderStack;
-        SceneNode *root = scene->GetRoot();
+        S<SceneNode> root = scene->GetRoot();
         renderStack.push({root, root->Position, root->Scale});
 
         while (!renderStack.empty())
         {
             RenderStackItem &currentItem = renderStack.top();
-            SceneNode *currentNode = currentItem.node;
+            S<SceneNode> currentNode = currentItem.node;
             glm::vec3 currentNodePosition = currentItem.position;
             glm::vec3 currentNodeScale = currentItem.scale;
             if (currentNode->NodeMesh) // No mesh means this is just a container
@@ -218,7 +218,7 @@ namespace Ciri
                 glm::mat4 mvp = proj * view * model;
                 m_ShaderLib->SetMat4f("u_MVP", glm::value_ptr(mvp));
 
-                Material *material = currentNode->NodeMaterial;
+                S<Material> material = currentNode->NodeMaterial;
                 m_ShaderLib->SetVec3f("u_BaseColor", material->baseColor);
                 m_ShaderLib->SetInt1i("u_BaseColorTexture", 0);
                 glActiveTexture(GL_TEXTURE0);
@@ -236,7 +236,7 @@ namespace Ciri
                 glActiveTexture(GL_TEXTURE4);
                 glBindTexture(GL_TEXTURE_2D, material->emissiveTextureID);
 
-                Mesh *mesh = currentNode->NodeMesh;
+                S<Mesh> mesh = currentNode->NodeMesh;
                 glBindVertexArray(mesh->m_VAO);
 
                 glDrawArrays(GL_TRIANGLES, 0, 3 * mesh->TriCount);
@@ -246,7 +246,7 @@ namespace Ciri
             }
 
             renderStack.pop();
-            for (SceneNode *node : currentNode->Children)
+            for (S<SceneNode> node : currentNode->Children)
             {
                 renderStack.push({node, currentNodePosition + node->Position, currentNodeScale * node->Scale});
             }

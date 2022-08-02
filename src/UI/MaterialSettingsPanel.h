@@ -8,7 +8,7 @@ namespace Ciri
     class MaterialSettingsPanel
     {
     private:
-        Material* m_SelectedMaterial = nullptr;
+        S<Material> m_SelectedMaterial = nullptr;
         MaterialLibrary& m_MaterialLibrary;
 
     public:
@@ -17,7 +17,7 @@ namespace Ciri
 
         void OnUIRender();
 
-        void SetSelectedNode(Material* material) { m_SelectedMaterial = material; }
+        void SetSelectedNode(S<Material> material) { m_SelectedMaterial = material; }
     
     private:
         void CreateTextureCombo(std::string name, std::string &material_tex_name, uint32_t &material_tex_id);

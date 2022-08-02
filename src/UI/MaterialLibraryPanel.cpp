@@ -16,7 +16,7 @@ namespace Ciri
         for (auto &pair : m_MaterialLibrary.GetMaterials())
         {
             std::string name = pair.first;
-            Material *material = pair.second;
+            S<Material> material = pair.second;
             std::string text = ICON_FK_CODEPEN + std::string(" ") + name;
             if (ImGui::Selectable(text.c_str(), m_SelectedMaterial == material))
             {

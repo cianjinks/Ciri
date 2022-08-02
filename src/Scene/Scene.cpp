@@ -4,7 +4,7 @@
 
 namespace Ciri
 {
-	void SceneNode::AddChild(SceneNode *child)
+	void SceneNode::AddChild(S<SceneNode> child)
 	{
 		Children.push_back(child);
 	}
@@ -12,7 +12,7 @@ namespace Ciri
 	Scene::Scene(const char *name)
 		: Name(name)
 	{
-		m_Root = new SceneNode();
+		m_Root = CreateS<SceneNode>();
 		m_Root->Name = std::string(name);
 
 		// Default Material
@@ -24,21 +24,20 @@ namespace Ciri
 	{
 		// Destroy scene node tree
 		DestroyTree(m_Root);
-		delete m_Root;
 	}
 
-	void Scene::DestroyTree(SceneNode *root)
+	void Scene::DestroyTree(S<SceneNode> root)
 	{
-		for (SceneNode *node : root->Children)
+		for (S<SceneNode> node : root->Children)
 		{
 			DestroyTree(node);
 		}
 		root->Children.clear(); // Destroys all elements in vector?
 	}
 
-	SceneNode *Scene::AddMesh(const char *name, Mesh *mesh, Material *material)
+	S<SceneNode> Scene::AddMesh(const char *name, S<Mesh> mesh, S<Material> material)
 	{
-		SceneNode *node = new SceneNode();
+		S<SceneNode> node = CreateS<SceneNode>();
 
 		node->Name = name;
 		node->NodeMesh = mesh;
@@ -51,9 +50,9 @@ namespace Ciri
 		return node;
 	}
 
-	SceneNode *Scene::AddContainer(const char *name)
+	S<SceneNode> Scene::AddContainer(const char *name)
 	{
-		SceneNode *node = new SceneNode();
+		S<SceneNode> node = CreateS<SceneNode>();
 
 		node->Name = name;
 		m_Root->AddChild(node);
@@ -61,7 +60,7 @@ namespace Ciri
 		return node;
 	}
 
-	SceneNode *Scene::LoadModel(const char *name, const char *filepath, Material *custom_material)
+	S<SceneNode> Scene::LoadModel(const char *name, const char *filepath, S<Material> custom_material)
 	{
 		tinyobj::attrib_t attrib;
 		std::vector<tinyobj::shape_t> shapes;
@@ -121,7 +120,7 @@ namespace Ciri
 			}
 		}
 
-		SceneNode *container = AddContainer(name);
+		S<SceneNode> container = AddContainer(name);
 
 		std::vector<glm::vec3> positionData;
 		std::vector<glm::vec3> normalData;
@@ -179,12 +178,11 @@ namespace Ciri
 
 				offset += 3;
 			}
-
-			// TODO: This is a memory leak, mesh pointer is lost
-			Mesh *mesh = new Mesh(positionData, normalData, texCoordData);
+			
+			S<Mesh> mesh = CreateS<Mesh>(positionData, normalData, texCoordData);
 			mesh->Construct();
 
-			SceneNode *node = new SceneNode();
+			S<SceneNode> node = CreateS<SceneNode>();
 			node->Name = shapes[s].name;
 			node->NodeMesh = mesh;
 
@@ -202,7 +200,7 @@ namespace Ciri
 					CIRI_WARN("Invalid material id for mesh: {}", shapes[s].name);
 				}
 
-				Material *material = MatLib.GetMaterial(materials[materialID].name.c_str());
+				S<Material> material = MatLib.GetMaterial(materials[materialID].name.c_str());
 				if (material)
 				{
 					node->NodeMaterial = material;

@@ -12,7 +12,7 @@ namespace Ciri
         stbi_set_flip_vertically_on_load(true);
     }
 
-    Material *MaterialLibrary::GetMaterial(std::string name)
+    S<Material> MaterialLibrary::GetMaterial(std::string name)
     {
         if (m_MaterialList.find(name) != m_MaterialList.end())
         {
@@ -21,7 +21,7 @@ namespace Ciri
         return nullptr;
     }
 
-    Material *MaterialLibrary::CreateMaterial(MaterialInfo &info,
+    S<Material> MaterialLibrary::CreateMaterial(MaterialInfo &info,
                                               glm::vec3 baseColor,
                                               float subsurface,
                                               float metallic,
@@ -34,7 +34,7 @@ namespace Ciri
                                               float clearcoat,
                                               float clearcoatGloss)
     {
-        Material *material = new Material();
+        S<Material> material = CreateS<Material>();
 
         material->baseColor = baseColor;
         RegisterTexture(info.baseColorFilepath, GL_TEXTURE0, &material->baseColorTextureID, info);

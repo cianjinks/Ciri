@@ -50,18 +50,18 @@ namespace Ciri
     class MaterialLibrary
     {
     private:
-        std::map<std::string, Material *> m_MaterialList; // name -> material
+        std::map<std::string, S<Material>> m_MaterialList; // name -> material
         std::map<std::string, uint32_t> m_TextureList;    // filepath -> texture id
 
     public:
         MaterialLibrary();
         ~MaterialLibrary() = default;
 
-        Material *GetMaterial(std::string name);
-        const std::map<std::string, Material *> &GetMaterials() const { return m_MaterialList; };
+        S<Material> GetMaterial(std::string name);
+        const std::map<std::string, S<Material>> &GetMaterials() const { return m_MaterialList; };
         const std::map<std::string, uint32_t> &GetTextures() const { return m_TextureList; };
 
-        Material *CreateMaterial(MaterialInfo &info,
+        S<Material> CreateMaterial(MaterialInfo &info,
                                  glm::vec3 base_color,
                                  float subsurface = 0.0f,
                                  float metallic = 0.0f,
