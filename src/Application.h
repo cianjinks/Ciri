@@ -7,6 +7,7 @@
 #include "UI/MeshSettingsPanel.h"
 #include "UI/MaterialLibraryPanel.h"
 #include "UI/MaterialSettingsPanel.h"
+#include "UI/RendererSettingsPanel.h"
 #include "Window/Window.h"
 #include "Render/Renderer.h"
 #include "Scene/Scene.h"
@@ -32,6 +33,7 @@ namespace Ciri
         U<MeshSettingsPanel> m_MeshSettingsPanel;
         U<MaterialLibraryPanel> m_MaterialLibraryPanel;
         U<MaterialSettingsPanel> m_MaterialSettingsPanel;
+        U<RendererSettingsPanel> m_RendererSettingsPanel;
 
     public:
         Application();

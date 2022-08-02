@@ -56,6 +56,7 @@ namespace Ciri
         m_MaterialLibraryPanel->OnUIRender();
         m_MaterialSettingsPanel->SetSelectedNode(m_MaterialLibraryPanel->GetSelectedMaterial());
         m_MaterialSettingsPanel->OnUIRender();
+        m_RendererSettingsPanel->OnUIRender();
     }
 
     void Application::DefineUI()
@@ -65,6 +66,7 @@ namespace Ciri
         m_MeshSettingsPanel = CreateU<MeshSettingsPanel>(m_Scene->MatLib);
         m_MaterialLibraryPanel = CreateU<MaterialLibraryPanel>(m_Scene->MatLib);
         m_MaterialSettingsPanel = CreateU<MaterialSettingsPanel>(m_Scene->MatLib);
+        m_RendererSettingsPanel = CreateU<RendererSettingsPanel>(m_Renderer);
     }
 
     void Application::DefineScene()
