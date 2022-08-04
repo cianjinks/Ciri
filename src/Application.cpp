@@ -91,8 +91,8 @@ namespace Ciri
         cube2Node->Scale = glm::vec3(0.75f);
         cube3Node->Position = glm::vec3(3.0f, 10.0f, 0.0f);
 
-        S<SceneNode> sponzaNode = m_Scene->LoadModel("sponza", "resources/mesh/sponza/sponza.obj");
-        S<SceneNode> dragonNode = m_Scene->LoadModel("dragon", "resources/mesh/dragon/dragon.obj");
+        S<SceneNode> sponzaNode = m_Scene->LoadModel(ModelType::OBJ, "sponza", "resources/mesh/sponza/sponza.obj");
+        S<SceneNode> dragonNode = m_Scene->LoadModel(ModelType::OBJ, "dragon", "resources/mesh/dragon/dragon.obj");
         sponzaNode->Scale = glm::vec3(0.05f);
         dragonNode->Position = glm::vec3(10.0f, 10.0f, 0.0f);
         dragonNode->Scale = glm::vec3(10.0f);

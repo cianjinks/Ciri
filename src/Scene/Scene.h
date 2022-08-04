@@ -8,6 +8,12 @@
 
 namespace Ciri
 {
+    enum class ModelType
+    {
+        OBJ = 0,
+        GLTF
+    };
+
     class SceneNode
     {
     public:
@@ -44,13 +50,19 @@ namespace Ciri
 
     public:
         S<SceneNode> AddMesh(const char *name, S<Mesh> mesh, S<Material> material = nullptr);
+        S<SceneNode> AddContainer(); // Create empty scene node
         S<SceneNode> AddContainer(const char *name); // Create empty scene node
-        // `custom_material` allows you to override the obj file materials
-        S<SceneNode> LoadModel(const char *name, const char *filepath, S<Material> custom_material = nullptr); // Load .obj file
+
+        S<SceneNode> LoadModel(ModelType type, const char *name, const char *filepath);
 
         S<SceneNode> GetRoot() const { return m_Root; }
         const uint32_t GetMeshCount() const { return m_MeshCount; }
         const uint32_t GetTotalTriCount() const { return m_TotalTriCount; }
+        S<Material> GetDefaultMaterial() const { return m_DefaultMaterial; }
+        
+        // TODO: These shouldn't be necesary, instead store count on nodes in the tree?
+        void SetMeshCount(uint32_t meshcount) { m_MeshCount = meshcount; }
+        void SetTotalTriCount(uint32_t tricount) { m_TotalTriCount = tricount; }
 
     private:
         void DestroyTree(S<SceneNode> root);
