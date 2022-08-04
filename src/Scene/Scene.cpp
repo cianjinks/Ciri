@@ -86,7 +86,12 @@ namespace Ciri
 				break;
 			}
 		}
-		result->Name = name;
+
+		if (result)
+		{
+			result->Name = name;
+		}
+		
 		return result;
 	}
 }

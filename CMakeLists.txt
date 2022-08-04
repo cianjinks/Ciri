@@ -59,11 +59,12 @@ add_subdirectory(dependencies/glm)
 add_subdirectory(dependencies/spdlog)
 add_subdirectory(dependencies/stb_image)
 add_subdirectory(dependencies/tinyobjloader)
+add_subdirectory(dependencies/tinygltf)
 
 file(GLOB_RECURSE source CONFIGURE_DEPENDS "src/*.h" "src/*.hpp" "src/*.cpp")
 
 add_executable(Ciri ${source} ${imgui-source})
-target_link_libraries(Ciri ${OPENGL_LIBRARIES} glfw glad glm spdlog stb_image tinyobjloader)
+target_link_libraries(Ciri ${OPENGL_LIBRARIES} glfw glad glm spdlog stb_image tinyobjloader tinygltf)
 target_include_directories(Ciri PRIVATE ${imgui-directory} ${stb_image-include} ${fork_awesome-include})
 target_precompile_headers(Ciri PRIVATE ${ciri-pch})
 
