@@ -31,4 +31,6 @@ Running `win_setup.bat` will create a Visual Studio solution in the folder `./bu
 
 ## Resources
 
-Test models contained in the `resources/mesh/` folder were downloaded from Morgan McGuire's [Computer Graphics Archive](https://casual-effects.com/data).
+Test models contained in the `resources/models/obj` folder were downloaded from Morgan McGuire's [Computer Graphics Archive](https://casual-effects.com/data).
+
+Test models contained in the `resources/models/gltf` folder were downloaded from [glTF-Sample-Models](https://github.com/KhronosGroup/glTF-Sample-Models).
