@@ -4,7 +4,7 @@
 
 namespace Ciri
 {
-    S<SceneNode> OBJImporter::Import(Scene* scene, const char *filepath)
+    bool OBJImporter::Import(Scene* scene, S<SceneNode> container, const char *filepath)
     {
         tinyobj::attrib_t attrib;
 		std::vector<tinyobj::shape_t> shapes;
@@ -24,6 +24,7 @@ namespace Ciri
 		{
 			CIRI_ERROR("Failed to load object!");
 			CIRI_ERROR(err);
+			return false;
 		}
 		CIRI_LOG("Successfully loaded {} - Shapes: {} | Materials: {}", filepath, shapes.size(), materials.size());
 
@@ -63,8 +64,6 @@ namespace Ciri
 				scene->MatLib.CreateMaterial(info, glm::vec3(1.0f));
 			}
 		}
-
-		S<SceneNode> container = scene->AddContainer();
 
 		std::vector<glm::vec3> positionData;
 		std::vector<glm::vec3> normalData;
@@ -161,6 +160,6 @@ namespace Ciri
 			texCoordData.clear();
 		}
 
-		return container;
+		return true;
     }
 }

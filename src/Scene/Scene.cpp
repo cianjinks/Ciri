@@ -72,26 +72,29 @@ namespace Ciri
 
 	S<SceneNode> Scene::LoadModel(ModelType type, const char *name, const char *filepath)
 	{
-		S<SceneNode> result = nullptr;
+		bool result = false;
+		S<SceneNode> container = CreateS<SceneNode>();
 		switch (type)
 		{
 			case ModelType::OBJ:
 			{
-				result = OBJImporter::Import(this, filepath);
+				result = OBJImporter::Import(this, container, filepath);
 				break;
 			}
 			case ModelType::GLTF:
 			{
-				result = GLTFImporter::Import(this, filepath);
+				result = GLTFImporter::Import(this, container, filepath);
 				break;
 			}
 		}
 
-		if (result)
+		container->Name = name;
+
+		if (!result)
 		{
-			result->Name = name;
+			CIRI_ERROR("Failed to load model: {}", filepath);
 		}
 		
-		return result;
+		return container;
 	}
 }

@@ -8,7 +8,7 @@ namespace Ciri
     class GLTFImporter
     {
     public:
-        static S<SceneNode> Import(Scene* scene, const char *filepath);
+        static bool Import(Scene* scene, S<SceneNode> container, std::string filepath);
     };
 }
 

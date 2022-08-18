@@ -71,6 +71,14 @@ namespace Ciri
 
     void Application::DefineScene()
     {
+        S<SceneNode> sponzaNode = m_Scene->LoadModel(ModelType::GLTF, "sponza", "resources/model/gltf/Sponza/glTF/Sponza.gltf");
+        // sponzaNode->Scale = glm::vec3(0.05f);
+        CIRI_LOG("Scene Initialised");
+    }
+
+#if 0
+    void Application::DefineScene()
+    {
         S<Sphere> sphere = CreateS<Sphere>(100, 100, false);
         S<Cube> cube1 = CreateS<Cube>();
         S<Cube> cube2 = CreateS<Cube>();
@@ -99,4 +107,5 @@ namespace Ciri
 
         CIRI_LOG("Scene Initialised");
     }
+#endif
 }
