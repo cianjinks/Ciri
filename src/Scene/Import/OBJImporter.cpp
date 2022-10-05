@@ -4,9 +4,10 @@
 
 namespace Ciri
 {
-    S<SceneNode> OBJImporter::Import(Scene* scene, const char *filepath)
-    {
-        tinyobj::attrib_t attrib;
+	/* TODO: Lots of redundant copying of data going on - really inefficient :/ */
+	S<SceneNode> OBJImporter::Import(Scene *scene, const char *filepath)
+	{
+		tinyobj::attrib_t attrib;
 		std::vector<tinyobj::shape_t> shapes;
 		std::vector<tinyobj::material_t> materials;
 
@@ -122,7 +123,7 @@ namespace Ciri
 
 				offset += 3;
 			}
-			
+
 			S<Mesh> mesh = CreateS<Mesh>(positionData, normalData, texCoordData);
 			mesh->Construct();
 
@@ -153,8 +154,8 @@ namespace Ciri
 
 			container->AddChild(node);
 
-            scene->SetTotalTriCount(scene->GetTotalTriCount() + mesh->TriCount);
-            scene->SetMeshCount(scene->GetMeshCount() + 1);
+			scene->SetTotalTriCount(scene->GetTotalTriCount() + mesh->TriCount);
+			scene->SetMeshCount(scene->GetMeshCount() + 1);
 
 			positionData.clear();
 			normalData.clear();
@@ -162,5 +163,5 @@ namespace Ciri
 		}
 
 		return container;
-    }
+	}
 }

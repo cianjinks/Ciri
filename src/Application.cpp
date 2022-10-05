@@ -8,7 +8,8 @@ namespace Ciri
     {
         Log::Init();
         m_Window = CreateS<Window>(Name, 1280, 720);
-        m_Window->SetEventCallback([this](Event& event) { OnEvent(event); });
+        m_Window->SetEventCallback([this](Event &event)
+                                   { OnEvent(event); });
         UI::Init(m_Window);
         m_Renderer = CreateS<Renderer>(m_Window->Width, m_Window->Height);
         m_Renderer->PrintDeviceInfo();
@@ -34,10 +35,16 @@ namespace Ciri
         m_Window->End();
     }
 
-    void Application::OnEvent(Event& event)
+    void Application::OnEvent(Event &event)
     {
-        if (!m_Window->IsCursorCaptured()) { UI::OnEvent(event); }
-        if (UI::WantInput()) { return; }
+        if (!m_Window->IsCursorCaptured())
+        {
+            UI::OnEvent(event);
+        }
+        if (UI::WantInput())
+        {
+            return;
+        }
 
         m_Window->OnEvent(event);
         m_Camera->OnEvent(event);
@@ -46,7 +53,10 @@ namespace Ciri
 
     void Application::OnUIRender()
     {
-        if (!UI::IsActive()) { return; }
+        if (!UI::IsActive())
+        {
+            return;
+        }
 
         // ImGui::ShowDemoWindow();
         m_StatisticsPanel->OnUIRender();
@@ -71,31 +81,34 @@ namespace Ciri
 
     void Application::DefineScene()
     {
-        S<Sphere> sphere = CreateS<Sphere>(100, 100, false);
-        S<Cube> cube1 = CreateS<Cube>();
-        S<Cube> cube2 = CreateS<Cube>();
-        S<Cube> cube3 = CreateS<Cube>();
-        sphere->Construct();
-        cube1->Construct();
-        cube2->Construct();
-        cube3->Construct();
-        S<SceneNode> sphereNode = m_Scene->AddMesh("sphere", sphere);
-        S<SceneNode> cube1Node = m_Scene->AddMesh("cube1", cube1);
-        S<SceneNode> cube2Node = m_Scene->AddMesh("cube2", cube2);
-        S<SceneNode> cube3Node = m_Scene->AddMesh("cube3", cube3);
-        sphereNode->Position = glm::vec3(0.0f, 15.0f, 0.0f);
-        sphereNode->Scale = glm::vec3(3.0f);
-        cube1Node->Position = glm::vec3(-3.0f, 10.0f, 0.0f);
-        cube1Node->Scale = glm::vec3(0.5f);
-        cube2Node->Position = glm::vec3(0.0f, 10.0f, 0.0f);
-        cube2Node->Scale = glm::vec3(0.75f);
-        cube3Node->Position = glm::vec3(3.0f, 10.0f, 0.0f);
+        // S<Sphere> sphere = CreateS<Sphere>(100, 100, false);
+        // S<Cube> cube1 = CreateS<Cube>();
+        // S<Cube> cube2 = CreateS<Cube>();
+        // S<Cube> cube3 = CreateS<Cube>();
+        // sphere->Construct();
+        // cube1->Construct();
+        // cube2->Construct();
+        // cube3->Construct();
+        // S<SceneNode> sphereNode = m_Scene->AddMesh("sphere", sphere);
+        // S<SceneNode> cube1Node = m_Scene->AddMesh("cube1", cube1);
+        // S<SceneNode> cube2Node = m_Scene->AddMesh("cube2", cube2);
+        // S<SceneNode> cube3Node = m_Scene->AddMesh("cube3", cube3);
+        // sphereNode->Position = glm::vec3(0.0f, 15.0f, 0.0f);
+        // sphereNode->Scale = glm::vec3(3.0f);
+        // cube1Node->Position = glm::vec3(-3.0f, 10.0f, 0.0f);
+        // cube1Node->Scale = glm::vec3(0.5f);
+        // cube2Node->Position = glm::vec3(0.0f, 10.0f, 0.0f);
+        // cube2Node->Scale = glm::vec3(0.75f);
+        // cube3Node->Position = glm::vec3(3.0f, 10.0f, 0.0f);
 
-        S<SceneNode> sponzaNode = m_Scene->LoadModel(ModelType::OBJ, "sponza", "resources/model/obj/sponza/sponza.obj");
-        S<SceneNode> dragonNode = m_Scene->LoadModel(ModelType::OBJ, "dragon", "resources/model/obj/dragon/dragon.obj");
+        // S<SceneNode> sponzaNode = m_Scene->LoadModel(ModelType::OBJ, "sponza", "resources/model/obj/sponza/sponza.obj");
+        // S<SceneNode> dragonNode = m_Scene->LoadModel(ModelType::OBJ, "dragon", "resources/model/obj/dragon/dragon.obj");
+        // sponzaNode->Scale = glm::vec3(0.05f);
+        // dragonNode->Position = glm::vec3(10.0f, 10.0f, 0.0f);
+        // dragonNode->Scale = glm::vec3(10.0f);
+
+        S<SceneNode> sponzaNode = m_Scene->LoadModel(ModelType::GLTF, "sponza", "resources/model/gltf/Sponza/glTF/Sponza.gltf");
         sponzaNode->Scale = glm::vec3(0.05f);
-        dragonNode->Position = glm::vec3(10.0f, 10.0f, 0.0f);
-        dragonNode->Scale = glm::vec3(10.0f);
 
         CIRI_LOG("Scene Initialised");
     }
