@@ -83,7 +83,6 @@ namespace Ciri
                         CIRI_LOG("BufferView Byte Offset: {}", buffer_view.byteOffset);
                         CIRI_LOG("BufferView Byte Length: {}", buffer_view.byteLength);
 
-                        /* Specifically just trying to load position data for now. */
                         if (attrib.first.compare("POSITION") == 0)
                         {
                             if (accessor.componentType == GL_FLOAT && accessor.type == TINYGLTF_TYPE_VEC3)
@@ -141,13 +140,43 @@ namespace Ciri
                         }
                     }
 
-                    S<Mesh> mesh = CreateS<Mesh>(positionData, normalData, texCoordData);
+                    /* Retrieve primitive indices. */
+                    std::vector<uint16_t> indexData;
+                    tinygltf::Accessor index_accessor = model.accessors[primitive.indices];
+                    const tinygltf::BufferView &buffer_view = model.bufferViews[index_accessor.bufferView];
+                    const tinygltf::Buffer &buffer = model.buffers[buffer_view.buffer];
+                    CIRI_LOG("Primitive Mode: {}", primitive.mode);
+                    CIRI_LOG("Index Accessor Count: {}", index_accessor.count);
+                    CIRI_LOG("Index Accessor Component Type: {}", index_accessor.componentType);
+                    CIRI_LOG("Index Accessor Type: {}", index_accessor.type);
+                    CIRI_LOG("Index Accessor Byte Offset: {}", index_accessor.byteOffset);
+                    CIRI_LOG("Index Accessor Byte Stride: {}", index_accessor.ByteStride(buffer_view));
+                    CIRI_LOG("BufferView Target: {}", buffer_view.target);
+                    CIRI_LOG("BufferView Buffer Byte Count: {}", buffer.data.size());
+                    CIRI_LOG("BufferView Byte Offset: {}", buffer_view.byteOffset);
+                    CIRI_LOG("BufferView Byte Length: {}", buffer_view.byteLength);
+
+                    if (index_accessor.componentType == GL_UNSIGNED_SHORT && index_accessor.type == TINYGLTF_TYPE_SCALAR)
+                    {
+                        for (size_t i = buffer_view.byteOffset; i < buffer_view.byteOffset + buffer_view.byteLength; i += index_accessor.ByteStride(buffer_view))
+                        {
+                            uint16_t t1 = *(uint16_t *)&buffer.data[i];
+                            indexData.push_back(t1);
+                        }
+                    }
+                    else
+                    {
+                        CIRI_ASSERT(false, "GLTF primitive has wrong index data type for Ciri mesh");
+                    }
+
+                    S<Mesh> mesh = CreateS<Mesh>(positionData, normalData, texCoordData, indexData);
                     mesh->Construct();
 
                     S<SceneNode> node = CreateS<SceneNode>();
                     node->NodeMesh = mesh;
                     node->NodeMaterial = scene->GetDefaultMaterial();
                     container->AddChild(node);
+                    break;
                 }
             }
 

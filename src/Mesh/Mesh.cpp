@@ -13,12 +13,21 @@ namespace Ciri
 	{
 	}
 
+		Mesh::Mesh(std::vector<glm::vec3> position_data, std::vector<glm::vec3> normal_data, std::vector<glm::vec2> texcoord_data, std::vector<uint16_t> index_data)
+		: m_PositionData(position_data), m_NormalData(normal_data), m_TexCoordData(texcoord_data), m_IndexData(index_data), IsIndexed(true)
+	{
+	}
+
 	void Mesh::Construct()
 	{
 		if (!m_VAO)
 		{
 			glGenVertexArrays(1, &m_VAO);
 			glGenBuffers(1, &m_VBO);
+			if (IsIndexed)
+			{
+				glGenBuffers(1, &m_IBO);
+			}
 		}
 
 		std::vector<float> data;
@@ -38,6 +47,11 @@ namespace Ciri
 		glBindVertexArray(m_VAO);
 		glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 		glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), data.data(), GL_STATIC_DRAW);
+		if (IsIndexed)
+		{
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_IndexData.size() * sizeof(uint16_t), m_IndexData.data(), GL_STATIC_DRAW);
+		}
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 0);
 		glEnableVertexAttribArray(0);
