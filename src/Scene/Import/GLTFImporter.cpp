@@ -12,6 +12,11 @@ namespace Ciri
         std::string err;
         std::string warn;
 
+        // materialpath = folder containing .gltf FOR NOW
+        std::string filepath_string = std::string(filepath);
+        std::size_t last = filepath_string.find_last_of("/\\");
+        std::string materialpath = filepath_string.substr(0, last + 1);
+
         tinygltf::Model model;
         bool ret = loader.LoadASCIIFromFile(&model, &err, &warn, filepath);
         if (!ret)
@@ -35,7 +40,7 @@ namespace Ciri
         std::stack<int> node_stack;
         for (int n : default_scene.nodes)
         {
-            if ((n >= 0) && (n < model.nodes.size()))
+            if ((n >= 0) && (n < (int)model.nodes.size()))
             {
                 node_stack.push(n);
             }
@@ -59,14 +64,8 @@ namespace Ciri
                 CIRI_LOG("Primitives Count - {}", mesh.primitives.size());
 
                 /* Loop over mesh primitives. */
-                // int i = 0;
                 for (const tinygltf::Primitive &primitive : mesh.primitives)
                 {
-                    // i++;
-                    // if (i != 3)
-                    // {
-                    //     continue;
-                    // }
                     std::vector<glm::vec3> positionData;
                     std::vector<glm::vec3> normalData;
                     std::vector<glm::vec2> texCoordData;
@@ -162,34 +161,48 @@ namespace Ciri
                     CIRI_LOG("BufferView Byte Offset: {}", buffer_view.byteOffset);
                     CIRI_LOG("BufferView Byte Length: {}", buffer_view.byteLength);
 
-                    if (index_accessor.componentType == GL_UNSIGNED_SHORT && index_accessor.type == TINYGLTF_TYPE_SCALAR)
+                    for (size_t i = index_accessor.byteOffset; i < index_accessor.byteOffset + (index_accessor.count * index_accessor.ByteStride(buffer_view)); i += index_accessor.ByteStride(buffer_view))
                     {
-                        for (size_t i = index_accessor.byteOffset; i < index_accessor.byteOffset + (index_accessor.count * index_accessor.ByteStride(buffer_view)); i += index_accessor.ByteStride(buffer_view))
+                        if (index_accessor.ByteStride(buffer_view) == 2)
                         {
                             uint16_t t1 = *(uint16_t *)&buffer.data[i];
                             indexData.push_back(t1);
                         }
-                    }
-                    else
-                    {
-                        CIRI_ASSERT(false, "GLTF primitive has wrong index data type for Ciri mesh");
+                        else if (index_accessor.ByteStride(buffer_view) == 4)
+                        {
+                            uint32_t t1 = *(uint32_t *)&buffer.data[i];
+                            indexData.push_back((uint16_t)t1);
+                        }
+                        else
+                        {
+                            CIRI_ASSERT(false, "GLTF primitive has unsupported index data type for Ciri mesh");
+                        }
                     }
 
-                    S<Mesh> mesh = CreateS<Mesh>(positionData, normalData, texCoordData, indexData);
+                    /* Primitive Material. Just base color texture for now. */
+                    tinygltf::Material &material = model.materials[primitive.material];
+                    tinygltf::TextureInfo &texture_info = material.pbrMetallicRoughness.baseColorTexture;
+                    tinygltf::Texture &texture = model.textures[texture_info.index];
+                    tinygltf::Image &image = model.images[texture.source];
+                    std::string full_material_path = std::string(materialpath) + image.uri;
+                    MaterialInfo info = {image.uri, true, false, full_material_path};
+                    S<Material> mat = scene->MatLib.CreateMaterial(info, glm::vec3(1.0f));
+
+                    S<Mesh>
+                        mesh = CreateS<Mesh>(positionData, normalData, texCoordData, indexData);
                     mesh->Construct();
 
                     S<SceneNode> node = CreateS<SceneNode>();
                     node->NodeMesh = mesh;
-                    node->NodeMaterial = scene->GetDefaultMaterial();
+                    node->NodeMaterial = mat;
                     container->AddChild(node);
-                    // break;
                 }
             }
 
             /* Process child nodes of current node. */
             for (int c : node.children)
             {
-                if ((c >= 0) && (c < model.nodes.size()))
+                if ((c >= 0) && (c < (int)model.nodes.size()))
                 {
                     node_stack.push(c);
                 }

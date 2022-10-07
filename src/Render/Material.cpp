@@ -7,10 +7,7 @@ namespace Ciri
 {
     Material::Material() {}
 
-    MaterialLibrary::MaterialLibrary()
-    {
-        stbi_set_flip_vertically_on_load(true);
-    }
+    MaterialLibrary::MaterialLibrary() {}
 
     S<Material> MaterialLibrary::GetMaterial(std::string name)
     {
@@ -22,17 +19,17 @@ namespace Ciri
     }
 
     S<Material> MaterialLibrary::CreateMaterial(MaterialInfo &info,
-                                              glm::vec3 baseColor,
-                                              float subsurface,
-                                              float metallic,
-                                              float specular,
-                                              float specularTint,
-                                              float roughness,
-                                              float anisotropic,
-                                              float sheen,
-                                              float sheenTint,
-                                              float clearcoat,
-                                              float clearcoatGloss)
+                                                glm::vec3 baseColor,
+                                                float subsurface,
+                                                float metallic,
+                                                float specular,
+                                                float specularTint,
+                                                float roughness,
+                                                float anisotropic,
+                                                float sheen,
+                                                float sheenTint,
+                                                float clearcoat,
+                                                float clearcoatGloss)
     {
         S<Material> material = CreateS<Material>();
 
@@ -82,6 +79,8 @@ namespace Ciri
     {
         int32_t w, h;
         int32_t nrChannels;
+
+        stbi_set_flip_vertically_on_load(info.flip);
 
         uint8_t *image = stbi_load(filepath.c_str(), &w, &h, &nrChannels, STBI_default);
         if (!image)

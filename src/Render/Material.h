@@ -10,6 +10,7 @@ namespace Ciri
     {
         std::string name = "null";
         bool mipmap = false;
+        bool flip = false;
 
         std::string baseColorFilepath;
         std::string normalFilepath;
@@ -51,7 +52,7 @@ namespace Ciri
     {
     private:
         std::map<std::string, S<Material>> m_MaterialList; // name -> material
-        std::map<std::string, uint32_t> m_TextureList;    // filepath -> texture id
+        std::map<std::string, uint32_t> m_TextureList;     // filepath -> texture id
 
     public:
         MaterialLibrary();
@@ -62,17 +63,17 @@ namespace Ciri
         const std::map<std::string, uint32_t> &GetTextures() const { return m_TextureList; };
 
         S<Material> CreateMaterial(MaterialInfo &info,
-                                 glm::vec3 base_color,
-                                 float subsurface = 0.0f,
-                                 float metallic = 0.0f,
-                                 float specular = 0.0f,
-                                 float specularTint = 0.0f,
-                                 float roughness = 0.0f,
-                                 float anisotropic = 0.0f,
-                                 float sheen = 0.0f,
-                                 float sheenTint = 0.0f,
-                                 float clearcoat = 0.0f,
-                                 float clearcoatGloss = 0.0f);
+                                   glm::vec3 base_color,
+                                   float subsurface = 0.0f,
+                                   float metallic = 0.0f,
+                                   float specular = 0.0f,
+                                   float specularTint = 0.0f,
+                                   float roughness = 0.0f,
+                                   float anisotropic = 0.0f,
+                                   float sheen = 0.0f,
+                                   float sheenTint = 0.0f,
+                                   float clearcoat = 0.0f,
+                                   float clearcoatGloss = 0.0f);
 
     private:
         // Add new texture to `m_TextureList`, calls `CompileTexture`

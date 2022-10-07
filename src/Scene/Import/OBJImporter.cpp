@@ -60,7 +60,7 @@ namespace Ciri
 				std::replace(texture_name.begin(), texture_name.end(), '\\', '/');
 				std::string full_material_path = std::string(materialpath) + texture_name;
 
-				MaterialInfo info = {materials[m].name, true, full_material_path};
+				MaterialInfo info = {materials[m].name, true, true, full_material_path};
 				scene->MatLib.CreateMaterial(info, glm::vec3(1.0f));
 			}
 		}
