@@ -59,8 +59,14 @@ namespace Ciri
                 CIRI_LOG("Primitives Count - {}", mesh.primitives.size());
 
                 /* Loop over mesh primitives. */
+                // int i = 0;
                 for (const tinygltf::Primitive &primitive : mesh.primitives)
                 {
+                    // i++;
+                    // if (i != 3)
+                    // {
+                    //     continue;
+                    // }
                     std::vector<glm::vec3> positionData;
                     std::vector<glm::vec3> normalData;
                     std::vector<glm::vec2> texCoordData;
@@ -158,7 +164,7 @@ namespace Ciri
 
                     if (index_accessor.componentType == GL_UNSIGNED_SHORT && index_accessor.type == TINYGLTF_TYPE_SCALAR)
                     {
-                        for (size_t i = buffer_view.byteOffset; i < buffer_view.byteOffset + buffer_view.byteLength; i += index_accessor.ByteStride(buffer_view))
+                        for (size_t i = index_accessor.byteOffset; i < index_accessor.byteOffset + (index_accessor.count * index_accessor.ByteStride(buffer_view)); i += index_accessor.ByteStride(buffer_view))
                         {
                             uint16_t t1 = *(uint16_t *)&buffer.data[i];
                             indexData.push_back(t1);
@@ -176,7 +182,7 @@ namespace Ciri
                     node->NodeMesh = mesh;
                     node->NodeMaterial = scene->GetDefaultMaterial();
                     container->AddChild(node);
-                    break;
+                    // break;
                 }
             }
 
