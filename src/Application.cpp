@@ -1,6 +1,7 @@
 #include "Application.h"
 
 #include "imgui.h"
+#include <glm/gtc/type_ptr.hpp>
 
 namespace Ciri
 {
@@ -56,6 +57,23 @@ namespace Ciri
         if (!UI::IsActive())
         {
             return;
+        }
+
+        /* Testing ImGuizmo. */
+        S<SceneNode> selected_node = m_SceneHierarchyPanel->GetSelectedNode();
+        if (selected_node)
+        {
+            ImGuizmo::SetOrthographic(false);
+            ImGuizmo::SetDrawlist(ImGui::GetBackgroundDrawList());
+            ImGuizmo::SetRect(0, 0, m_Window->Width, m_Window->Height);
+            glm::mat4 node_transform = glm::translate(glm::mat4(1.0f), selected_node->Position) * glm::scale(glm::mat4(1.0f), selected_node->Scale); /* TODO: Create GetTransform function for node and use it in the renderer. */
+            ImGuizmo::Manipulate(glm::value_ptr(m_Camera->GetViewMat()), glm::value_ptr(m_Camera->GetProjectionMat()), ImGuizmo::OPERATION::SCALE, ImGuizmo::LOCAL, glm::value_ptr(node_transform));
+
+            if (ImGuizmo::IsUsing())
+            {
+                glm::vec3 translation, scale;
+                Math::DecomposeTransform(node_transform, selected_node->Position, selected_node->Scale);
+            }
         }
 
         // ImGui::ShowDemoWindow();

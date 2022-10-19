@@ -45,6 +45,8 @@ set(imgui-source ${imgui-directory}/imconfig.h
 	${imgui-directory}/imgui_demo.cpp
 	${imgui-directory}/backends/imgui_impl_glfw.cpp
 	${imgui-directory}/backends/imgui_impl_opengl3.cpp
+	${imgui-directory}/ImGuizmo.h
+	${imgui-directory}/ImGuizmo.cpp
 )
 
 # fork_awesome icons
