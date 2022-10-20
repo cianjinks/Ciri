@@ -4,9 +4,9 @@
 
 namespace Ciri
 {
-    MeshSettingsPanel::MeshSettingsPanel(MaterialLibrary& matlib)
+    MeshSettingsPanel::MeshSettingsPanel(MaterialLibrary &matlib)
         : m_MaterialLibrary(matlib)
-    {   
+    {
     }
 
     void MeshSettingsPanel::OnUIRender()
@@ -16,6 +16,7 @@ namespace Ciri
         {
             ImGui::Text(m_SelectedNode->Name.c_str());
             ImGui::InputFloat3("Position", &m_SelectedNode->Position.x);
+            ImGui::InputFloat3("Rotation", &m_SelectedNode->Rotation.x);
             ImGui::InputFloat3("Scale", &m_SelectedNode->Scale.x);
 
             // Material setting

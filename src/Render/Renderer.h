@@ -12,6 +12,7 @@ namespace Ciri
     {
         S<SceneNode> node;
         glm::vec3 position;
+        glm::mat4 rotation; /* Rotation converted from vec3 to mat4 in RenderStack. */
         glm::vec3 scale;
     };
 
@@ -43,7 +44,7 @@ namespace Ciri
         Renderer(int32_t targetWidth, int32_t targetHeight);
         ~Renderer();
 
-        void OnEvent(Event& event);
+        void OnEvent(Event &event);
 
         void RenderScene(const S<Scene> &scene, const S<Camera> &camera);
 

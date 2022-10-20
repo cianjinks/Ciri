@@ -23,6 +23,7 @@ namespace Ciri
         S<Material> NodeMaterial = nullptr; // Reference to a material in the Scene's MaterialLibrary
 
         glm::vec3 Position = glm::vec3(0.0f);
+        glm::vec3 Rotation = glm::vec3(0.0f);
         glm::vec3 Scale = glm::vec3(1.0f);
 
         std::vector<S<SceneNode>> Children;
@@ -50,7 +51,7 @@ namespace Ciri
 
     public:
         S<SceneNode> AddMesh(const char *name, S<Mesh> mesh, S<Material> material = nullptr);
-        S<SceneNode> AddContainer(); // Create empty scene node
+        S<SceneNode> AddContainer();                 // Create empty scene node
         S<SceneNode> AddContainer(const char *name); // Create empty scene node
 
         S<SceneNode> LoadModel(ModelType type, const char *name, const char *filepath);
@@ -59,7 +60,7 @@ namespace Ciri
         const uint32_t GetMeshCount() const { return m_MeshCount; }
         const uint32_t GetTotalTriCount() const { return m_TotalTriCount; }
         S<Material> GetDefaultMaterial() const { return m_DefaultMaterial; }
-        
+
         // TODO: These shouldn't be necesary, instead store count on nodes in the tree?
         void SetMeshCount(uint32_t meshcount) { m_MeshCount = meshcount; }
         void SetTotalTriCount(uint32_t tricount) { m_TotalTriCount = tricount; }
