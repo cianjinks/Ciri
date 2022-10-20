@@ -5,7 +5,7 @@ namespace Ciri
     namespace Math
     {
         /* Taken from https://github.com/TheCherno/Hazel which modifies glm::decompose. */
-        bool DecomposeTransform(const glm::mat4 &transform, glm::vec3 &r_translation, glm::vec3 &r_scale)
+        bool DecomposeTransform(const glm::mat4 &transform, glm::vec3 &r_translation, glm::vec3 &r_rotation, glm::vec3 &r_scale)
         {
             using namespace glm;
             using T = float;
@@ -31,7 +31,7 @@ namespace Ciri
             r_translation = vec3(LocalMatrix[3]);
             LocalMatrix[3] = vec4(0, 0, 0, LocalMatrix[3].w);
 
-            vec3 Row[3];
+            vec3 Row[3], Pdum3;
 
             // Now get scale and shear.
             for (length_t i = 0; i < 3; ++i)
@@ -50,26 +50,28 @@ namespace Ciri
             // Check for a coordinate system flip.  If the determinant
             // is -1, then negate the matrix and the scaling factors.
 #if 0
-            Pdum3 = cross(Row[1], Row[2]); // v3Cross(row[1], row[2], Pdum3);
-            if (dot(Row[0], Pdum3) < 0)
-            {
-                for (length_t i = 0; i < 3; i++)
-                {
-                    scale[i] *= static_cast<T>(-1);
-                    Row[i] *= static_cast<T>(-1);
-                }
-            }
+		Pdum3 = cross(Row[1], Row[2]); // v3Cross(row[1], row[2], Pdum3);
+		if (dot(Row[0], Pdum3) < 0)
+		{
+			for (length_t i = 0; i < 3; i++)
+			{
+				scale[i] *= static_cast<T>(-1);
+				Row[i] *= static_cast<T>(-1);
+			}
+		}
 #endif
 
-            // rotation.y = asin(-Row[0][2]);
-            // if (cos(rotation.y) != 0) {
-            //     rotation.x = atan2(Row[1][2], Row[2][2]);
-            //     rotation.z = atan2(Row[0][1], Row[0][0]);
-            // }
-            // else {
-            //     rotation.x = atan2(-Row[2][0], Row[1][1]);
-            //     rotation.z = 0;
-            // }
+            r_rotation.y = asin(-Row[0][2]);
+            if (cos(r_rotation.y) != 0)
+            {
+                r_rotation.x = atan2(Row[1][2], Row[2][2]);
+                r_rotation.z = atan2(Row[0][1], Row[0][0]);
+            }
+            else
+            {
+                r_rotation.x = atan2(-Row[2][0], Row[1][1]);
+                r_rotation.z = 0;
+            }
 
             return true;
         }

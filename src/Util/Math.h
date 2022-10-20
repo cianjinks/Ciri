@@ -8,8 +8,7 @@ namespace Ciri
 {
     namespace Math
     {
-        /* TODO: Add rotation. */
-        bool DecomposeTransform(const glm::mat4& transform, glm::vec3& r_translation, glm::vec3& r_scale);
+        bool DecomposeTransform(const glm::mat4 &transform, glm::vec3 &r_translation, glm::vec3 &r_rotation, glm::vec3 &r_scale);
     }
 }
 
