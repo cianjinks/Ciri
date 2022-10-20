@@ -226,8 +226,9 @@ namespace Ciri
                 glm::mat4 model = glm::mat4(1.0f);
                 model = glm::translate(model, currentNodePosition);
                 model = model * currentNodeRotation;
-                /* TODO:
-                 *      Scale is incorrect when trying to scale sub-objects on
+                /* TODO: The scene hierarchy does not actually work correctly.
+                 * Consider parenting cube to cube and offset positon then rotation.
+                 *      Also scale is incorrect when trying to scale sub-objects on
                  * sponza, because these objects have position (0, 0, 0) but their
                  * vertices are actually relative to the (0, 0, 0) of the entire
                  * sponza model. I presume this is not fixable :(

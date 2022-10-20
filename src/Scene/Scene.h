@@ -50,6 +50,8 @@ namespace Ciri
         ~Scene();
 
     public:
+        /* Create scene node but don't parent to scene root. */
+        S<SceneNode> CreateMesh(const char *name, S<Mesh> mesh, S<Material> material = nullptr);
         S<SceneNode> AddMesh(const char *name, S<Mesh> mesh, S<Material> material = nullptr);
         S<SceneNode> AddContainer();                 // Create empty scene node
         S<SceneNode> AddContainer(const char *name); // Create empty scene node

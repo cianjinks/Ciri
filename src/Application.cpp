@@ -106,6 +106,13 @@ namespace Ciri
         cube2Node->Scale = glm::vec3(0.75f);
         cube3Node->Position = glm::vec3(3.0f, 10.0f, 0.0f);
 
+        S<Cube> child = CreateS<Cube>();
+        child->Construct();
+        S<SceneNode> childNode = m_Scene->CreateMesh("child", child);
+        childNode->Position = glm::vec3(0.0f, -2.0f, 0.0f);
+        childNode->Scale = glm::vec3(0.5f);
+        cube1Node->AddChild(childNode);
+
         // S<SceneNode> dragonNode = m_Scene->LoadModel(ModelType::OBJ, "dragon", "resources/model/obj/dragon/dragon.obj");
         // dragonNode->Position = glm::vec3(10.0f, 10.0f, 0.0f);
         // dragonNode->Scale = glm::vec3(10.0f);

@@ -36,6 +36,20 @@ namespace Ciri
 		root->Children.clear(); // Destroys all elements in vector?
 	}
 
+	S<SceneNode> Scene::CreateMesh(const char *name, S<Mesh> mesh, S<Material> material)
+	{
+		S<SceneNode> node = CreateS<SceneNode>();
+
+		node->Name = name;
+		node->NodeMesh = mesh;
+		node->NodeMaterial = material ? material : m_DefaultMaterial;
+
+		m_TotalTriCount += mesh->TriCount;
+		m_MeshCount++;
+
+		return node;
+	}
+
 	S<SceneNode> Scene::AddMesh(const char *name, S<Mesh> mesh, S<Material> material)
 	{
 		S<SceneNode> node = CreateS<SceneNode>();
@@ -75,23 +89,23 @@ namespace Ciri
 		S<SceneNode> result = nullptr;
 		switch (type)
 		{
-			case ModelType::OBJ:
-			{
-				result = OBJImporter::Import(this, filepath);
-				break;
-			}
-			case ModelType::GLTF:
-			{
-				result = GLTFImporter::Import(this, filepath);
-				break;
-			}
+		case ModelType::OBJ:
+		{
+			result = OBJImporter::Import(this, filepath);
+			break;
+		}
+		case ModelType::GLTF:
+		{
+			result = GLTFImporter::Import(this, filepath);
+			break;
+		}
 		}
 
 		if (result)
 		{
 			result->Name = name;
 		}
-		
+
 		return result;
 	}
 }
