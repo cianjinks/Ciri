@@ -1,8 +1,6 @@
 #include "Application.h"
 
 #include "imgui.h"
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/quaternion.hpp>
 
 namespace Ciri
 {
@@ -60,28 +58,8 @@ namespace Ciri
             return;
         }
 
-        /* Testing ImGuizmo. */
-        S<SceneNode> selected_node = m_SceneHierarchyPanel->GetSelectedNode();
-        if (selected_node)
-        {
-            ImGuizmo::SetOrthographic(false);
-            ImGuizmo::SetDrawlist(ImGui::GetBackgroundDrawList());
-            ImGuizmo::SetRect(0, 0, (float)m_Window->Width, (float)m_Window->Height);
-            glm::mat4 node_transform = glm::translate(glm::mat4(1.0f), selected_node->Position) * glm::toMat4(glm::quat(selected_node->Rotation)) * glm::scale(glm::mat4(1.0f), selected_node->Scale); /* TODO: Create GetTransform function for node and use it in the renderer. */
-            ImGuizmo::Manipulate(glm::value_ptr(m_Camera->GetViewMat()), glm::value_ptr(m_Camera->GetProjectionMat()),
-                                 ImGuizmo::OPERATION::TRANSLATE | ImGuizmo::OPERATION::SCALE | ImGuizmo::OPERATION::ROTATE, ImGuizmo::LOCAL,
-                                 glm::value_ptr(node_transform));
-
-            if (ImGuizmo::IsUsing())
-            {
-                glm::vec3 translation, rotation, scale;
-                Math::DecomposeTransform(node_transform, translation, rotation, scale);
-                selected_node->Position = translation;
-                glm::vec3 deltaRotation = rotation - selected_node->Rotation;
-                selected_node->Rotation += deltaRotation;
-                selected_node->Scale = scale;
-            }
-        }
+        m_Gizmo->SetSelectedNode(m_SceneHierarchyPanel->GetSelectedNode());
+        m_Gizmo->OnUIRender();
 
         // ImGui::ShowDemoWindow();
         m_StatisticsPanel->OnUIRender();
@@ -96,6 +74,8 @@ namespace Ciri
 
     void Application::DefineUI()
     {
+        m_Gizmo = CreateU<Gizmo>(m_Camera);
+
         m_StatisticsPanel = CreateU<StatisticsPanel>(m_Scene);
         m_SceneHierarchyPanel = CreateU<SceneHierarchyPanel>(m_Scene);
         m_MeshSettingsPanel = CreateU<MeshSettingsPanel>(m_Scene->MatLib);
