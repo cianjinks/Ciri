@@ -166,7 +166,7 @@ namespace Ciri
         if (in)
         {
             in.seekg(0, std::ios::end);
-            data.resize(in.tellg());
+            data.resize((const uint32_t)in.tellg());
             in.seekg(0, std::ios::beg);
             in.read(&data[0], data.size());
             in.close();

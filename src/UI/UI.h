@@ -2,9 +2,9 @@
 #define CIRI_UI_H
 
 // Include ImGUI before Glad
+#define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
 #include "imgui.h"
 #include "ImGuizmo.h"
-#define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 
@@ -19,7 +19,7 @@ namespace Ciri
         static bool s_HideUI;
 
     public:
-        static void Init(const S<Window>& window);
+        static void Init(const S<Window> &window);
         static void PreRender();
         static void PostRender();
 
@@ -30,7 +30,7 @@ namespace Ciri
         static void ToggleActive() { s_HideUI = !s_HideUI; }
         static bool IsActive() { return !s_HideUI; }
 
-        static void OnEvent(Event& event);
+        static void OnEvent(Event &event);
     };
 }
 

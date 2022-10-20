@@ -57,7 +57,7 @@ namespace Ciri
             CIRI_LOG("Node - {}", node.name);
 
             /* Retrieve Mesh if it exists. */
-            if ((node.mesh >= 0) && (node.mesh < model.meshes.size()))
+            if ((node.mesh >= 0) && ((size_t)node.mesh < model.meshes.size()))
             {
                 const tinygltf::Mesh &mesh = model.meshes[node.mesh];
                 CIRI_LOG("Mesh - {}", mesh.name);

@@ -19,7 +19,7 @@ namespace Ciri
     class Application
     {
     public:
-        std::string Name = "Ciri";
+        std::string Name = "Rendering Engine";
 
     private:
         S<Window> m_Window;
@@ -40,7 +40,7 @@ namespace Ciri
         ~Application() = default;
 
         void Run();
-        void OnEvent(Event& event);
+        void OnEvent(Event &event);
         void OnUIRender();
 
         void DefineUI();

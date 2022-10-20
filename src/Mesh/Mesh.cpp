@@ -13,7 +13,7 @@ namespace Ciri
 	{
 	}
 
-		Mesh::Mesh(std::vector<glm::vec3> position_data, std::vector<glm::vec3> normal_data, std::vector<glm::vec2> texcoord_data, std::vector<uint16_t> index_data)
+	Mesh::Mesh(std::vector<glm::vec3> position_data, std::vector<glm::vec3> normal_data, std::vector<glm::vec2> texcoord_data, std::vector<uint16_t> index_data)
 		: m_PositionData(position_data), m_NormalData(normal_data), m_TexCoordData(texcoord_data), m_IndexData(index_data), IsIndexed(true)
 	{
 	}
@@ -32,7 +32,7 @@ namespace Ciri
 
 		std::vector<float> data;
 		data.reserve((m_PositionData.size() * 3) + (m_NormalData.size() * 3) + (m_TexCoordData.size() * 2));
-		for (int i = 0; i < m_PositionData.size(); i++)
+		for (size_t i = 0; i < m_PositionData.size(); i++)
 		{
 			data.push_back(m_PositionData[i].x);
 			data.push_back(m_PositionData[i].y);

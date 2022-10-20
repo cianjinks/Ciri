@@ -178,12 +178,12 @@ namespace Ciri
     // UV sphere
     Sphere::Sphere(uint32_t h_segments, uint32_t v_segments, bool flat)
     {
-        for (int v = 0; v < v_segments; v++)
+        for (uint32_t v = 0; v < v_segments; v++)
         {
             float theta1 = glm::pi<float>() * (float(v) / float(v_segments));
             float theta2 = glm::pi<float>() * (float(v + 1) / float(v_segments));
 
-            for (int h = 0; h < h_segments; h++)
+            for (uint32_t h = 0; h < h_segments; h++)
             {
                 float phi1 = glm::two_pi<float>() * (float(h) / float(h_segments));
                 float phi2 = glm::two_pi<float>() * (float(h + 1) / float(h_segments));

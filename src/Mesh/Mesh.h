@@ -34,7 +34,17 @@ namespace Ciri
         // Upload mesh data to GPU (generate VAO, VBO)
         void Construct();
 
-        int32_t GetIndexCount() { if (IsIndexed) { return m_IndexData.size(); } else { return -1; }}
+        int32_t GetIndexCount()
+        {
+            if (IsIndexed)
+            {
+                return m_IndexData.size();
+            }
+            else
+            {
+                return -1;
+            }
+        }
     };
 }
 
