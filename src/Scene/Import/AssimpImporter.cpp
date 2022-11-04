@@ -18,6 +18,9 @@ namespace Ciri
         std::string file_dir = std::string(filepath);
         file_dir = file_dir.substr(0, file_dir.find_last_of('/'));
 
+        std::map<std::string, BoneInfo> boneInfoMap;
+        int boneCounter = 0;
+
         std::stack<aiNode*> nodestack;
         nodestack.push(assimp_scene->mRootNode);
         while(!nodestack.empty())
@@ -28,7 +31,7 @@ namespace Ciri
             for (uint32_t m = 0; m < node->mNumMeshes; m++)
             {
                 aiMesh *assimp_mesh = assimp_scene->mMeshes[node->mMeshes[m]];
-                ProcessAssimpMesh(scene, container, assimp_scene, assimp_mesh, file_dir);
+                ProcessAssimpMesh(scene, container, assimp_scene, assimp_mesh, file_dir, boneInfoMap, boneCounter);
             }
 
             for (uint32_t n = 0; n < node->mNumChildren; n++)
@@ -40,7 +43,7 @@ namespace Ciri
         return container;
     }
 
-    void AssimpImporter::ProcessAssimpMesh(Scene* scene, const S<SceneNode>& container, const aiScene* assimp_scene, const aiMesh* assimp_mesh, std::string file_dir)
+    void AssimpImporter::ProcessAssimpMesh(Scene* scene, const S<SceneNode>& container, const aiScene* assimp_scene, const aiMesh* assimp_mesh, std::string file_dir, std::map<std::string, BoneInfo>& boneinfomap, int& bonecounter)
     {
         std::vector<glm::vec3> positionData;
         std::vector<glm::vec3> normalData;
@@ -70,8 +73,12 @@ namespace Ciri
             }
         }
 
+        std::vector<glm::i32vec4> boneidData;
+        std::vector<glm::vec4> boneweightData;
+        ProcessBones(assimp_scene, assimp_mesh, boneidData, boneweightData, boneinfomap, bonecounter);
+
         S<Mesh>
-            mesh = CreateS<Mesh>(positionData, normalData, texCoordData, indexData);
+            mesh = CreateS<Mesh>(positionData, normalData, texCoordData, indexData, boneidData, boneweightData);
         mesh->Construct();
 
         S<SceneNode> node = CreateS<SceneNode>();
@@ -107,6 +114,54 @@ namespace Ciri
         if (diffuse_texture_count > 1)
         {
             CIRI_WARN("Model has more than 2 diffuse textures for one mesh. This is unsupported.");
+        }
+    }
+
+    void AssimpImporter::ProcessBones(const aiScene* assimp_scene, const aiMesh* assimp_mesh, std::vector<glm::i32vec4>& boneids, std::vector<glm::vec4>& boneweights, std::map<std::string, BoneInfo>& boneinfomap, int& bonecounter)
+    {
+        for (int bone_index = 0; bone_index < assimp_mesh->mNumBones; bone_index++)
+        {
+            int boneID = -1;
+            std::string boneName = assimp_mesh->mBones[bone_index]->mName.C_Str();
+            if (boneinfomap.find(boneName) == boneinfomap.end())
+            {
+                BoneInfo newBoneInfo;
+                newBoneInfo.id = bonecounter;
+                newBoneInfo.offset = ConvertMatrixToGLMFormat(assimp_mesh->mBones[bone_index]->mOffsetMatrix);
+                boneinfomap[boneName] = newBoneInfo;
+                boneID = bonecounter;
+                bonecounter++;
+            }
+            else
+            {
+                boneID = boneinfomap[boneName].id;
+            }
+
+            auto weights = assimp_mesh->mBones[bone_index]->mWeights;
+            uint32_t numWeights = assimp_mesh->mBones[bone_index]->mNumWeights;
+            for (int weight_index = 0; weight_index < numWeights; ++weight_index)
+            {
+                int vertex_id = weights[weight_index].mVertexId;
+                float weight = weights[weight_index].mWeight;
+
+                for (int i = 0; i < 4; ++i)
+                {
+                    if (boneids.size() <= vertex_id)
+                    {
+                        boneids.resize(vertex_id + 1, glm::i32vec4(-1));
+                    }
+                    if (boneweights.size() <= vertex_id)
+                    {
+                        boneweights.resize(vertex_id + 1, glm::vec4(0.0f));
+                    }
+                    if (boneids[vertex_id][i] < 0)
+                    {
+                        boneweights[vertex_id][i] = weight;
+                        boneids[vertex_id][i] = boneID;
+                        break;
+                    }
+                }
+            }
         }
     }
 }

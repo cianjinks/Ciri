@@ -86,41 +86,44 @@ namespace Ciri
 
     void Application::DefineScene()
     {
-        S<Sphere> sphere = CreateS<Sphere>(100, 100, false);
-        S<Cube> cube1 = CreateS<Cube>();
-        S<Cube> cube2 = CreateS<Cube>();
-        S<Cube> cube3 = CreateS<Cube>();
-        sphere->Construct();
-        cube1->Construct();
-        cube2->Construct();
-        cube3->Construct();
-        S<SceneNode> sphereNode = m_Scene->AddMesh("sphere", sphere);
-        S<SceneNode> cube1Node = m_Scene->AddMesh("cube1", cube1);
-        S<SceneNode> cube2Node = m_Scene->AddMesh("cube2", cube2);
-        S<SceneNode> cube3Node = m_Scene->AddMesh("cube3", cube3);
-        sphereNode->Position = glm::vec3(0.0f, 15.0f, 0.0f);
-        sphereNode->Scale = glm::vec3(3.0f);
-        cube1Node->Position = glm::vec3(-3.0f, 10.0f, 0.0f);
-        cube1Node->Scale = glm::vec3(0.5f);
-        cube2Node->Position = glm::vec3(0.0f, 10.0f, 0.0f);
-        cube2Node->Scale = glm::vec3(0.75f);
-        cube3Node->Position = glm::vec3(3.0f, 10.0f, 0.0f);
+        // S<Sphere> sphere = CreateS<Sphere>(100, 100, false);
+        // S<Cube> cube1 = CreateS<Cube>();
+        // S<Cube> cube2 = CreateS<Cube>();
+        // S<Cube> cube3 = CreateS<Cube>();
+        // sphere->Construct();
+        // cube1->Construct();
+        // cube2->Construct();
+        // cube3->Construct();
+        // S<SceneNode> sphereNode = m_Scene->AddMesh("sphere", sphere);
+        // S<SceneNode> cube1Node = m_Scene->AddMesh("cube1", cube1);
+        // S<SceneNode> cube2Node = m_Scene->AddMesh("cube2", cube2);
+        // S<SceneNode> cube3Node = m_Scene->AddMesh("cube3", cube3);
+        // sphereNode->Position = glm::vec3(0.0f, 15.0f, 0.0f);
+        // sphereNode->Scale = glm::vec3(3.0f);
+        // cube1Node->Position = glm::vec3(-3.0f, 10.0f, 0.0f);
+        // cube1Node->Scale = glm::vec3(0.5f);
+        // cube2Node->Position = glm::vec3(0.0f, 10.0f, 0.0f);
+        // cube2Node->Scale = glm::vec3(0.75f);
+        // cube3Node->Position = glm::vec3(3.0f, 10.0f, 0.0f);
 
-        S<Cube> child = CreateS<Cube>();
-        child->Construct();
-        S<SceneNode> childNode = m_Scene->CreateMesh("child", child);
-        childNode->Position = glm::vec3(0.0f, -2.0f, 0.0f);
-        childNode->Scale = glm::vec3(0.5f);
-        cube1Node->AddChild(childNode);
+        // S<Cube> child = CreateS<Cube>();
+        // child->Construct();
+        // S<SceneNode> childNode = m_Scene->CreateMesh("child", child);
+        // childNode->Position = glm::vec3(0.0f, -2.0f, 0.0f);
+        // childNode->Scale = glm::vec3(0.5f);
+        // cube1Node->AddChild(childNode);
 
         // S<SceneNode> dragonNode = m_Scene->LoadModel(Importer::OBJ, "dragon", "resources/model/obj/dragon/dragon.obj");
         // dragonNode->Position = glm::vec3(10.0f, 10.0f, 0.0f);
         // dragonNode->Scale = glm::vec3(10.0f);
 
-        S<SceneNode> sponzaNode = m_Scene->LoadModel(Importer::ASSIMP, "sponza", "resources/model/gltf/Sponza/glTF/Sponza.gltf");
-        sponzaNode->Scale = glm::vec3(0.05f);
+        // S<SceneNode> sponzaNode = m_Scene->LoadModel(Importer::ASSIMP, "sponza", "resources/model/gltf/Sponza/glTF/Sponza.gltf");
+        // sponzaNode->Scale = glm::vec3(0.05f);
         // S<SceneNode> chessNode = m_Scene->LoadModel(Importer::GLTF, "chess", "resources/model/gltf/ABeautifulGame/glTF/ABeautifulGame.gltf");
         // chessNode->Scale = glm::vec3(10.0f);
+
+        S<SceneNode> vampire_node = m_Scene->LoadModel(Importer::ASSIMP, "vampire", "resources/model/anim/dancing_vampire.dae");
+        vampire_node->Scale = glm::vec3(0.1f);
 
         CIRI_LOG("Scene Initialised");
     }
