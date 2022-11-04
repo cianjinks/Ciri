@@ -2,6 +2,7 @@
 
 #include "Import/OBJImporter.h"
 #include "Import/GLTFImporter.h"
+#include "Import/AssimpImporter.h"
 
 namespace Ciri
 {
@@ -84,21 +85,24 @@ namespace Ciri
 		return node;
 	}
 
-	S<SceneNode> Scene::LoadModel(ModelType type, const char *name, const char *filepath)
+	S<SceneNode> Scene::LoadModel(Importer type, const char *name, const char *filepath)
 	{
 		S<SceneNode> result = nullptr;
 		switch (type)
 		{
-		case ModelType::OBJ:
+		case Importer::OBJ:
 		{
 			result = OBJImporter::Import(this, filepath);
 			break;
 		}
-		case ModelType::GLTF:
+		case Importer::GLTF:
 		{
 			result = GLTFImporter::Import(this, filepath);
 			break;
 		}
+		case Importer::ASSIMP:
+			result = AssimpImporter::Import(this, filepath);
+			break;
 		}
 
 		if (result)

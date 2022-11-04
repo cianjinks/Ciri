@@ -16,3 +16,6 @@
 [submodule "dependencies/tinygltf"]
 	path = dependencies/tinygltf
 	url = https://github.com/syoyo/tinygltf
+[submodule "dependencies/assimp"]
+	path = dependencies/assimp
+	url = https://github.com/cianjinks/assimp

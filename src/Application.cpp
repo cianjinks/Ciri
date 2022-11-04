@@ -113,13 +113,13 @@ namespace Ciri
         childNode->Scale = glm::vec3(0.5f);
         cube1Node->AddChild(childNode);
 
-        // S<SceneNode> dragonNode = m_Scene->LoadModel(ModelType::OBJ, "dragon", "resources/model/obj/dragon/dragon.obj");
+        // S<SceneNode> dragonNode = m_Scene->LoadModel(Importer::OBJ, "dragon", "resources/model/obj/dragon/dragon.obj");
         // dragonNode->Position = glm::vec3(10.0f, 10.0f, 0.0f);
         // dragonNode->Scale = glm::vec3(10.0f);
 
-        S<SceneNode> sponzaNode = m_Scene->LoadModel(ModelType::GLTF, "sponza", "resources/model/gltf/Sponza/glTF/Sponza.gltf");
+        S<SceneNode> sponzaNode = m_Scene->LoadModel(Importer::ASSIMP, "sponza", "resources/model/gltf/Sponza/glTF/Sponza.gltf");
         sponzaNode->Scale = glm::vec3(0.05f);
-        // S<SceneNode> chessNode = m_Scene->LoadModel(ModelType::GLTF, "chess", "resources/model/gltf/ABeautifulGame/glTF/ABeautifulGame.gltf");
+        // S<SceneNode> chessNode = m_Scene->LoadModel(Importer::GLTF, "chess", "resources/model/gltf/ABeautifulGame/glTF/ABeautifulGame.gltf");
         // chessNode->Scale = glm::vec3(10.0f);
 
         CIRI_LOG("Scene Initialised");

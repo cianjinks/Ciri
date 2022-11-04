@@ -8,10 +8,11 @@
 
 namespace Ciri
 {
-    enum class ModelType
+    enum class Importer
     {
         OBJ = 0,
-        GLTF
+        GLTF,
+        ASSIMP
     };
 
     class SceneNode
@@ -56,7 +57,7 @@ namespace Ciri
         S<SceneNode> AddContainer();                 // Create empty scene node
         S<SceneNode> AddContainer(const char *name); // Create empty scene node
 
-        S<SceneNode> LoadModel(ModelType type, const char *name, const char *filepath);
+        S<SceneNode> LoadModel(Importer type, const char *name, const char *filepath);
 
         S<SceneNode> GetRoot() const { return m_Root; }
         const uint32_t GetMeshCount() const { return m_MeshCount; }
