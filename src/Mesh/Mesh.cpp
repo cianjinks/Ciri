@@ -14,7 +14,7 @@ namespace Ciri
 	}
 
 	Mesh::Mesh(std::vector<glm::vec3> position_data, std::vector<glm::vec3> normal_data, std::vector<glm::vec2> texcoord_data, std::vector<uint16_t> index_data)
-		: m_PositionData(position_data), m_NormalData(normal_data), m_TexCoordData(texcoord_data), m_IndexData(index_data), IsIndexed(true)
+		: m_PositionData(position_data), m_NormalData(normal_data), m_TexCoordData(texcoord_data), m_IndexData(index_data), IsIndexed(index_data.size() > 0)
 	{
 	}
 
