@@ -15,6 +15,8 @@ namespace Ciri
         ASSIMP
     };
 
+    class Animation; /* Forward declare animation. */
+
     class SceneNode
     {
     public:
@@ -22,6 +24,7 @@ namespace Ciri
 
         S<Mesh> NodeMesh = nullptr;
         S<Material> NodeMaterial = nullptr; // Reference to a material in the Scene's MaterialLibrary
+        S<Animation> NodeAnimation = nullptr;
 
         glm::vec3 Position = glm::vec3(0.0f);
         glm::vec3 Rotation = glm::vec3(0.0f);

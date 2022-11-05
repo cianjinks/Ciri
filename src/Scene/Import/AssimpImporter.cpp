@@ -49,6 +49,11 @@ namespace Ciri
             }
         }
 
+        if (assimp_scene->mAnimations[0])
+        {
+            ProcessAnimation(assimp_scene->mAnimations[0], container, boneInfoMap, boneCounter);
+        }
+
         return container;
     }
 
@@ -134,7 +139,7 @@ namespace Ciri
             {
                 BoneInfo newBoneInfo;
                 newBoneInfo.id = bonecounter;
-                newBoneInfo.offset = ConvertMatrixToGLMFormat(assimp_mesh->mBones[bone_index]->mOffsetMatrix);
+                newBoneInfo.offset = Math::AssimpConvertMatrixToGLMFormat(assimp_mesh->mBones[bone_index]->mOffsetMatrix);
                 boneinfomap[boneName] = newBoneInfo;
                 boneID = bonecounter;
                 bonecounter++;
@@ -172,9 +177,14 @@ namespace Ciri
         }
     }
 
+    void AssimpImporter::ProcessAnimation(const aiAnimation* assimp_anim, const S<SceneNode>& container, std::map<std::string, BoneInfo>& boneinfomap, int& bonecounter)
+    {
+        container->NodeAnimation = CreateS<Animation>(assimp_anim, boneinfomap, bonecounter);
+    }
+
     void AssimpImporter::SetNodeTransform(S<SceneNode> parent, S<SceneNode> node, aiNode* assimp_node)
     {
-        glm::mat4 node_transform = ConvertMatrixToGLMFormat(assimp_node->mTransformation);
+        glm::mat4 node_transform = Math::AssimpConvertMatrixToGLMFormat(assimp_node->mTransformation);
         Math::DecomposeTransform(node_transform, node->Position, node->Rotation, node->Scale);
     }
 }

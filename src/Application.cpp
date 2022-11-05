@@ -25,8 +25,9 @@ namespace Ciri
     {
         while (!m_Window->ShouldClose())
         {
-            m_Camera->OnUpdate(m_Window->GetTimeStep());
-            m_Renderer->RenderScene(m_Scene, m_Camera);
+            float dt = m_Window->GetTimeStep();
+            m_Camera->OnUpdate(dt);
+            m_Renderer->RenderScene(dt, m_Scene, m_Camera);
             UI::PreRender();
             OnUIRender();
             UI::PostRender();

@@ -61,6 +61,7 @@ namespace Ciri
         m_CurrentShader = none;
 
         AddShader("Geometry Buffer", ShaderType::GEOMETRY_BUFFER, "resources/shader/gbuffer.vert", "resources/shader/gbuffer.frag");
+        AddShader("Geometry Buffer Anim", ShaderType::GEOMETRY_BUFFER_ANIM, "resources/shader/gbuffer_anim.vert", "resources/shader/gbuffer.frag");
 
         AddShader("Base Color", ShaderType::BASE_COLOR, "resources/shader/screen_quad.vert", "resources/shader/base_color.frag");
         AddShader("Linear Depth", ShaderType::LINEAR_DEPTH, "resources/shader/screen_quad.vert", "resources/shader/linear_depth.frag");

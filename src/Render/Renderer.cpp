@@ -152,7 +152,7 @@ namespace Ciri
         glViewport(0, 0, TargetWidth, TargetHeight);
     }
 
-    void Renderer::RenderScene(const S<Scene> &scene, const S<Camera> &camera)
+    void Renderer::RenderScene(float dt, const S<Scene> &scene, const S<Camera> &camera)
     {
         glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -163,8 +163,8 @@ namespace Ciri
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glDrawBuffers(s_NumRenderTargets, m_RenderTargets);
 
-        m_ShaderLib->BindShader(ShaderType::GEOMETRY_BUFFER);
-        RenderSceneGeometry(scene, camera);
+        m_ShaderLib->BindShader(ShaderType::GEOMETRY_BUFFER_ANIM);
+        RenderSceneGeometry(dt, scene, camera);
         m_ShaderLib->BindShader(ShaderType::NONE);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -203,7 +203,8 @@ namespace Ciri
         BlitDepthBuffer();
     }
 
-    void Renderer::RenderSceneGeometry(const S<Scene> &scene,
+    void Renderer::RenderSceneGeometry(float dt,
+                                       const S<Scene> &scene,
                                        const S<Camera> &camera)
     {
         camera->RecalcVP();
@@ -221,6 +222,20 @@ namespace Ciri
             glm::vec3 currentNodePosition = currentItem.position;
             glm::mat4 currentNodeRotation = currentItem.rotation;
             glm::vec3 currentNodeScale = currentItem.scale;
+
+            /* Updating animations during rendering as opposed to via an update function. */
+            /* Messy but works for now. */
+            if (currentNode->NodeAnimation)
+            {
+                currentNode->NodeAnimation->UpdateAnimation(currentNode, dt);
+                std::vector<glm::mat4> final_bone_matrices = currentNode->NodeAnimation->GetFinalBoneMatrices();
+                for (int i = 0; i < final_bone_matrices.size(); i++)
+                {
+                    std::string u_bone_matrix = "u_FinalBoneMatrices[" + std::to_string(i) + "]";
+                    m_ShaderLib->SetMat4f(u_bone_matrix.c_str(), glm::value_ptr(final_bone_matrices[i]));
+                }
+            }
+
             if (currentNode->NodeMesh) // No mesh means this is just a container
             {
                 glm::mat4 model = glm::mat4(1.0f);

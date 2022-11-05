@@ -75,5 +75,14 @@ namespace Ciri
 
             return true;
         }
+
+        glm::mat4 ComposeTransform(glm::vec3& translation, glm::vec3& rotation, glm::vec3& scale)
+        {
+            glm::mat4 mat(1.0f);
+            mat = glm::translate(mat, translation);
+            mat = mat * glm::toMat4(glm::quat(rotation));
+            mat = glm::scale(mat, scale);
+            return mat;
+        }
     }
 }

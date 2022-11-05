@@ -5,6 +5,7 @@
 #include "Render/Material.h"
 #include "Scene/Scene.h"
 #include "Scene/Camera.h"
+#include "Anim/Animation.h"
 
 namespace Ciri
 {
@@ -46,7 +47,7 @@ namespace Ciri
 
         void OnEvent(Event &event);
 
-        void RenderScene(const S<Scene> &scene, const S<Camera> &camera);
+        void RenderScene(float dt, const S<Scene> &scene, const S<Camera> &camera);
 
         void Resize(int32_t width, int32_t height);
 
@@ -64,7 +65,7 @@ namespace Ciri
         }
 
     private:
-        void RenderSceneGeometry(const S<Scene> &scene, const S<Camera> &camera);
+        void RenderSceneGeometry(float dt, const S<Scene> &scene, const S<Camera> &camera);
         void RenderScreenQuad();
 
         void BlitDepthBuffer();
