@@ -223,20 +223,6 @@ namespace Ciri
             glm::mat4 currentNodeRotation = currentItem.rotation;
             glm::vec3 currentNodeScale = currentItem.scale;
 
-            /* Updating animations during rendering as opposed to via an update function. */
-            /* Messy but works for now. */
-            if (currentNode->NodeAnimation)
-            {
-                currentNode->NodeAnimation->UpdateAnimation(dt);
-
-                std::vector<glm::mat4> final_bone_matrices = currentNode->NodeAnimation->GetFinalBoneMatrices();
-                if (!final_bone_matrices.empty())
-                {
-                    uint32_t loc = glGetUniformLocation(m_ShaderLib->GetShader()->program_id, "u_FinalBoneMatrices");
-                    glUniformMatrix4fv(loc, 4, GL_FALSE, glm::value_ptr(final_bone_matrices[0]));
-                }
-            }
-
             if (currentNode->NodeMesh) // No mesh means this is just a container
             {
                 glm::mat4 model = glm::mat4(1.0f);
@@ -252,6 +238,20 @@ namespace Ciri
                 model = glm::scale(model, currentNodeScale);
                 glm::mat4 mvp = proj * view * model;
                 m_ShaderLib->SetMat4f("u_MVP", glm::value_ptr(mvp));
+
+                /* Updating animations during rendering as opposed to via an update function. */
+                /* Messy but works for now. */
+                if (currentNode->NodeAnimation)
+                {
+                    currentNode->NodeAnimation->UpdateAnimation(dt);
+
+                    std::vector<glm::mat4> &final_bone_matrices = currentNode->NodeAnimation->GetFinalBoneMatrices();
+                    for (int i = 0; i < final_bone_matrices.size(); i++)
+                    {
+                        std::string uniform_str = "u_FinalBoneMatrices[" + std::to_string(i) + "]";
+                        m_ShaderLib->SetMat4f(uniform_str.c_str(), glm::value_ptr(final_bone_matrices[i]));
+                    }
+                }
 
                 S<Material> material = currentNode->NodeMaterial;
                 m_ShaderLib->SetVec3f("u_BaseColor", material->baseColor);

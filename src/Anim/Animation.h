@@ -29,31 +29,32 @@ namespace Ciri
         float m_DeltaTime;
 
     public:
-        Animation(const aiScene* scene, const aiAnimation* animation, std::map<std::string, BoneInfo>& boneinfomap, int& bonecounter);
+        Animation(const aiScene *scene, const aiAnimation *animation, std::map<std::string, BoneInfo> &boneinfomap, int &bonecounter);
         ~Animation() = default;
 
-        void ReadMissingBones(const aiAnimation* animation, std::map<std::string, BoneInfo>& boneinfomap, int& bonecounter);
-        void ReadHierarchyData(AssimpNodeData& dest, const aiNode* node);
+        void ReadMissingBones(const aiAnimation *animation, std::map<std::string, BoneInfo> &boneinfomap, int &bonecounter);
+        void ReadHierarchyData(AssimpNodeData &dest, const aiNode *node);
 
         inline float GetTicksPerSecond() { return m_TicksPerSecond; }
-        inline float GetDuration() { return m_Duration;}
-        inline const std::map<std::string,BoneInfo>& GetBoneIDMap() { return m_BoneInfoMap; }
+        inline float GetDuration() { return m_Duration; }
+        inline const std::map<std::string, BoneInfo> &GetBoneIDMap() { return m_BoneInfoMap; }
 
-        Bone* FindBone(const std::string& name)
+        Bone *FindBone(const std::string &name)
         {
             auto iter = std::find_if(m_Bones.begin(), m_Bones.end(),
-                [&](const Bone& Bone)
-                {
-                    return Bone.GetBoneName() == name;
-                }
-            );
-            if (iter == m_Bones.end()) return nullptr;
-            else return &(*iter);
+                                     [&](const Bone &Bone)
+                                     {
+                                         return Bone.GetBoneName() == name;
+                                     });
+            if (iter == m_Bones.end())
+                return nullptr;
+            else
+                return &(*iter);
         }
 
         void UpdateAnimation(float dt);
-        void CalculateBoneTransform(const AssimpNodeData* node, glm::mat4 parentTransform);
-        std::vector<glm::mat4> GetFinalBoneMatrices() { return m_FinalBoneMatrices; }
+        void CalculateBoneTransform(const AssimpNodeData *node, glm::mat4 parentTransform);
+        std::vector<glm::mat4> &GetFinalBoneMatrices() { return m_FinalBoneMatrices; }
     };
 }
 

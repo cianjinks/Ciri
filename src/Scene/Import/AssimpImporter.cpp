@@ -24,11 +24,11 @@ namespace Ciri
         struct NodeStackElem
         {
             S<SceneNode> parent;
-            aiNode* node;
+            aiNode *node;
         };
         std::stack<NodeStackElem> nodestack;
         nodestack.push({container, assimp_scene->mRootNode});
-        while(!nodestack.empty())
+        while (!nodestack.empty())
         {
             NodeStackElem elem = nodestack.top();
             nodestack.pop();
@@ -49,15 +49,10 @@ namespace Ciri
             }
         }
 
-        if (assimp_scene->mAnimations[0])
-        {
-            ProcessAnimation(assimp_scene, assimp_scene->mAnimations[0], container, boneInfoMap, boneCounter);
-        }
-
         return container;
     }
 
-    void AssimpImporter::ProcessAssimpMesh(Scene* scene, const S<SceneNode>& node, const aiScene* assimp_scene, const aiMesh* assimp_mesh, std::string file_dir, std::map<std::string, BoneInfo>& boneinfomap, int& bonecounter)
+    void AssimpImporter::ProcessAssimpMesh(Scene *scene, const S<SceneNode> &node, const aiScene *assimp_scene, const aiMesh *assimp_mesh, std::string file_dir, std::map<std::string, BoneInfo> &boneinfomap, int &bonecounter)
     {
         std::vector<glm::vec3> positionData;
         std::vector<glm::vec3> normalData;
@@ -65,8 +60,8 @@ namespace Ciri
 
         for (uint32_t v = 0; v < assimp_mesh->mNumVertices; v++)
         {
-            positionData.push_back({assimp_mesh->mVertices[v].x, assimp_mesh->mVertices[v].y, assimp_mesh->mVertices[v].z });
-            normalData.push_back({assimp_mesh->mNormals[v].x, assimp_mesh->mNormals[v].y, assimp_mesh->mNormals[v].z });
+            positionData.push_back({assimp_mesh->mVertices[v].x, assimp_mesh->mVertices[v].y, assimp_mesh->mVertices[v].z});
+            normalData.push_back({assimp_mesh->mNormals[v].x, assimp_mesh->mNormals[v].y, assimp_mesh->mNormals[v].z});
             if (assimp_mesh->mTextureCoords[0])
             {
                 texCoordData.push_back({assimp_mesh->mTextureCoords[0][v].x, assimp_mesh->mTextureCoords[0][v].y});
@@ -78,10 +73,10 @@ namespace Ciri
         }
 
         std::vector<uint16_t> indexData;
-        for(uint32_t i = 0; i < assimp_mesh->mNumFaces; i++)
+        for (uint32_t i = 0; i < assimp_mesh->mNumFaces; i++)
         {
             aiFace face = assimp_mesh->mFaces[i];
-            for(uint32_t j = 0; j < face.mNumIndices; j++)
+            for (uint32_t j = 0; j < face.mNumIndices; j++)
             {
                 indexData.push_back((uint16_t)face.mIndices[j]);
             }
@@ -98,17 +93,22 @@ namespace Ciri
         node->NodeMesh = mesh;
         if (assimp_mesh->mMaterialIndex >= 0)
         {
-            aiMaterial* assimp_material = assimp_scene->mMaterials[assimp_mesh->mMaterialIndex];
+            aiMaterial *assimp_material = assimp_scene->mMaterials[assimp_mesh->mMaterialIndex];
             ProcessAssimpMaterial(scene, node, assimp_material, file_dir);
 
-            if(!node->NodeMaterial)
+            if (!node->NodeMaterial)
             {
                 node->NodeMaterial = scene->GetDefaultMaterial();
             }
         }
+
+        if (assimp_scene->mAnimations[0])
+        {
+            ProcessAnimation(assimp_scene, assimp_scene->mAnimations[0], node, boneinfomap, bonecounter);
+        }
     }
 
-    void AssimpImporter::ProcessAssimpMaterial(Scene *scene, const S<SceneNode>& node, const aiMaterial* assimp_material, std::string file_dir)
+    void AssimpImporter::ProcessAssimpMaterial(Scene *scene, const S<SceneNode> &node, const aiMaterial *assimp_material, std::string file_dir)
     {
         /* Only support one diffuse texture for now. */
         uint32_t diffuse_texture_count = assimp_material->GetTextureCount(aiTextureType_DIFFUSE);
@@ -129,7 +129,7 @@ namespace Ciri
         }
     }
 
-    void AssimpImporter::ProcessBones(const aiScene* assimp_scene, const aiMesh* assimp_mesh, std::vector<glm::i32vec4>& boneids, std::vector<glm::vec4>& boneweights, std::map<std::string, BoneInfo>& boneinfomap, int& bonecounter)
+    void AssimpImporter::ProcessBones(const aiScene *assimp_scene, const aiMesh *assimp_mesh, std::vector<glm::i32vec4> &boneids, std::vector<glm::vec4> &boneweights, std::map<std::string, BoneInfo> &boneinfomap, int &bonecounter)
     {
         for (int bone_index = 0; bone_index < assimp_mesh->mNumBones; bone_index++)
         {
@@ -177,12 +177,12 @@ namespace Ciri
         }
     }
 
-    void AssimpImporter::ProcessAnimation(const aiScene* scene, const aiAnimation* assimp_anim, const S<SceneNode>& container, std::map<std::string, BoneInfo>& boneinfomap, int& bonecounter)
+    void AssimpImporter::ProcessAnimation(const aiScene *scene, const aiAnimation *assimp_anim, const S<SceneNode> &container, std::map<std::string, BoneInfo> &boneinfomap, int &bonecounter)
     {
         container->NodeAnimation = CreateS<Animation>(scene, assimp_anim, boneinfomap, bonecounter);
     }
 
-    void AssimpImporter::SetNodeTransform(S<SceneNode> parent, S<SceneNode> node, aiNode* assimp_node)
+    void AssimpImporter::SetNodeTransform(S<SceneNode> parent, S<SceneNode> node, aiNode *assimp_node)
     {
         glm::mat4 node_transform = Math::AssimpConvertMatrixToGLMFormat(assimp_node->mTransformation);
         Math::DecomposeTransform(node_transform, node->Position, node->Rotation, node->Scale);
