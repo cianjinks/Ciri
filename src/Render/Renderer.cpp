@@ -163,7 +163,7 @@ namespace Ciri
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glDrawBuffers(s_NumRenderTargets, m_RenderTargets);
 
-        m_ShaderLib->BindShader(ShaderType::GEOMETRY_BUFFER_ANIM);
+        m_ShaderLib->BindShader(ShaderType::GEOMETRY_BUFFER);
         RenderSceneGeometry(dt, scene, camera);
         m_ShaderLib->BindShader(ShaderType::NONE);
 
@@ -236,13 +236,12 @@ namespace Ciri
                  * sponza model. I presume this is not fixable :(
                  */
                 model = glm::scale(model, currentNodeScale);
-                glm::mat4 mvp = proj * view * model;
-                m_ShaderLib->SetMat4f("u_MVP", glm::value_ptr(mvp));
 
                 /* Updating animations during rendering as opposed to via an update function. */
                 /* Messy but works for now. */
                 if (currentNode->NodeAnimation)
                 {
+                    m_ShaderLib->BindShader(ShaderType::GEOMETRY_BUFFER_ANIM);
                     currentNode->NodeAnimation->UpdateAnimation(dt);
 
                     std::vector<glm::mat4> &final_bone_matrices = currentNode->NodeAnimation->GetFinalBoneMatrices();
@@ -252,6 +251,9 @@ namespace Ciri
                         m_ShaderLib->SetMat4f(uniform_str.c_str(), glm::value_ptr(final_bone_matrices[i]));
                     }
                 }
+
+                glm::mat4 mvp = proj * view * model;
+                m_ShaderLib->SetMat4f("u_MVP", glm::value_ptr(mvp));
 
                 S<Material> material = currentNode->NodeMaterial;
                 m_ShaderLib->SetVec3f("u_BaseColor", material->baseColor);
@@ -285,6 +287,11 @@ namespace Ciri
 
                 glBindVertexArray(0);
                 glBindTexture(GL_TEXTURE_2D, 0);
+
+                if (currentNode->NodeAnimation)
+                {
+                    m_ShaderLib->BindShader(ShaderType::GEOMETRY_BUFFER);
+                }
             }
 
             renderStack.pop();

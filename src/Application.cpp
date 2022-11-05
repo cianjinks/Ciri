@@ -118,8 +118,8 @@ namespace Ciri
         // dragonNode->Position = glm::vec3(10.0f, 10.0f, 0.0f);
         // dragonNode->Scale = glm::vec3(10.0f);
 
-        // S<SceneNode> sponzaNode = m_Scene->LoadModel(Importer::ASSIMP, "sponza", "resources/model/gltf/Sponza/glTF/Sponza.gltf");
-        // sponzaNode->Scale = glm::vec3(0.05f);
+        S<SceneNode> sponzaNode = m_Scene->LoadModel(Importer::GLTF, "sponza", "resources/model/gltf/Sponza/glTF/Sponza.gltf");
+        sponzaNode->Scale = glm::vec3(0.05f);
         // S<SceneNode> chessNode = m_Scene->LoadModel(Importer::GLTF, "chess", "resources/model/gltf/ABeautifulGame/glTF/ABeautifulGame.gltf");
         // chessNode->Scale = glm::vec3(10.0f);
 
@@ -127,6 +127,8 @@ namespace Ciri
         // vampire_node->Scale = glm::vec3(0.1f);
 
         S<SceneNode> elk = m_Scene->LoadModel(Importer::ASSIMP, "elk", "resources/model/anim/elk/elk.gltf");
+        elk->Scale = glm::vec3(4.0f);
+        // S<SceneNode> winter_scene = m_Scene->LoadModel(Importer::ASSIMP, "winter", "resources/model/gltf/winter/scene.gltf");
 
         CIRI_LOG("Scene Initialised");
     }

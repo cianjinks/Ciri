@@ -102,7 +102,7 @@ namespace Ciri
             }
         }
 
-        if (assimp_scene->mAnimations[0])
+        if (assimp_scene->mNumAnimations > 0)
         {
             ProcessAnimation(assimp_scene, assimp_scene->mAnimations[0], node, boneinfomap, bonecounter);
         }
