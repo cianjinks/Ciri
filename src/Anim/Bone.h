@@ -7,6 +7,7 @@
 #include <glm/gtx/quaternion.hpp>
 
 #include <assimp/Importer.hpp>
+#include <assimp/scene.h>
 #include <assimp/anim.h>
 
 namespace Ciri

@@ -7,6 +7,14 @@
 
 namespace Ciri
 {
+    struct AssimpNodeData
+    {
+        glm::mat4 transformation;
+        std::string name;
+        int childrenCount;
+        std::vector<AssimpNodeData> children;
+    };
+
     class Animation
     {
     private:
@@ -14,16 +22,18 @@ namespace Ciri
         int m_TicksPerSecond;
         std::vector<Bone> m_Bones;
         std::map<std::string, BoneInfo> m_BoneInfoMap;
+        AssimpNodeData m_RootNode;
 
         std::vector<glm::mat4> m_FinalBoneMatrices;
         float m_CurrentTime;
         float m_DeltaTime;
 
     public:
-        Animation(const aiAnimation* animation, std::map<std::string, BoneInfo>& boneinfomap, int& bonecounter);
+        Animation(const aiScene* scene, const aiAnimation* animation, std::map<std::string, BoneInfo>& boneinfomap, int& bonecounter);
         ~Animation() = default;
 
         void ReadMissingBones(const aiAnimation* animation, std::map<std::string, BoneInfo>& boneinfomap, int& bonecounter);
+        void ReadHierarchyData(AssimpNodeData& dest, const aiNode* node);
 
         inline float GetTicksPerSecond() { return m_TicksPerSecond; }
         inline float GetDuration() { return m_Duration;}
@@ -41,8 +51,8 @@ namespace Ciri
             else return &(*iter);
         }
 
-        void UpdateAnimation(S<SceneNode>& node, float dt);
-        void CalculateBoneTransform(S<SceneNode>& node, glm::mat4 parentTransform);
+        void UpdateAnimation(float dt);
+        void CalculateBoneTransform(const AssimpNodeData* node, glm::mat4 parentTransform);
         std::vector<glm::mat4> GetFinalBoneMatrices() { return m_FinalBoneMatrices; }
     };
 }

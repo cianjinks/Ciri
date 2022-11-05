@@ -44,7 +44,7 @@ namespace Ciri
 				(m_PositionData.size() * sizeof(glm::vec3))
 				 + (m_NormalData.size() * sizeof(glm::vec3))
 				 + (m_TexCoordData.size() * sizeof(glm::vec2))
-				 + (m_BoneWeightData.size() * sizeof(glm::vec3))
+				 + (m_BoneWeightData.size() * sizeof(glm::vec4))
 				 + (m_BoneIDData.size() * sizeof(glm::i32vec4)));
 
 		for (size_t i = 0; i < m_PositionData.size(); i++)

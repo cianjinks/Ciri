@@ -2,14 +2,29 @@
 
 namespace Ciri
 {
-    Animation::Animation(const aiAnimation* animation, std::map<std::string, BoneInfo>& boneinfomap, int& bonecounter)
+    Animation::Animation(const aiScene* scene, const aiAnimation* animation, std::map<std::string, BoneInfo>& boneinfomap, int& bonecounter)
     {
         m_Duration = animation->mDuration;
         m_TicksPerSecond = animation->mTicksPerSecond;
+        ReadHierarchyData(m_RootNode, scene->mRootNode);
         ReadMissingBones(animation, boneinfomap, bonecounter);
 
         m_CurrentTime = 0.0f;
         m_FinalBoneMatrices.resize(100, glm::mat4(1.0f));
+    }
+
+    void Animation::ReadHierarchyData(AssimpNodeData& dest, const aiNode* node)
+    {
+        dest.name = node->mName.data;
+        dest.transformation = Math::AssimpConvertMatrixToGLMFormat(node->mTransformation);
+        dest.childrenCount = node->mNumChildren;
+
+        for (int i = 0; i < node->mNumChildren; i++)
+        {
+            AssimpNodeData newData;
+            ReadHierarchyData(newData, node->mChildren[i]);
+            dest.children.push_back(newData);
+        }
     }
 
     void Animation::ReadMissingBones(const aiAnimation* animation, std::map<std::string, BoneInfo>& boneinfomap, int& bonecounter)
@@ -32,18 +47,18 @@ namespace Ciri
         m_BoneInfoMap = boneinfomap;
     }
 
-    void Animation::UpdateAnimation(S<SceneNode>& node, float dt)
+    void Animation::UpdateAnimation(float dt)
     {
         m_DeltaTime = dt;
         m_CurrentTime += m_TicksPerSecond * dt;
         m_CurrentTime = fmod(m_CurrentTime, m_Duration);
-        CalculateBoneTransform(node, glm::mat4(1.0f));
+        CalculateBoneTransform(&m_RootNode, glm::mat4(1.0f));
     }
 
-    void Animation::CalculateBoneTransform(S<SceneNode>& node, glm::mat4 parentTransform)
+    void Animation::CalculateBoneTransform(const AssimpNodeData* node, glm::mat4 parentTransform)
     {
-        std::string nodeName = node->Name;
-        glm::mat4 nodeTransform = Math::ComposeTransform(node->Position, node->Rotation, node->Scale);
+        std::string nodeName = node->name;
+        glm::mat4 nodeTransform = node->transformation;
 
         Bone* Bone = FindBone(nodeName);
 
@@ -63,9 +78,7 @@ namespace Ciri
             m_FinalBoneMatrices[index] = globalTransformation * offset;
         }
 
-        for (S<SceneNode> child : node->Children)
-        {
-            CalculateBoneTransform(child, globalTransformation);
-        }
+        for (int i = 0; i < node->childrenCount; i++)
+            CalculateBoneTransform(&node->children[i], globalTransformation);
     }
 }

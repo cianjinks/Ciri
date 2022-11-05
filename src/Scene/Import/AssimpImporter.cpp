@@ -51,7 +51,7 @@ namespace Ciri
 
         if (assimp_scene->mAnimations[0])
         {
-            ProcessAnimation(assimp_scene->mAnimations[0], container, boneInfoMap, boneCounter);
+            ProcessAnimation(assimp_scene, assimp_scene->mAnimations[0], container, boneInfoMap, boneCounter);
         }
 
         return container;
@@ -177,9 +177,9 @@ namespace Ciri
         }
     }
 
-    void AssimpImporter::ProcessAnimation(const aiAnimation* assimp_anim, const S<SceneNode>& container, std::map<std::string, BoneInfo>& boneinfomap, int& bonecounter)
+    void AssimpImporter::ProcessAnimation(const aiScene* scene, const aiAnimation* assimp_anim, const S<SceneNode>& container, std::map<std::string, BoneInfo>& boneinfomap, int& bonecounter)
     {
-        container->NodeAnimation = CreateS<Animation>(assimp_anim, boneinfomap, bonecounter);
+        container->NodeAnimation = CreateS<Animation>(scene, assimp_anim, boneinfomap, bonecounter);
     }
 
     void AssimpImporter::SetNodeTransform(S<SceneNode> parent, S<SceneNode> node, aiNode* assimp_node)

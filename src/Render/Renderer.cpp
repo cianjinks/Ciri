@@ -227,12 +227,13 @@ namespace Ciri
             /* Messy but works for now. */
             if (currentNode->NodeAnimation)
             {
-                currentNode->NodeAnimation->UpdateAnimation(currentNode, dt);
+                currentNode->NodeAnimation->UpdateAnimation(dt);
+
                 std::vector<glm::mat4> final_bone_matrices = currentNode->NodeAnimation->GetFinalBoneMatrices();
-                for (int i = 0; i < final_bone_matrices.size(); i++)
+                if (!final_bone_matrices.empty())
                 {
-                    std::string u_bone_matrix = "u_FinalBoneMatrices[" + std::to_string(i) + "]";
-                    m_ShaderLib->SetMat4f(u_bone_matrix.c_str(), glm::value_ptr(final_bone_matrices[i]));
+                    uint32_t loc = glGetUniformLocation(m_ShaderLib->GetShader()->program_id, "u_FinalBoneMatrices");
+                    glUniformMatrix4fv(loc, 4, GL_FALSE, glm::value_ptr(final_bone_matrices[0]));
                 }
             }
 

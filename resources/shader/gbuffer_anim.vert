@@ -27,8 +27,8 @@ void main()
             totalPosition = vec4(a_Pos,1.0f);
             break;
         }
-        // vec4 localPosition = u_FinalBoneMatrices[a_BoneIDs[i]] * vec4(a_Pos, 1.0f);
-        // totalPosition += localPosition * a_BoneWeights[i];
+        vec4 localPosition = u_FinalBoneMatrices[a_BoneIDs[i]] * vec4(a_Pos, 1.0f);
+        totalPosition += localPosition * a_BoneWeights[i];
     }
 
     gl_Position = u_MVP * totalPosition;
