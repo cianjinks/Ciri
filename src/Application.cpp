@@ -123,8 +123,10 @@ namespace Ciri
         // S<SceneNode> chessNode = m_Scene->LoadModel(Importer::GLTF, "chess", "resources/model/gltf/ABeautifulGame/glTF/ABeautifulGame.gltf");
         // chessNode->Scale = glm::vec3(10.0f);
 
-        S<SceneNode> vampire_node = m_Scene->LoadModel(Importer::ASSIMP, "vampire", "resources/model/anim/dancing_vampire.dae");
+        // S<SceneNode> vampire_node = m_Scene->LoadModel(Importer::ASSIMP, "vampire", "resources/model/anim/vampire/dancing_vampire.dae");
         // vampire_node->Scale = glm::vec3(0.1f);
+
+        S<SceneNode> elk = m_Scene->LoadModel(Importer::ASSIMP, "elk", "resources/model/anim/elk/elk.gltf");
 
         CIRI_LOG("Scene Initialised");
     }

@@ -59,19 +59,16 @@ namespace Ciri
 
     void MaterialLibrary::RegisterTexture(std::string filepath, uint32_t texture_index, uint32_t *texture_id, MaterialInfo &info)
     {
-        if (!filepath.empty())
+        if (m_TextureList.find(filepath) == m_TextureList.end())
         {
-            if (m_TextureList.find(filepath) == m_TextureList.end())
+            if (!CompileTexture(filepath, texture_index, texture_id, info))
             {
-                if (!CompileTexture(filepath, texture_index, texture_id, info))
-                {
-                    CIRI_WARN("Failed to compile texture: {}", filepath);
-                }
+                CIRI_WARN("Failed to compile texture: {}", filepath);
             }
-            else
-            {
-                *texture_id = m_TextureList[filepath];
-            }
+        }
+        else
+        {
+            *texture_id = m_TextureList[filepath];
         }
     }
 
@@ -82,13 +79,22 @@ namespace Ciri
 
         stbi_set_flip_vertically_on_load(info.flip);
 
-        uint8_t *image = stbi_load(filepath.c_str(), &w, &h, &nrChannels, STBI_default);
-        if (!image)
+        uint8_t *image;
+        if (!filepath.empty())
         {
-            CIRI_WARN("Failed to read texture: {}", filepath);
-            return false;
+            image = stbi_load(filepath.c_str(), &w, &h, &nrChannels, STBI_default);
+            if (!image)
+            {
+                CIRI_WARN("Failed to read texture: {}", filepath);
+                return false;
+            }
+            CIRI_LOG("Read texture: {}, w = {:d}, h = {:d}, nrChannels = {:d}", filepath, w, h, nrChannels);
         }
-        CIRI_LOG("Read texture: {}, w = {:d}, h = {:d}, nrChannels = {:d}", filepath, w, h, nrChannels);
+        else
+        {
+            w = 1, h = 1, nrChannels = 3;
+            image = new uint8_t[3] { 255, 255, 255 };
+        }
 
         glGenTextures(1, texture_id);
         glActiveTexture(texture_index);
@@ -124,7 +130,15 @@ namespace Ciri
             return false;
         }
         glBindTexture(GL_TEXTURE_2D, 0);
-        stbi_image_free(image);
+
+        if (!filepath.empty())
+        {
+            stbi_image_free(image);
+        }
+        else
+        {
+            delete[] image;
+        }
 
         m_TextureList[filepath] = *texture_id;
         return true;

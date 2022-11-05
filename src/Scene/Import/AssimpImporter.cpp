@@ -7,9 +7,9 @@ namespace Ciri
         S<SceneNode> container = scene->AddContainer();
 
         Assimp::Importer importer;
-        const aiScene *assimp_scene = importer.ReadFile(filepath, aiProcess_Triangulate | aiProcess_FlipUVs);
+        const aiScene *assimp_scene = importer.ReadFile(filepath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | aiProcess_FindInvalidData);
 
-        if (!scene || assimp_scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE | !assimp_scene->mRootNode)
+        if (!assimp_scene || assimp_scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE | !assimp_scene->mRootNode)
         {
             CIRI_ERROR("{}", filepath);
             CIRI_ASSERT(false, "Failed to load model using assimp!");
@@ -110,6 +110,9 @@ namespace Ciri
 
     void AssimpImporter::ProcessAssimpMaterial(Scene *scene, const S<SceneNode> &node, const aiMaterial *assimp_material, std::string file_dir)
     {
+        MaterialInfo info = {"", true, false};
+        bool valid_mat = false;
+
         /* Only support one diffuse texture for now. */
         uint32_t diffuse_texture_count = assimp_material->GetTextureCount(aiTextureType_DIFFUSE);
         if (diffuse_texture_count > 0)
@@ -118,14 +121,30 @@ namespace Ciri
             assimp_material->GetTexture(aiTextureType_DIFFUSE, 0, &local_filepath);
             std::string full_filepath = file_dir + "/" + std::string(local_filepath.C_Str());
 
-            MaterialInfo info = {local_filepath.C_Str(), true, false, full_filepath};
-            S<Material> material = scene->MatLib.CreateMaterial(info, glm::vec3(1.0f));
-            node->NodeMaterial = material;
+            info.name = std::string(local_filepath.C_Str());
+            info.baseColorFilepath = full_filepath;
+            valid_mat = true;
         }
 
         if (diffuse_texture_count > 1)
         {
             CIRI_WARN("Model has more than 2 diffuse textures for one mesh. This is unsupported.");
+        }
+
+
+        /* Base color support. */
+        aiColor3D color(0.f, 0.f, 0.f);
+        glm::vec3 baseColor = glm::vec3(1.0f);
+        if(assimp_material->Get(AI_MATKEY_COLOR_DIFFUSE, color) == AI_SUCCESS)
+        {
+            baseColor = {color.r, color.g, color.b};
+            valid_mat = true;
+        }
+
+        if (valid_mat)
+        {
+            S<Material> material = scene->MatLib.CreateMaterial(info, baseColor);
+            node->NodeMaterial = material;
         }
     }
 
