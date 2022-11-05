@@ -123,7 +123,7 @@ namespace Ciri
         // chessNode->Scale = glm::vec3(10.0f);
 
         S<SceneNode> vampire_node = m_Scene->LoadModel(Importer::ASSIMP, "vampire", "resources/model/anim/dancing_vampire.dae");
-        vampire_node->Scale = glm::vec3(0.1f);
+        // vampire_node->Scale = glm::vec3(0.1f);
 
         CIRI_LOG("Scene Initialised");
     }

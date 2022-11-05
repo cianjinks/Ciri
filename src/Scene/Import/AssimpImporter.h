@@ -7,6 +7,8 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include <glm/gtx/quaternion.hpp>
+
 namespace Ciri
 {
     class AssimpImporter
@@ -25,6 +27,8 @@ namespace Ciri
         static void ProcessAssimpMesh(Scene* scene, const S<SceneNode>& container, const aiScene* assimp_scene, const aiMesh* assimp_mesh, std::string file_dir, std::map<std::string, BoneInfo>& boneinfomap, int& bonecounter);
         static void ProcessAssimpMaterial(Scene *scene, const S<SceneNode>& node, const aiMaterial* assimp_material, std::string file_dir);
         static void ProcessBones(const aiScene* assimp_scene, const aiMesh* assimp_mesh, std::vector<glm::i32vec4>& boneids, std::vector<glm::vec4>& boneweights, std::map<std::string, BoneInfo>& boneinfomap, int& bonecounter);
+
+        static void SetNodeTransform(S<SceneNode> parent, S<SceneNode> node, aiNode* assimp_node);
 
         static inline glm::mat4 ConvertMatrixToGLMFormat(const aiMatrix4x4& from)
         {
