@@ -53,10 +53,13 @@ namespace Ciri
 
     void Application::OnUIRender()
     {
-        if (!UI::IsActive())
-        {
-            return;
-        }
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2 {0, 0});
+        ImGui::Begin("Viewport");
+        ImVec2 size = ImGui::GetContentRegionAvail();
+        m_Renderer->Resize((uint32_t)size.x, (uint32_t)size.y);
+        ImGui::Image(reinterpret_cast<void*>(m_Renderer->GetViewportTexture()), ImVec2{ size.x, size.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+        ImGui::End();
+        ImGui::PopStyleVar();
 
         m_Gizmo->SetSelectedNode(m_SceneHierarchyPanel->GetSelectedNode());
         m_Gizmo->OnUIRender();

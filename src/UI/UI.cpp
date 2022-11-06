@@ -11,6 +11,7 @@ namespace Ciri
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         ImGuiIO &io = ImGui::GetIO();
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
         // Merge in icons from Fork Awesome
         static const ImWchar icons_ranges[] = {ICON_MIN_FK, ICON_MAX_FK, 0};
@@ -37,6 +38,8 @@ namespace Ciri
 		    ImGui::NewFrame();
             ImGuizmo::BeginFrame();
             ImGui::PushStyleColor(ImGuiCol_ResizeGrip, 0);
+
+            ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
         }
     }
 

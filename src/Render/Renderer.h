@@ -36,7 +36,12 @@ namespace Ciri
         uint32_t m_GMetallicRoughnessTexture;
         uint32_t m_GEmissiveTexture;
 
-        // Screen Quad
+        // Viewport Framebuffer
+        uint32_t m_ViewportFB;
+        uint32_t m_ViewportColorTexture;
+        uint32_t m_ViewportDepthTexture;
+
+        // Viewport Quad
         uint32_t m_ScreenQuadVAO;
         uint32_t m_ScreenQuadVBO;
 
@@ -54,6 +59,8 @@ namespace Ciri
         void CycleShader();
         ShaderType GetCurrentShader() const { return m_CurrentShader; }
         const S<ShaderLibrary> &GetShaderLibrary() const { return m_ShaderLib; }
+
+        uint32_t GetViewportTexture() const { return m_ViewportColorTexture; }
 
         void PrintDeviceInfo()
         {

@@ -83,14 +83,44 @@ namespace Ciri
 
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         {
-            CIRI_ASSERT(false, "Geometry Buffer is incomplete!");
+            CIRI_ASSERT(false, "Geometry Framebuffer is incomplete!");
         }
 
-        // Cleanup
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        // Output Quad
+        // Viewport Framebuffer
+        glGenFramebuffers(1, &m_ViewportFB);
+        glBindFramebuffer(GL_FRAMEBUFFER, m_ViewportFB);
+
+        glGenTextures(1, &m_ViewportColorTexture);
+        glBindTexture(GL_TEXTURE_2D, m_ViewportColorTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TargetWidth, TargetHeight, 0,
+                     GL_RGBA, GL_FLOAT, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+                               m_ViewportColorTexture, 0);
+
+        glGenTextures(1, &m_ViewportDepthTexture);
+        glBindTexture(GL_TEXTURE_2D, m_ViewportDepthTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, TargetWidth,
+                     TargetHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
+                               m_ViewportDepthTexture, 0);
+
+        /* No need to specify draw buffers because it defaults to single color output? */
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        {
+            CIRI_ASSERT(false, "Viewport Framebuffer is incomplete!");
+        }
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        // Viewport Quad
         glGenVertexArrays(1, &m_ScreenQuadVAO);
         glGenBuffers(1, &m_ScreenQuadVBO);
 
@@ -144,12 +174,15 @@ namespace Ciri
 
     void Renderer::Resize(int32_t width, int32_t height)
     {
-        TargetWidth = width;
-        TargetHeight = height;
+        if (TargetWidth != width || TargetHeight != height)
+        {
+            TargetWidth = width;
+            TargetHeight = height;
 
-        ResizeBuffers();
+            ResizeBuffers();
 
-        glViewport(0, 0, TargetWidth, TargetHeight);
+            glViewport(0, 0, TargetWidth, TargetHeight);
+        }
     }
 
     void Renderer::RenderScene(const S<Scene> &scene, const S<Camera> &camera)
@@ -167,7 +200,7 @@ namespace Ciri
         RenderSceneGeometry(scene, camera);
         m_ShaderLib->BindShader(ShaderType::NONE);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glBindFramebuffer(GL_FRAMEBUFFER, m_ViewportFB);
 
         // 2. Lighting?
 
@@ -201,6 +234,8 @@ namespace Ciri
         glBindTexture(GL_TEXTURE_2D, 0);
         m_ShaderLib->BindShader(ShaderType::NONE);
         BlitDepthBuffer();
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     void Renderer::RenderSceneGeometry(const S<Scene> &scene,
@@ -291,13 +326,16 @@ namespace Ciri
     void Renderer::BlitDepthBuffer()
     {
         glBindFramebuffer(GL_READ_FRAMEBUFFER, m_GBuffer);
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_ViewportFB);
         glBlitFramebuffer(0, 0, TargetWidth, TargetHeight, 0, 0, TargetWidth,
                           TargetHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
     }
 
     void Renderer::ResizeBuffers()
     {
+        /* No need to recreate entire framebuffers? */
+
+        // Geometry Buffer
         glBindTexture(GL_TEXTURE_2D, m_GBaseColorTexture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TargetWidth, TargetHeight, 0,
                      GL_RGBA, GL_FLOAT, NULL);
@@ -313,5 +351,15 @@ namespace Ciri
         glBindTexture(GL_TEXTURE_2D, m_GDepthTexture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, TargetWidth,
                      TargetHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+
+        // Viewport
+        glBindTexture(GL_TEXTURE_2D, m_ViewportColorTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TargetWidth, TargetHeight, 0,
+                     GL_RGBA, GL_FLOAT, NULL);
+        glBindTexture(GL_TEXTURE_2D, m_ViewportDepthTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, TargetWidth,
+                     TargetHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
 } // namespace Ciri
