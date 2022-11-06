@@ -31,26 +31,20 @@ namespace Ciri
 
     void UI::PreRender()
     {
-        if(!s_HideUI)
-        {
-            ImGui_ImplOpenGL3_NewFrame();
-		    ImGui_ImplGlfw_NewFrame();
-		    ImGui::NewFrame();
-            ImGuizmo::BeginFrame();
-            ImGui::PushStyleColor(ImGuiCol_ResizeGrip, 0);
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+        ImGuizmo::BeginFrame();
+        ImGui::PushStyleColor(ImGuiCol_ResizeGrip, 0);
 
-            ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
-        }
+        ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
     }
 
     void UI::PostRender()
     {
-        if(!s_HideUI)
-        {
-            ImGui::PopStyleColor(1);
-            ImGui::Render();
-            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        }
+        ImGui::PopStyleColor(1);
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
 
     bool UI::WantInput()
@@ -64,14 +58,7 @@ namespace Ciri
         EventType type = event.GetEventType();
         switch (type)
         {
-            case EventType::KEY_PRESS:
-                KeyEvent& key_event = static_cast<KeyEvent&>(event);
-                int key = key_event.GetKey();
-                if(key == GLFW_KEY_F1)
-                {
-                    ToggleActive();
-                }
-                break;
+            /* Unused. */
         }
     }
 }

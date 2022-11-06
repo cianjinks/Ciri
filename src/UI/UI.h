@@ -25,11 +25,6 @@ namespace Ciri
 
         static bool WantInput();
 
-        static void Disable() { s_HideUI = true; }
-        static void Enable() { s_HideUI = false; }
-        static void ToggleActive() { s_HideUI = !s_HideUI; }
-        static bool IsActive() { return !s_HideUI; }
-
         static void OnEvent(Event &event);
     };
 }

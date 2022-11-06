@@ -39,7 +39,7 @@ namespace Ciri
         }
 
         // TODO: Debug callback for OpenGL context
-        
+
         // Event Callbacks
         glfwSetWindowUserPointer(m_Window, &m_EventCallback);
 
@@ -55,7 +55,7 @@ namespace Ciri
         {
             CallbackFunc fn = *static_cast<CallbackFunc*>(glfwGetWindowUserPointer(window));
             if (!fn) { CIRI_ASSERT(false, "No Event Callback function is set"); }
-            
+
             switch(action)
             {
                 case GLFW_PRESS:
@@ -143,23 +143,7 @@ namespace Ciri
         EventType type = event.GetEventType();
         switch (type)
         {
-            case EventType::MOUSE_PRESS:
-            {
-                MouseButtonEvent& mouse_event = static_cast<MouseButtonEvent&>(event);
-                int button = mouse_event.GetButton();
-                if (button == GLFW_MOUSE_BUTTON_LEFT)
-                {
-                    CaptureCursor();
-                    UI::Disable();
-                }
-                if (button == GLFW_MOUSE_BUTTON_RIGHT)
-                {
-                    ReleaseCursor();
-                    UI::Enable();
-                    SetMouseStatus(true);
-                }
-                break;
-            }
+            /* Unused. */
         }
     }
 

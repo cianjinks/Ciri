@@ -2,6 +2,7 @@
 #define CIRI_APPLICATION_H
 
 #include "UI/UI.h"
+#include "UI/Viewport.h"
 #include "UI/Gizmo.h"
 #include "UI/StatisticsPanel.h"
 #include "UI/SceneHierarchyPanel.h"
@@ -28,8 +29,12 @@ namespace Ciri
         S<Scene> m_Scene;
         S<Camera> m_Camera;
 
+        // Viewport
+        U<Viewport> m_Viewport;
+
         // UI Gizmo
         U<Gizmo> m_Gizmo;
+
         // UI Panels
         U<StatisticsPanel> m_StatisticsPanel;
         U<SceneHierarchyPanel> m_SceneHierarchyPanel;
