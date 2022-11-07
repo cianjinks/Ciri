@@ -6,7 +6,7 @@ namespace Ciri
 {
     bool UI::s_HideUI = false;
 
-    void UI::Init(const S<Window>& window)
+    void UI::Init(const S<Window> &window)
     {
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
@@ -31,20 +31,26 @@ namespace Ciri
 
     void UI::PreRender()
     {
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-        ImGuizmo::BeginFrame();
-        ImGui::PushStyleColor(ImGuiCol_ResizeGrip, 0);
+        if (!s_HideUI)
+        {
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui_ImplGlfw_NewFrame();
+            ImGui::NewFrame();
+            ImGuizmo::BeginFrame();
+            ImGui::PushStyleColor(ImGuiCol_ResizeGrip, 0);
 
-        ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+            ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+        }
     }
 
     void UI::PostRender()
     {
-        ImGui::PopStyleColor(1);
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        if (!s_HideUI)
+        {
+            ImGui::PopStyleColor(1);
+            ImGui::Render();
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        }
     }
 
     bool UI::WantInput()
@@ -53,12 +59,8 @@ namespace Ciri
         return (io.WantCaptureMouse || io.WantCaptureKeyboard);
     }
 
-    void UI::OnEvent(Event& event)
+    void UI::OnEvent(Event &event)
     {
-        EventType type = event.GetEventType();
-        switch (type)
-        {
-            /* Unused. */
-        }
+        /* Unused. */
     }
 }

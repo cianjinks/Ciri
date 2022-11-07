@@ -51,7 +51,9 @@ namespace Ciri
 
         void OnEvent(Event &event);
 
-        void RenderScene(const S<Scene> &scene, const S<Camera> &camera);
+        /* Currently the renderer holds the viewport framebuffer and renders to it. But sometimes we want to render to default framebuffer instead. */
+        /* For now add a toggle bool. In the future it would make sense to pass in the render target to the renderer. */
+        void RenderScene(const S<Scene> &scene, const S<Camera> &camera, bool viewport);
 
         void Resize(int32_t width, int32_t height);
 
@@ -74,7 +76,7 @@ namespace Ciri
         void RenderSceneGeometry(const S<Scene> &scene, const S<Camera> &camera);
         void RenderScreenQuad();
 
-        void BlitDepthBuffer();
+        void BlitDepthBuffer(uint32_t framebuffer);
 
         void ResizeBuffers();
     };

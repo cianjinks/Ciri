@@ -4,12 +4,12 @@
 
 namespace Ciri
 {
-    Window* Window::s_Instance = nullptr;
+    Window *Window::s_Instance = nullptr;
 
     Window::Window(std::string name, int32_t width, int32_t height)
         : Name(name), Width(width), Height(height)
     {
-        if(s_Instance)
+        if (s_Instance)
         {
             CIRI_ASSERT(false, "Only one instance of a Window may exist!");
         }
@@ -43,16 +43,16 @@ namespace Ciri
         // Event Callbacks
         glfwSetWindowUserPointer(m_Window, &m_EventCallback);
 
-        glfwSetFramebufferSizeCallback(m_Window, [](GLFWwindow* window, int width, int height){
+        glfwSetFramebufferSizeCallback(m_Window, [](GLFWwindow *window, int width, int height)
+                                       {
             CallbackFunc fn = *static_cast<CallbackFunc*>(glfwGetWindowUserPointer(window));
             if (!fn) { CIRI_ASSERT(false, "No Event Callback function is set"); }
 
             WindowResizeEvent event(width, height);
-            fn(event);
-        });
+            fn(event); });
 
-        glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
-        {
+        glfwSetKeyCallback(m_Window, [](GLFWwindow *window, int key, int scancode, int action, int mods)
+                           {
             CallbackFunc fn = *static_cast<CallbackFunc*>(glfwGetWindowUserPointer(window));
             if (!fn) { CIRI_ASSERT(false, "No Event Callback function is set"); }
 
@@ -76,20 +76,18 @@ namespace Ciri
                     fn(event);
                     break;
                 }
-            }
-        });
+            } });
 
-        glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xpos, double ypos)
-        {
+        glfwSetCursorPosCallback(m_Window, [](GLFWwindow *window, double xpos, double ypos)
+                                 {
             CallbackFunc fn = *static_cast<CallbackFunc*>(glfwGetWindowUserPointer(window));
             if (!fn) { CIRI_ASSERT(false, "No Event Callback function is set"); }
 
             MousePositionEvent event(xpos, ypos);
-            fn(event);
-        });
+            fn(event); });
 
-        glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods)
-        {
+        glfwSetMouseButtonCallback(m_Window, [](GLFWwindow *window, int button, int action, int mods)
+                                   {
             CallbackFunc fn = *static_cast<CallbackFunc*>(glfwGetWindowUserPointer(window));
             if (!fn) { CIRI_ASSERT(false, "No Event Callback function is set"); }
 
@@ -107,17 +105,15 @@ namespace Ciri
                     fn(event);
                     break;
                 }
-            }
-        });
+            } });
 
-        glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset)
-        {
+        glfwSetScrollCallback(m_Window, [](GLFWwindow *window, double xOffset, double yOffset)
+                              {
             CallbackFunc fn = *static_cast<CallbackFunc*>(glfwGetWindowUserPointer(window));
             if (!fn) { CIRI_ASSERT(false, "No Event Callback function is set"); }
 
             MouseScrollEvent event(xOffset, yOffset);
-            fn(event);
-        });
+            fn(event); });
 
         CIRI_LOG("Window & OpenGL Context Initialised");
     }
@@ -138,19 +134,26 @@ namespace Ciri
         glfwPollEvents();
     }
 
-    void Window::OnEvent(Event& event)
+    void Window::OnEvent(Event &event)
     {
         EventType type = event.GetEventType();
         switch (type)
         {
-            /* Unused. */
+        case EventType::WINDOW_RESIZE:
+        {
+            WindowResizeEvent &resize_event =
+                static_cast<WindowResizeEvent &>(event);
+            Width = resize_event.GetWidth();
+            Height = resize_event.GetHeight();
+            break;
+        }
         }
     }
 
     void Window::End()
     {
         glfwDestroyWindow(m_Window);
-	    glfwTerminate();
+        glfwTerminate();
     }
 
     void Window::CaptureCursor()
@@ -162,12 +165,12 @@ namespace Ciri
     void Window::ReleaseCursor()
     {
         glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		m_CursorCaptured = false;
+        m_CursorCaptured = false;
     }
 
     glm::ivec2 Window::GetMainMonitorResolution()
     {
-        const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         return {mode->width, mode->height};
     }
 

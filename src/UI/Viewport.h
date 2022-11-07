@@ -5,6 +5,7 @@
 #include "Window/Window.h"
 #include "Window/Event.h"
 #include "UI/Gizmo.h"
+#include "UI/UI.h"
 
 #include <glm/glm.hpp>
 

@@ -4,7 +4,7 @@
 
 namespace Ciri
 {
-    RendererSettingsPanel::RendererSettingsPanel(const S<Renderer>& renderer)
+    RendererSettingsPanel::RendererSettingsPanel(const S<Renderer> &renderer)
     {
         SetRenderer(renderer);
     }
@@ -27,7 +27,7 @@ namespace Ciri
             ImGui::EndCombo();
         }
         ImGui::Text("[Z]  - Cycle Shader");
-        ImGui::Text("[F1] - Hide UI");
+        ImGui::Text("[F] - Fullscreen Viewport");
         ImGui::End();
     }
 }

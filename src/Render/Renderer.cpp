@@ -185,7 +185,7 @@ namespace Ciri
         }
     }
 
-    void Renderer::RenderScene(const S<Scene> &scene, const S<Camera> &camera)
+    void Renderer::RenderScene(const S<Scene> &scene, const S<Camera> &camera, bool viewport)
     {
         glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -200,7 +200,7 @@ namespace Ciri
         RenderSceneGeometry(scene, camera);
         m_ShaderLib->BindShader(ShaderType::NONE);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, m_ViewportFB);
+        glBindFramebuffer(GL_FRAMEBUFFER, viewport ? m_ViewportFB : 0);
 
         // 2. Lighting?
 
@@ -233,7 +233,7 @@ namespace Ciri
         RenderScreenQuad();
         glBindTexture(GL_TEXTURE_2D, 0);
         m_ShaderLib->BindShader(ShaderType::NONE);
-        BlitDepthBuffer();
+        BlitDepthBuffer(viewport ? m_ViewportFB : 0);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
@@ -323,10 +323,10 @@ namespace Ciri
         glBindVertexArray(0);
     }
 
-    void Renderer::BlitDepthBuffer()
+    void Renderer::BlitDepthBuffer(uint32_t framebuffer)
     {
         glBindFramebuffer(GL_READ_FRAMEBUFFER, m_GBuffer);
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_ViewportFB);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
         glBlitFramebuffer(0, 0, TargetWidth, TargetHeight, 0, 0, TargetWidth,
                           TargetHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
     }

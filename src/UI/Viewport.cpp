@@ -34,6 +34,11 @@ namespace Ciri
 
     void Viewport::OnUpdate()
     {
+        if (!UI::IsActive())
+        {
+            return;
+        }
+
         bool mouse_in_viewport = InViewport({ImGui::GetMousePos().x, ImGui::GetMousePos().y});
         bool right_click = Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT);
         if (mouse_in_viewport && right_click && !Window::Get()->IsCursorCaptured())

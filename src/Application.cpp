@@ -26,7 +26,7 @@ namespace Ciri
         while (!m_Window->ShouldClose())
         {
             m_Camera->OnUpdate(m_Window->GetTimeStep());
-            m_Renderer->RenderScene(m_Scene, m_Camera);
+            m_Renderer->RenderScene(m_Scene, m_Camera, UI::IsActive());
             m_Viewport->OnUpdate();
             UI::PreRender();
             OnUIRender();
@@ -38,12 +38,42 @@ namespace Ciri
 
     void Application::OnEvent(Event &event)
     {
+        m_Window->OnEvent(event);
         m_Camera->OnEvent(event);
         m_Renderer->OnEvent(event);
+
+        /* TODO: Create event dispatcher class. */
+        EventType type = event.GetEventType();
+        switch (type)
+        {
+        case EventType::KEY_PRESS:
+            KeyEvent &key_event = static_cast<KeyEvent &>(event);
+            int key = key_event.GetKey();
+            if (key == GLFW_KEY_F)
+            {
+                UI::ToggleActive();
+                if (!UI::IsActive())
+                {
+                    m_Window->CaptureCursor();
+                    m_Renderer->Resize(m_Window->Width, m_Window->Height);
+                }
+                else
+                {
+                    m_Window->ReleaseCursor();
+                    m_Window->SetMouseStatus(true);
+                }
+            }
+            break;
+        }
     }
 
     void Application::OnUIRender()
     {
+        if (!UI::IsActive())
+        {
+            return;
+        }
+
         m_Viewport->GetGizmo()->SetSelectedNode(m_SceneHierarchyPanel->GetSelectedNode());
         m_Viewport->OnUIRender();
 
