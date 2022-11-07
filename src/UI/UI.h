@@ -22,6 +22,7 @@ namespace Ciri
         static void Init(const S<Window> &window);
         static void PreRender();
         static void PostRender();
+        static void SetTheme();
 
         static bool WantInput();
 
@@ -29,8 +30,6 @@ namespace Ciri
         static void Enable() { s_HideUI = false; }
         static void ToggleActive() { s_HideUI = !s_HideUI; }
         static bool IsActive() { return !s_HideUI; }
-
-        static void OnEvent(Event &event);
     };
 }
 

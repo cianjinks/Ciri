@@ -7,7 +7,7 @@ namespace Ciri
     Application::Application()
     {
         Log::Init();
-        m_Window = CreateS<Window>(Name, 1280, 720);
+        m_Window = CreateS<Window>(Name, 1920, 1080);
         m_Window->SetEventCallback([this](Event &event)
                                    { OnEvent(event); });
         UI::Init(m_Window);
@@ -72,7 +72,7 @@ namespace Ciri
         m_Viewport->GetGizmo()->SetSelectedNode(m_SceneHierarchyPanel->GetSelectedNode());
         m_Viewport->OnUIRender();
 
-        // ImGui::ShowDemoWindow();
+        ImGui::ShowDemoWindow();
         m_StatisticsPanel->OnUIRender();
         m_SceneHierarchyPanel->OnUIRender();
         m_MeshSettingsPanel->SetSelectedNode(m_SceneHierarchyPanel->GetSelectedNode());
