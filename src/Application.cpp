@@ -72,7 +72,7 @@ namespace Ciri
         m_Viewport->GetGizmo()->SetSelectedNode(m_SceneHierarchyPanel->GetSelectedNode());
         m_Viewport->OnUIRender();
 
-        ImGui::ShowDemoWindow();
+        // ImGui::ShowDemoWindow();
         m_StatisticsPanel->OnUIRender();
         m_SceneHierarchyPanel->OnUIRender();
         m_MeshSettingsPanel->SetSelectedNode(m_SceneHierarchyPanel->GetSelectedNode());

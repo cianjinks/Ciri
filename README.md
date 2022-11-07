@@ -2,6 +2,7 @@
 
 ## Media
 
+![Latest UI](docs/UI.png)
 ![Deferred Rendering Tests](docs/sponza_depth.png)
 ![Current State](docs/progress.png)
 ![Sponza Textured](docs/sponza_textured.png)
