@@ -54,13 +54,8 @@ namespace Ciri
                 UI::ToggleActive();
                 if (!UI::IsActive())
                 {
-                    m_Window->CaptureCursor();
+                    m_Camera->Resize(m_Window->Width, m_Window->Height);
                     m_Renderer->Resize(m_Window->Width, m_Window->Height);
-                }
-                else
-                {
-                    m_Window->ReleaseCursor();
-                    m_Window->SetMouseStatus(true);
                 }
             }
             break;

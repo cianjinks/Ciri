@@ -14,6 +14,7 @@ namespace Ciri
     class Viewport
     {
     private:
+        S<Camera> m_Camera;
         S<Renderer> m_Renderer;
         S<Gizmo> m_Gizmo;
 

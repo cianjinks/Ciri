@@ -48,12 +48,20 @@ namespace Ciri
 
     void Camera::OnEvent(Event& event)
     {
+        EventType type = event.GetEventType();
+
+        if (!UI::IsActive() && type == EventType::WINDOW_RESIZE)
+        {
+            WindowResizeEvent &resize_event =
+                static_cast<WindowResizeEvent &>(event);
+            Resize(resize_event.GetWidth(), resize_event.GetHeight());
+        }
+
         if(!Window::Get()->IsCursorCaptured())
         {
             return;
         }
 
-        EventType type = event.GetEventType();
         switch (type)
         {
             case EventType::WINDOW_RESIZE:

@@ -1,6 +1,8 @@
 #ifndef CIRI_CAMERA_H
 #define CIRI_CAMERA_H
 
+#include "UI/UI.h"
+
 #include <glm/glm.hpp>
 
 namespace Ciri
@@ -24,7 +26,7 @@ namespace Ciri
 
         float LastX = 0.0f;
         float LastY = 0.0f;
-        
+
     private:
         float m_Width, m_Height;
 
@@ -41,7 +43,7 @@ namespace Ciri
         void OnEvent(Event& event);
 
         void Resize(int32_t width, int32_t height);
-        
+
         void RecalcDirection();
         void RecalcVP();
 
