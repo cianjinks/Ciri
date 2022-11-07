@@ -44,10 +44,8 @@ namespace Ciri
 
     void Application::OnUIRender()
     {
+        m_Viewport->GetGizmo()->SetSelectedNode(m_SceneHierarchyPanel->GetSelectedNode());
         m_Viewport->OnUIRender();
-
-        m_Gizmo->SetSelectedNode(m_SceneHierarchyPanel->GetSelectedNode());
-        m_Gizmo->OnUIRender();
 
         // ImGui::ShowDemoWindow();
         m_StatisticsPanel->OnUIRender();
@@ -62,9 +60,7 @@ namespace Ciri
 
     void Application::DefineUI()
     {
-        m_Viewport = CreateU<Viewport>(m_Renderer);
-
-        m_Gizmo = CreateU<Gizmo>(m_Camera);
+        m_Viewport = CreateU<Viewport>(m_Camera, m_Renderer);
 
         m_StatisticsPanel = CreateU<StatisticsPanel>(m_Scene);
         m_SceneHierarchyPanel = CreateU<SceneHierarchyPanel>(m_Scene);

@@ -3,7 +3,6 @@
 
 #include "UI/UI.h"
 #include "UI/Viewport.h"
-#include "UI/Gizmo.h"
 #include "UI/StatisticsPanel.h"
 #include "UI/SceneHierarchyPanel.h"
 #include "UI/MeshSettingsPanel.h"
@@ -31,9 +30,6 @@ namespace Ciri
 
         // Viewport
         U<Viewport> m_Viewport;
-
-        // UI Gizmo
-        U<Gizmo> m_Gizmo;
 
         // UI Panels
         U<StatisticsPanel> m_StatisticsPanel;

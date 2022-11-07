@@ -14,9 +14,8 @@ namespace Ciri
         if (m_SelectedNode)
         {
             ImGuizmo::SetOrthographic(false);
-            ImGuizmo::SetDrawlist(ImGui::GetBackgroundDrawList());
-            ImGuiIO &io = ImGui::GetIO();
-            ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+            ImGuizmo::SetDrawlist();
+            ImGuizmo::SetRect(m_Rect.x, m_Rect.y, m_Rect.z, m_Rect.w);
             glm::mat4 node_transform = glm::translate(glm::mat4(1.0f), m_SelectedNode->Position) * glm::toMat4(glm::quat(m_SelectedNode->Rotation)) * glm::scale(glm::mat4(1.0f), m_SelectedNode->Scale); /* TODO: Create GetTransform function for node and use it in the renderer. */
             ImGuizmo::Manipulate(glm::value_ptr(m_Camera->GetViewMat()), glm::value_ptr(m_Camera->GetProjectionMat()),
                                  ImGuizmo::OPERATION::TRANSLATE | ImGuizmo::OPERATION::SCALE | ImGuizmo::OPERATION::ROTATE, ImGuizmo::LOCAL,
