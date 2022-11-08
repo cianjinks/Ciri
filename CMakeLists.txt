@@ -20,7 +20,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DCIRI_RELEASE")
 add_definitions(-DCMAKE_EXPORT_COMPILE_COMMANDS=ON)
 
 # C++ Standard
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # GLFW
@@ -29,6 +29,9 @@ set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_USE_HYBRID_HPG ON CACHE BOOL "" FORCE)
+
+# EnTT
+set(entt-include dependencies/entt/include)
 
 # ImGui
 set(imgui-directory dependencies/imgui)
@@ -68,7 +71,7 @@ file(GLOB_RECURSE source CONFIGURE_DEPENDS "src/*.h" "src/*.hpp" "src/*.cpp")
 
 add_executable(Ciri ${source} ${imgui-source})
 target_link_libraries(Ciri ${OPENGL_LIBRARIES} glfw glad glm spdlog stb_image tinyobjloader tinygltf assimp)
-target_include_directories(Ciri PRIVATE ${imgui-directory} ${stb_image-include} ${fork_awesome-include})
+target_include_directories(Ciri PRIVATE ${imgui-directory} ${stb_image-include} ${fork_awesome-include} ${entt-include})
 target_precompile_headers(Ciri PRIVATE ${ciri-pch})
 
 # Visual Studio Startup Project
