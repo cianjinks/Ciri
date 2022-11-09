@@ -6,14 +6,17 @@ namespace Ciri
     {
         Transform::Transform(const glm::mat4 &mat)
         {
-            glm::vec3 rotation;
-            DecomposeTransform(mat, Translation, rotation, Scale);
-            Rotation = glm::quat(rotation);
+            Decompose(mat);
         }
 
         glm::mat4 Transform::Compose()
         {
             return ComposeTransform(Translation, Rotation, Scale);
+        }
+
+        void Transform::Decompose(const glm::mat4 &mat)
+        {
+            DecomposeTransform(mat, Translation, Rotation, Scale);
         }
 
         glm::mat4 ComposeTransform(const glm::vec3 &translation, const glm::quat &rotation, const glm::vec3 &scale)

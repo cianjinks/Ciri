@@ -20,6 +20,8 @@ namespace Ciri
         Entity(const Entity &other) = default;
         Entity(entt::entity entity, const S<Scene> &scene);
 
+        bool IsValid() { return m_Entity != entt::null; }
+
         template <typename T, typename... Args>
         T &AddComponent(Args &&...args)
         {
@@ -59,6 +61,13 @@ namespace Ciri
             {
                 CIRI_ASSERT(false, "Entity tried to use a dangling scene reference!");
             }
+        }
+
+        operator uint32_t() const { return (uint32_t)m_Entity; }
+        
+        bool operator==(const Entity &other) const
+        {
+            return m_Entity == other.m_Entity && m_Scene == other.m_Scene;
         }
     };
 }

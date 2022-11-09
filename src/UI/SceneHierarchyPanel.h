@@ -17,6 +17,7 @@ namespace Ciri
         ~SceneHierarchyPanel() = default;
 
         void OnUIRender();
+        void RenderNode(Entity entity);
 
         void SetScene(const S<Scene> &scene) { m_Scene = scene; }
 

@@ -12,7 +12,7 @@ namespace Ciri
         struct Transform
         {
             glm::vec3 Translation = glm::vec3(0.0f);
-            glm::quat Rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+            glm::vec3 Rotation = glm::vec3(0.0f);
             glm::vec3 Scale = glm::vec3(1.0f);
 
             Transform() = default;
@@ -21,6 +21,7 @@ namespace Ciri
             Transform(const glm::mat4 &mat);
 
             glm::mat4 Compose();
+            void Decompose(const glm::mat4 &mat);
         };
 
         glm::mat4 ComposeTransform(const glm::vec3 &translation, const glm::quat &rotation, const glm::vec3 &scale);

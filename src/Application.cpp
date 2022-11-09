@@ -69,7 +69,7 @@ namespace Ciri
             return;
         }
 
-        // m_Viewport->GetGizmo()->SetSelectedNode(m_SceneHierarchyPanel->GetSelectedNode());
+        m_Viewport->GetGizmo()->SetSelectedEntity(m_SceneHierarchyPanel->GetSelectedEntity());
         m_Viewport->OnUIRender();
 
         // ImGui::ShowDemoWindow();
@@ -116,6 +116,9 @@ namespace Ciri
         quad_entity.AddComponent<MeshComponent>(quad_mesh);
         TransformComponent &quad_transform = quad_entity.AddComponent<TransformComponent>();
         quad_transform.Transform.Translation = glm::vec3(3.0f, 0.0f, 0.0f);
+
+        m_Scene->CreateEntity("Empty 1");
+        m_Scene->CreateEntity("Empty 2");
 
         CIRI_LOG("Scene Initialised");
     }

@@ -14,22 +14,37 @@ namespace Ciri
     {
         ImGui::Begin("Scene");
         const entt::registry &registry = m_Scene->GetRegistry();
+        int e = 0;
         registry.each([&](auto entity)
                       {
             if (registry.valid(entity))
             {
                 Entity entity(entity, m_Scene);
-                if (entity.HasComponent<TagComponent>())
-                {
-                    auto& tc = entity.GetComponent<TagComponent>();
-                    ImGui::Text(tc.Tag.c_str());
-                }
-                else
-                {
-                    ImGui::Text("Unknown Entity");
-                }
+                RenderNode(entity);
             } });
         ImGui::End();
+    }
+
+    void SceneHierarchyPanel::RenderNode(Entity entity)
+    {
+        ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
+        if (m_SelectedEntity.IsValid() && m_SelectedEntity == entity)
+        {
+            node_flags |= ImGuiTreeNodeFlags_Selected;
+        }
+
+        auto &tc = entity.GetComponent<TagComponent>();
+        bool node_open = ImGui::TreeNodeEx((void *)(uint64_t)(uint32_t)entity, node_flags, "%s %s", ICON_FK_CUBE, tc.Tag.c_str());
+
+        if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+        {
+            m_SelectedEntity = entity;
+        }
+
+        if (node_open)
+        {
+            ImGui::TreePop();
+        }
     }
 
     // void SceneHierarchyPanel::RenderNodeHierarchy(S<SceneNode> root, int ptr_id)

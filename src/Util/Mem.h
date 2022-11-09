@@ -23,6 +23,11 @@ namespace Ciri
 
     template <typename T>
     using W = std::weak_ptr<T>;
+    template <typename T>
+    bool operator==(const std::weak_ptr<T> &lhs, const std::weak_ptr<T> &rhs)
+    {
+        return !rhs.owner_before(lhs) && !lhs.owner_before(rhs);
+    }
 }
 
 #endif
