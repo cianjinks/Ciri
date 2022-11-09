@@ -22,7 +22,8 @@
 #include "Util/Assert.h"
 #include "Util/Log.h"
 #include "Util/Mem.h"
-#include "Util/Math.h"
+
+#include "Math/Math.h"
 
 #include "Window/Event.h"
 #include "Window/Input.h"

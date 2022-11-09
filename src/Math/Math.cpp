@@ -4,6 +4,36 @@ namespace Ciri
 {
     namespace Math
     {
+        Transform::Transform(const glm::mat4 &mat)
+        {
+            glm::vec3 rotation;
+            DecomposeTransform(mat, Translation, rotation, Scale);
+            Rotation = glm::quat(rotation);
+        }
+
+        glm::mat4 Transform::Compose()
+        {
+            return ComposeTransform(Translation, Rotation, Scale);
+        }
+
+        glm::mat4 ComposeTransform(const glm::vec3 &translation, const glm::quat &rotation, const glm::vec3 &scale)
+        {
+            glm::mat4 result = glm::mat4(1.0f);
+            result = glm::translate(result, translation);
+            result *= glm::toMat4(rotation);
+            result = glm::scale(result, scale);
+            return result;
+        }
+
+        glm::mat4 ComposeTransform(const glm::vec3 &translation, const glm::vec3 &rotation, const glm::vec3 &scale)
+        {
+            glm::mat4 result = glm::mat4(1.0f);
+            result = glm::translate(result, translation);
+            result *= glm::toMat4(glm::quat(rotation));
+            result = glm::scale(result, scale);
+            return result;
+        }
+
         /* Taken from https://github.com/TheCherno/Hazel which modifies glm::decompose. */
         bool DecomposeTransform(const glm::mat4 &transform, glm::vec3 &r_translation, glm::vec3 &r_rotation, glm::vec3 &r_scale)
         {

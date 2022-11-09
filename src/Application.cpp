@@ -80,7 +80,7 @@ namespace Ciri
         // m_MaterialLibraryPanel->OnUIRender();
         // m_MaterialSettingsPanel->SetSelectedNode(m_MaterialLibraryPanel->GetSelectedMaterial());
         // m_MaterialSettingsPanel->OnUIRender();
-        // m_RendererSettingsPanel->OnUIRender();
+        m_RendererSettingsPanel->OnUIRender();
     }
 
     void Application::DefineUI()
@@ -92,25 +92,30 @@ namespace Ciri
         // m_MeshSettingsPanel = CreateU<MeshSettingsPanel>(m_Scene->MatLib);
         // m_MaterialLibraryPanel = CreateU<MaterialLibraryPanel>(m_Scene->MatLib);
         // m_MaterialSettingsPanel = CreateU<MaterialSettingsPanel>(m_Scene->MatLib);
-        // m_RendererSettingsPanel = CreateU<RendererSettingsPanel>(m_Renderer);
+        m_RendererSettingsPanel = CreateU<RendererSettingsPanel>(m_Renderer);
     }
 
     void Application::DefineScene()
     {
         Entity sphere_entity = m_Scene->CreateEntity("Sphere");
-        S<Sphere> sphere_mesh = CreateS<Sphere>();
+        S<Sphere> sphere_mesh = CreateS<Sphere>(32, 32);
         sphere_mesh->Construct();
         sphere_entity.AddComponent<MeshComponent>(sphere_mesh);
+        TransformComponent &sphere_transform = sphere_entity.AddComponent<TransformComponent>();
 
         Entity cube_entity = m_Scene->CreateEntity("Cube");
         S<Cube> cube_mesh = CreateS<Cube>();
         cube_mesh->Construct();
         cube_entity.AddComponent<MeshComponent>(cube_mesh);
+        TransformComponent &cube_transform = cube_entity.AddComponent<TransformComponent>();
+        cube_transform.Transform.Translation = glm::vec3(-3.0f, 0.0f, 0.0f);
 
         Entity quad_entity = m_Scene->CreateEntity("Quad");
         S<Quad> quad_mesh = CreateS<Quad>();
         quad_mesh->Construct();
         quad_entity.AddComponent<MeshComponent>(quad_mesh);
+        TransformComponent &quad_transform = quad_entity.AddComponent<TransformComponent>();
+        quad_transform.Transform.Translation = glm::vec3(3.0f, 0.0f, 0.0f);
 
         CIRI_LOG("Scene Initialised");
     }

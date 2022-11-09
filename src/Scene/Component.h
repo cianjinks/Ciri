@@ -3,6 +3,8 @@
 
 #include "Mesh/Mesh.h"
 
+#include <glm/glm.hpp>
+
 namespace Ciri
 {
     struct TagComponent
@@ -13,6 +15,18 @@ namespace Ciri
         TagComponent(const TagComponent &) = default;
         TagComponent(const std::string &tag)
             : Tag(tag) {}
+    };
+
+    struct TransformComponent
+    {
+        Math::Transform Transform;
+
+        TransformComponent() = default;
+        TransformComponent(const TransformComponent &other) = default;
+        TransformComponent(Math::Transform transform)
+            : Transform(transform) {}
+        TransformComponent(const glm::mat4 &mat)
+            : Transform(mat) {}
     };
 
     struct MeshComponent
