@@ -2,6 +2,7 @@
 
 #include "tiny_gltf.h"
 
+#if 0
 namespace Ciri
 {
     S<SceneNode> GLTFImporter::Import(Scene *scene, const char *filepath)
@@ -212,3 +213,4 @@ namespace Ciri
         return container;
     }
 }
+#endif

@@ -5,7 +5,7 @@
 
 namespace Ciri
 {
-    SceneHierarchyPanel::SceneHierarchyPanel(const S<Scene>& scene)
+    SceneHierarchyPanel::SceneHierarchyPanel(const S<Scene> &scene)
     {
         SetScene(scene);
     }
@@ -13,44 +13,59 @@ namespace Ciri
     void SceneHierarchyPanel::OnUIRender()
     {
         ImGui::Begin("Scene");
-        RenderNodeHierarchy(m_Scene->GetRoot(), 0);
+        const entt::registry &registry = m_Scene->GetRegistry();
+        registry.each([&](auto entity)
+                      {
+            if (registry.valid(entity))
+            {
+                Entity entity(entity, m_Scene);
+                if (entity.HasComponent<TagComponent>())
+                {
+                    auto& tc = entity.GetComponent<TagComponent>();
+                    ImGui::Text(tc.Tag.c_str());
+                }
+                else
+                {
+                    ImGui::Text("Unknown Entity");
+                }
+            } });
         ImGui::End();
     }
 
-    void SceneHierarchyPanel::RenderNodeHierarchy(S<SceneNode> root, int ptr_id)
-    {   
-        ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
+    // void SceneHierarchyPanel::RenderNodeHierarchy(S<SceneNode> root, int ptr_id)
+    // {
+    //     ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
 
-        bool is_leaf = root->Children.empty();
-        if (is_leaf)
-        {
-            node_flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-        }
+    //     bool is_leaf = root->Children.empty();
+    //     if (is_leaf)
+    //     {
+    //         node_flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+    //     }
 
-        if (m_SelectedNode == root)
-        {
-            node_flags |= ImGuiTreeNodeFlags_Selected;
-        }
+    //     if (m_SelectedNode == root)
+    //     {
+    //         node_flags |= ImGuiTreeNodeFlags_Selected;
+    //     }
 
-        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2.0f, 2.0f));
-        // TODO: Blank root name is buggy and icon handling is rough
-        bool node_open = ImGui::TreeNodeEx((void *)(intptr_t)ptr_id, node_flags, "%s %s", root->NodeMesh ? ICON_FK_CUBE : ICON_FK_SQUARE_O, root->Name.c_str());
+    //     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2.0f, 2.0f));
+    //     // TODO: Blank root name is buggy and icon handling is rough
+    //     bool node_open = ImGui::TreeNodeEx((void *)(intptr_t)ptr_id, node_flags, "%s %s", root->NodeMesh ? ICON_FK_CUBE : ICON_FK_SQUARE_O, root->Name.c_str());
 
-        // Update selected node on click but not expand toggle click
-        if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
-        {
-            m_SelectedNode = root;
-        }
+    //     // Update selected node on click but not expand toggle click
+    //     if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+    //     {
+    //         m_SelectedNode = root;
+    //     }
 
-        if (node_open && !is_leaf)
-        {
-            for (S<SceneNode> node : root->Children)
-            {
-                RenderNodeHierarchy(node, ptr_id++);
-            }
+    //     if (node_open && !is_leaf)
+    //     {
+    //         for (S<SceneNode> node : root->Children)
+    //         {
+    //             RenderNodeHierarchy(node, ptr_id++);
+    //         }
 
-            ImGui::TreePop();
-        }
-        ImGui::PopStyleVar();
-    }
+    //         ImGui::TreePop();
+    //     }
+    //     ImGui::PopStyleVar();
+    // }
 }

@@ -1,15 +1,16 @@
-#include "MeshSettingsPanel.h"
+#include "EntitySettingsPanel.h"
 
 #include "imgui.h"
 
+#if 0
 namespace Ciri
 {
-    MeshSettingsPanel::MeshSettingsPanel(MaterialLibrary &matlib)
+    EntitySettingsPanel::EntitySettingsPanel(MaterialLibrary &matlib)
         : m_MaterialLibrary(matlib)
     {
     }
 
-    void MeshSettingsPanel::OnUIRender()
+    void EntitySettingsPanel::OnUIRender()
     {
         ImGui::Begin("Mesh Settings");
         if (m_SelectedNode)
@@ -42,3 +43,4 @@ namespace Ciri
         ImGui::End();
     }
 }
+#endif

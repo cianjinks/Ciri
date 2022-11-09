@@ -9,6 +9,7 @@
 
 namespace Ciri
 {
+#if 0
     class AssimpImporter
     {
     public:
@@ -18,6 +19,7 @@ namespace Ciri
         static void ProcessAssimpMesh(Scene* scene, const S<SceneNode>& container, const aiScene* assimp_scene, const aiMesh* assimp_mesh, std::string file_dir);
         static void ProcessAssimpMaterial(Scene *scene, const S<SceneNode>& node, const aiMaterial* assimp_material, std::string file_dir);
     };
+#endif
 }
 
 #endif

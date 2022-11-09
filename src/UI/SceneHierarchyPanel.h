@@ -2,6 +2,7 @@
 #define CIRI_SCENEPANEL_H
 
 #include "Scene/Scene.h"
+#include "Scene/Entity.h"
 
 namespace Ciri
 {
@@ -9,20 +10,20 @@ namespace Ciri
     {
     private:
         S<Scene> m_Scene;
-        S<SceneNode> m_SelectedNode = nullptr;
+        Entity m_SelectedEntity;
 
     public:
-        SceneHierarchyPanel(const S<Scene>& scene);
+        SceneHierarchyPanel(const S<Scene> &scene);
         ~SceneHierarchyPanel() = default;
 
         void OnUIRender();
 
-        void SetScene(const S<Scene>& scene) { m_Scene = scene; }
+        void SetScene(const S<Scene> &scene) { m_Scene = scene; }
 
-        S<SceneNode> GetSelectedNode() { return m_SelectedNode; }
+        Entity GetSelectedEntity() { return m_SelectedEntity; }
 
     private:
-        void RenderNodeHierarchy(S<SceneNode> root, int ptr_id);
+        // void RenderNodeHierarchy(S<SceneNode> root, int ptr_id);
     };
 }
 

@@ -13,11 +13,16 @@ namespace Ciri
 
     template <typename T>
     using S = std::shared_ptr<T>;
+    template <typename T>
+    using ThisS = std::enable_shared_from_this<T>;
     template <typename T, typename... Args>
     constexpr S<T> CreateS(Args &&...args)
     {
         return std::make_shared<T>(std::forward<Args>(args)...);
     }
+
+    template <typename T>
+    using W = std::weak_ptr<T>;
 }
 
 #endif

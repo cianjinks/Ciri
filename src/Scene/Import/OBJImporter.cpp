@@ -2,6 +2,8 @@
 
 #include "tiny_obj_loader.h"
 
+#if 0
+
 namespace Ciri
 {
 	/* TODO: Lots of redundant copying of data going on - really inefficient :/ */
@@ -165,3 +167,4 @@ namespace Ciri
 		return container;
 	}
 }
+#endif

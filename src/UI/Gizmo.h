@@ -3,6 +3,7 @@
 
 #include "Scene/Camera.h"
 #include "Scene/Scene.h"
+#include "Scene/Entity.h"
 
 #include <glm/glm.hpp>
 
@@ -12,7 +13,7 @@ namespace Ciri
     {
     private:
         S<Camera> m_Camera;
-        S<SceneNode> m_SelectedNode = nullptr;
+        Entity m_SelectedEntity;
 
         glm::vec4 m_Rect = glm::vec4(0.0f);
 
@@ -22,7 +23,7 @@ namespace Ciri
 
         void OnUIRender();
 
-        void SetSelectedNode(S<SceneNode> node) { m_SelectedNode = node; }
+        void SetSelectedEntity(Entity entity) { m_SelectedEntity = entity; }
         void SetRect(glm::vec2 pos, glm::vec2 scale)
         {
             m_Rect.x = pos.x, m_Rect.y = pos.y;

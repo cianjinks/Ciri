@@ -245,6 +245,31 @@ namespace Ciri
         glm::mat4 proj = camera->GetProjectionMat();
         glm::mat4 view = camera->GetViewMat();
 
+        const entt::registry &registry = scene->GetRegistry();
+        auto reg_view = registry.view<MeshComponent>();
+        for (auto entity : reg_view)
+        {
+            auto mc = registry.get<MeshComponent>(entity);
+
+            glm::mat4 mvp = proj * view * glm::mat4(1.0f);
+            m_ShaderLib->SetMat4f("u_MVP", glm::value_ptr(mvp));
+
+            S<Mesh> mesh = mc.CMesh;
+            glBindVertexArray(mesh->m_VAO);
+
+            if (mesh->IsIndexed)
+            {
+                glDrawElements(GL_TRIANGLES, mesh->GetIndexCount(), GL_UNSIGNED_SHORT, 0);
+            }
+            else
+            {
+                glDrawArrays(GL_TRIANGLES, 0, 3 * mesh->TriCount);
+            }
+
+            glBindVertexArray(0);
+        }
+
+#if 0
         std::stack<RenderStackItem> renderStack;
         S<SceneNode> root = scene->GetRoot();
         renderStack.push({root, root->Position, glm::toMat4(glm::quat(root->Rotation)), root->Scale});
@@ -314,6 +339,7 @@ namespace Ciri
                                   currentNodeScale * node->Scale});
             }
         }
+#endif
     }
 
     void Renderer::RenderScreenQuad()

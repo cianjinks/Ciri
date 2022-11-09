@@ -1,5 +1,6 @@
 #include "AssimpImporter.h"
 
+#if 0
 namespace Ciri
 {
     S<SceneNode> AssimpImporter::Import(Scene *scene, const char *filepath)
@@ -110,3 +111,4 @@ namespace Ciri
         }
     }
 }
+#endif

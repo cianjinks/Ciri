@@ -8,14 +8,6 @@
 
 namespace Ciri
 {
-    struct RenderStackItem
-    {
-        S<SceneNode> node;
-        glm::vec3 position;
-        glm::mat4 rotation; /* Rotation converted from vec3 to mat4 in RenderStack. */
-        glm::vec3 scale;
-    };
-
     class Renderer
     {
     public:

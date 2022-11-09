@@ -5,7 +5,7 @@
 #include "UI/Viewport.h"
 #include "UI/StatisticsPanel.h"
 #include "UI/SceneHierarchyPanel.h"
-#include "UI/MeshSettingsPanel.h"
+#include "UI/EntitySettingsPanel.h"
 #include "UI/MaterialLibraryPanel.h"
 #include "UI/MaterialSettingsPanel.h"
 #include "UI/RendererSettingsPanel.h"
@@ -13,6 +13,7 @@
 #include "Render/Renderer.h"
 #include "Scene/Scene.h"
 #include "Scene/Camera.h"
+#include "Scene/Component.h"
 #include "Mesh/Primitive.h"
 
 namespace Ciri
@@ -34,7 +35,7 @@ namespace Ciri
         // UI Panels
         U<StatisticsPanel> m_StatisticsPanel;
         U<SceneHierarchyPanel> m_SceneHierarchyPanel;
-        U<MeshSettingsPanel> m_MeshSettingsPanel;
+        // U<MeshSettingsPanel> m_MeshSettingsPanel;
         U<MaterialLibraryPanel> m_MaterialLibraryPanel;
         U<MaterialSettingsPanel> m_MaterialSettingsPanel;
         U<RendererSettingsPanel> m_RendererSettingsPanel;

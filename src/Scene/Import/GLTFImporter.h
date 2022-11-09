@@ -3,6 +3,7 @@
 
 #include "Scene/Scene.h"
 
+#if 0
 namespace Ciri
 {
     class GLTFImporter
@@ -11,5 +12,6 @@ namespace Ciri
         static S<SceneNode> Import(Scene* scene, const char *filepath);
     };
 }
+#endif
 
 #endif
