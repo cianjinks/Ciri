@@ -4,6 +4,7 @@
 #include "Render/Shader.h"
 #include "Render/Material.h"
 #include "Scene/Scene.h"
+#include "Scene/Entity.h"
 #include "Scene/Camera.h"
 
 namespace Ciri

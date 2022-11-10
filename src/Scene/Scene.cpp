@@ -18,4 +18,9 @@ namespace Ciri
 		entity.AddComponent<TagComponent>(tag);
 		return entity;
 	}
+
+	S<Material> Scene::CreateMaterial(MaterialSpecification &spec)
+	{
+		return m_MaterialLibrary.CreateMaterial(spec);
+	}
 }

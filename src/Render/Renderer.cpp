@@ -254,6 +254,29 @@ namespace Ciri
             glm::mat4 mvp = proj * view * tc.Transform.Compose();
             m_ShaderLib->SetMat4f("u_MVP", glm::value_ptr(mvp));
 
+            Entity wrap_entity(entity, scene);
+            if (wrap_entity.HasComponent<MaterialComponent>())
+            {
+                auto &mc = wrap_entity.GetComponent<MaterialComponent>();
+                S<Material> &material = mc.CMaterial;
+                m_ShaderLib->SetVec3f("u_BaseColor", material->spec.baseColor);
+                m_ShaderLib->SetInt1i("u_BaseColorTexture", 0);
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, material->spec.baseColorTextureID);
+                m_ShaderLib->SetInt1i("u_NormalTexture", 1);
+                glActiveTexture(GL_TEXTURE1);
+                glBindTexture(GL_TEXTURE_2D, material->spec.normalTextureID);
+                m_ShaderLib->SetInt1i("u_MetallicRoughnessTexture", 2);
+                glActiveTexture(GL_TEXTURE2);
+                glBindTexture(GL_TEXTURE_2D, material->spec.metallicRoughnessTextureID);
+                m_ShaderLib->SetInt1i("u_OcclusionTexture", 3);
+                glActiveTexture(GL_TEXTURE3);
+                glBindTexture(GL_TEXTURE_2D, material->spec.occlusionTextureID);
+                m_ShaderLib->SetInt1i("u_EmissiveTexture", 4);
+                glActiveTexture(GL_TEXTURE4);
+                glBindTexture(GL_TEXTURE_2D, material->spec.emissiveTextureID);
+            }
+
             S<Mesh> mesh = mc.CMesh;
             glBindVertexArray(mesh->m_VAO);
 
@@ -267,6 +290,7 @@ namespace Ciri
             }
 
             glBindVertexArray(0);
+            glBindTexture(GL_TEXTURE_2D, 0);
         }
 
 #if 0

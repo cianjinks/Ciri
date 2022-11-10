@@ -4,7 +4,7 @@
 
 namespace Ciri
 {
-    MaterialSettingsPanel::MaterialSettingsPanel(MaterialLibrary& matlib)
+    MaterialSettingsPanel::MaterialSettingsPanel(MaterialLibrary &matlib)
         : m_MaterialLibrary(matlib)
     {
     }
@@ -14,25 +14,25 @@ namespace Ciri
         ImGui::Begin("Material Settings");
         if (m_SelectedMaterial)
         {
-            ImGui::Text(m_SelectedMaterial->info.name.c_str());
-            ImGui::InputFloat3("Base Color", &m_SelectedMaterial->baseColor.x);
-            CreateTextureCombo("Albedo Tex", m_SelectedMaterial->info.baseColorFilepath, m_SelectedMaterial->baseColorTextureID);
-            CreateTextureCombo("Normal Tex", m_SelectedMaterial->info.normalFilepath, m_SelectedMaterial->normalTextureID);
-            CreateTextureCombo("Metallic Tex", m_SelectedMaterial->info.metallicRoughnessFilepath, m_SelectedMaterial->metallicRoughnessTextureID);
-            CreateTextureCombo("Emissive Tex", m_SelectedMaterial->info.emissiveFilepath, m_SelectedMaterial->emissiveTextureID);
-            CreateTextureCombo("Occlusion Tex", m_SelectedMaterial->info.occlusionFilepath, m_SelectedMaterial->occlusionTextureID);
-            ImGui::InputFloat("Subsurface", &m_SelectedMaterial->subsurface);
-            ImGui::InputFloat("Metallic", &m_SelectedMaterial->metallic);
-            ImGui::InputFloat("Specular", &m_SelectedMaterial->specular);
-            ImGui::InputFloat("Specular Tint", &m_SelectedMaterial->specularTint);
-            ImGui::InputFloat("Roughness", &m_SelectedMaterial->roughness);
-            ImGui::InputFloat("Anisotropic", &m_SelectedMaterial->anisotropic);
-            ImGui::InputFloat("Sheen", &m_SelectedMaterial->sheen);
-            ImGui::InputFloat("Sheen Tint", &m_SelectedMaterial->sheenTint);
-            ImGui::InputFloat("Clearcoat", &m_SelectedMaterial->clearcoat);
-            ImGui::InputFloat("Clearcoat Gloss", &m_SelectedMaterial->clearcoatGloss);
+            ImGui::Text(m_SelectedMaterial->spec.name.c_str());
+            ImGui::InputFloat3("Base Color", &m_SelectedMaterial->spec.baseColor.x);
+            CreateTextureCombo("Albedo Tex", m_SelectedMaterial->spec.baseColorFilepath, m_SelectedMaterial->spec.baseColorTextureID);
+            CreateTextureCombo("Normal Tex", m_SelectedMaterial->spec.normalFilepath, m_SelectedMaterial->spec.normalTextureID);
+            CreateTextureCombo("Metallic Tex", m_SelectedMaterial->spec.metallicRoughnessFilepath, m_SelectedMaterial->spec.metallicRoughnessTextureID);
+            CreateTextureCombo("Emissive Tex", m_SelectedMaterial->spec.emissiveFilepath, m_SelectedMaterial->spec.emissiveTextureID);
+            CreateTextureCombo("Occlusion Tex", m_SelectedMaterial->spec.occlusionFilepath, m_SelectedMaterial->spec.occlusionTextureID);
+            ImGui::InputFloat("Subsurface", &m_SelectedMaterial->spec.subsurface);
+            ImGui::InputFloat("Metallic", &m_SelectedMaterial->spec.metallic);
+            ImGui::InputFloat("Specular", &m_SelectedMaterial->spec.specular);
+            ImGui::InputFloat("Specular Tint", &m_SelectedMaterial->spec.specularTint);
+            ImGui::InputFloat("Roughness", &m_SelectedMaterial->spec.roughness);
+            ImGui::InputFloat("Anisotropic", &m_SelectedMaterial->spec.anisotropic);
+            ImGui::InputFloat("Sheen", &m_SelectedMaterial->spec.sheen);
+            ImGui::InputFloat("Sheen Tint", &m_SelectedMaterial->spec.sheenTint);
+            ImGui::InputFloat("Clearcoat", &m_SelectedMaterial->spec.clearcoat);
+            ImGui::InputFloat("Clearcoat Gloss", &m_SelectedMaterial->spec.clearcoatGloss);
         }
-	    ImGui::End();
+        ImGui::End();
     }
 
     void MaterialSettingsPanel::CreateTextureCombo(std::string name, std::string &material_tex_name, uint32_t &material_tex_id)

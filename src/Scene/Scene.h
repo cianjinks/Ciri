@@ -28,14 +28,18 @@ namespace Ciri
 
     private:
         entt::registry m_Registry;
+        MaterialLibrary m_MaterialLibrary;
+        // TODO: MeshLibrary/Manager?
 
     public:
         Scene(const char *name);
         ~Scene() = default;
 
         entt::registry &GetRegistry() { return m_Registry; }
+        MaterialLibrary &GetMaterialLibrary() { return m_MaterialLibrary; }
 
         Entity CreateEntity(const std::string &tag);
+        S<Material> CreateMaterial(MaterialSpecification &spec);
 
         friend Entity;
     };

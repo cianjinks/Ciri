@@ -1,6 +1,7 @@
 #ifndef CIRI_COMPONENT_H
 #define CIRI_COMPONENT_H
 
+#include "Render/Material.h"
 #include "Mesh/Mesh.h"
 
 #include <glm/glm.hpp>
@@ -37,6 +38,16 @@ namespace Ciri
         MeshComponent(const MeshComponent &other) = default;
         MeshComponent(const S<Mesh> &mesh)
             : CMesh(mesh) {}
+    };
+
+    struct MaterialComponent
+    {
+        S<Material> CMaterial;
+
+        MaterialComponent() = default;
+        MaterialComponent(const MaterialComponent &other) = default;
+        MaterialComponent(const S<Material> &material)
+            : CMaterial(material) {}
     };
 }
 
