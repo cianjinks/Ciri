@@ -14,7 +14,7 @@ namespace Ciri
     template <typename T>
     using S = std::shared_ptr<T>;
     template <typename T>
-    using ThisS = std::enable_shared_from_this<T>;
+    using SharedThis = std::enable_shared_from_this<T>;
     template <typename T, typename... Args>
     constexpr S<T> CreateS(Args &&...args)
     {

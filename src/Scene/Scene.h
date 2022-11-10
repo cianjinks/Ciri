@@ -19,9 +19,9 @@ namespace Ciri
 
     class Entity;
 
-    /* TODO: If a scene object is created not as a shared ptr then problems will result from `ThisS`. */
+    /* TODO: If a scene object is created not as a shared ptr then problems will result from `SharedThis`. */
     /* Option might be to make default constructor private and implement a `Create()` function. */
-    class Scene : public ThisS<Scene>
+    class Scene : public SharedThis<Scene>
     {
     public:
         const char *Name;
