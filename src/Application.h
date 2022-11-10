@@ -35,7 +35,7 @@ namespace Ciri
         // UI Panels
         U<StatisticsPanel> m_StatisticsPanel;
         U<SceneHierarchyPanel> m_SceneHierarchyPanel;
-        // U<MeshSettingsPanel> m_MeshSettingsPanel;
+        U<EntitySettingsPanel> m_EntitySettingsPanel;
         U<MaterialLibraryPanel> m_MaterialLibraryPanel;
         U<MaterialSettingsPanel> m_MaterialSettingsPanel;
         U<RendererSettingsPanel> m_RendererSettingsPanel;

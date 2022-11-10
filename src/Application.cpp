@@ -75,8 +75,8 @@ namespace Ciri
         // ImGui::ShowDemoWindow();
         m_StatisticsPanel->OnUIRender();
         m_SceneHierarchyPanel->OnUIRender();
-        // m_MeshSettingsPanel->SetSelectedNode(m_SceneHierarchyPanel->GetSelectedNode());
-        // m_MeshSettingsPanel->OnUIRender();
+        m_EntitySettingsPanel->SetSelectedEntity(m_SceneHierarchyPanel->GetSelectedEntity());
+        m_EntitySettingsPanel->OnUIRender();
         // m_MaterialLibraryPanel->OnUIRender();
         // m_MaterialSettingsPanel->SetSelectedNode(m_MaterialLibraryPanel->GetSelectedMaterial());
         // m_MaterialSettingsPanel->OnUIRender();
@@ -89,7 +89,7 @@ namespace Ciri
 
         m_StatisticsPanel = CreateU<StatisticsPanel>(m_Scene);
         m_SceneHierarchyPanel = CreateU<SceneHierarchyPanel>(m_Scene);
-        // m_MeshSettingsPanel = CreateU<MeshSettingsPanel>(m_Scene->MatLib);
+        m_EntitySettingsPanel = CreateU<EntitySettingsPanel>();
         // m_MaterialLibraryPanel = CreateU<MaterialLibraryPanel>(m_Scene->MatLib);
         // m_MaterialSettingsPanel = CreateU<MaterialSettingsPanel>(m_Scene->MatLib);
         m_RendererSettingsPanel = CreateU<RendererSettingsPanel>(m_Renderer);

@@ -2,26 +2,24 @@
 #define CIRI_MESHPANEL_H
 
 #include "Scene/Scene.h"
+#include "Scene/Entity.h"
 #include "Render/Material.h"
 
-#if 0
 namespace Ciri
 {
     class EntitySettingsPanel
     {
     private:
-        S<SceneNode> m_SelectedNode = nullptr;
-        MaterialLibrary &m_MaterialLibrary;
+        Entity m_SelectedEntity;
 
     public:
-        EntitySettingsPanel(MaterialLibrary &matlib);
+        EntitySettingsPanel() = default;
         ~EntitySettingsPanel() = default;
 
         void OnUIRender();
 
-        void SetSelectedNode(S<SceneNode> node) { m_SelectedNode = node; }
+        void SetSelectedEntity(Entity entity) { m_SelectedEntity = entity; }
     };
 }
-#endif
 
 #endif
