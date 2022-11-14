@@ -4,7 +4,7 @@
 #include "Scene/Camera.h"
 #include "Scene/Scene.h"
 #include "Scene/Entity.h"
-
+#include "Scene/Component.h"
 #include <glm/glm.hpp>
 
 namespace Ciri

@@ -4,6 +4,7 @@
 #include "Render/Material.h"
 #include "Mesh/Mesh.h"
 
+#include "entt.hpp"
 #include <glm/glm.hpp>
 
 namespace Ciri
@@ -16,6 +17,19 @@ namespace Ciri
         TagComponent(const TagComponent &) = default;
         TagComponent(const std::string &tag)
             : Tag(tag) {}
+    };
+
+    class Entity;
+
+    struct HierarchyComponent
+    {
+        Entity Parent; /* Parent. */
+        Entity First;  /* First Child. */
+        Entity Prev;   /* Previous at current level. */
+        Entity Next;   /* Next at current level. */
+
+        HierarchyComponent() = default;
+        HierarchyComponent(const HierarchyComponent &) = default;
     };
 
     struct TransformComponent

@@ -3,6 +3,7 @@
 
 #include "Scene/Scene.h"
 #include "Scene/Entity.h"
+#include "Scene/Component.h"
 #include "Render/Material.h"
 
 namespace Ciri

@@ -130,8 +130,13 @@ namespace Ciri
         TransformComponent &quad_transform = quad_entity.AddComponent<TransformComponent>();
         quad_transform.Transform.Translation = glm::vec3(3.0f, 0.0f, 0.0f);
 
-        m_Scene->CreateEntity("Empty 1");
-        m_Scene->CreateEntity("Empty 2");
+        Entity empty1 = m_Scene->CreateEntity("Empty 1");
+        Entity empty2 = m_Scene->CreateEntity("Empty 2");
+
+        cube_entity.SetParent(sphere_entity);
+        quad_entity.SetParent(cube_entity);
+        empty1.SetParent(sphere_entity);
+        empty2.SetParent(cube_entity);
 
         CIRI_LOG("Scene Initialised");
     }

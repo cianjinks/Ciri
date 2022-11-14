@@ -1,7 +1,6 @@
 #ifndef CIRI_SCENE_H
 #define CIRI_SCENE_H
 
-#include "Component.h"
 #include "Mesh/Mesh.h"
 #include "Render/Material.h"
 

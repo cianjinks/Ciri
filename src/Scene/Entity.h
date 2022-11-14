@@ -2,7 +2,6 @@
 #define CIRI_ENTITY_H
 
 #include "Scene.h"
-#include "Component.h"
 
 #include "entt.hpp"
 
@@ -21,6 +20,8 @@ namespace Ciri
         Entity(entt::entity entity, const S<Scene> &scene);
 
         bool IsValid() { return m_Entity != entt::null; }
+
+        void SetParent(Entity parent);
 
         template <typename T, typename... Args>
         T &AddComponent(Args &&...args)
@@ -64,7 +65,7 @@ namespace Ciri
         }
 
         operator uint32_t() const { return (uint32_t)m_Entity; }
-        
+
         bool operator==(const Entity &other) const
         {
             return m_Entity == other.m_Entity && m_Scene == other.m_Scene;

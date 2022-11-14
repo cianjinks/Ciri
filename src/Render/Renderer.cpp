@@ -1,5 +1,7 @@
 #include "Renderer.h"
 
+#include "Scene/Component.h"
+
 #include <glad/glad.h>
 
 #include <glm/glm.hpp>
