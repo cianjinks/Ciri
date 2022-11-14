@@ -253,7 +253,7 @@ namespace Ciri
         {
             auto [tc, mc] = group.get<TransformComponent, MeshComponent>(entity);
 
-            glm::mat4 mvp = proj * view * tc.Transform.Compose();
+            glm::mat4 mvp = proj * view * tc.Transform.GetWorldMatrix();
             m_ShaderLib->SetMat4f("u_MVP", glm::value_ptr(mvp));
 
             Entity wrap_entity(entity, scene);

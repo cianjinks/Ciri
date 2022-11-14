@@ -23,11 +23,15 @@ namespace Ciri
             if (m_SelectedEntity.HasComponent<TransformComponent>())
             {
                 auto &tc = m_SelectedEntity.GetComponent<TransformComponent>();
-                ImGui::InputFloat3("Translation", &tc.Transform.Translation.x);
-                glm::vec3 rotation = glm::degrees(tc.Transform.Rotation);
+                glm::vec3 translation = tc.Transform.GetLocalTranslation();
+                glm::vec3 rotation = glm::degrees(glm::eulerAngles(tc.Transform.GetLocalRotation()));
+                glm::vec3 scale = tc.Transform.GetLocalScale();
+                ImGui::InputFloat3("Translation", &translation.x);
                 ImGui::InputFloat3("Rotation", &rotation.x);
-                tc.Transform.Rotation = glm::radians(rotation);
-                ImGui::InputFloat3("Scale", &tc.Transform.Scale.x);
+                ImGui::InputFloat3("Scale", &scale.x);
+                tc.Transform.SetLocalTranslation(translation);
+                tc.Transform.SetLocalRotation(glm::radians(rotation));
+                tc.Transform.SetLocalScale(scale);
             }
 
             // // Material setting

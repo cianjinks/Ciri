@@ -117,7 +117,7 @@ namespace Ciri
         S<Material> cube_mat = m_Scene->CreateMaterial(spec);
         cube_entity.AddComponent<MaterialComponent>(cube_mat);
         TransformComponent &cube_transform = cube_entity.AddComponent<TransformComponent>();
-        cube_transform.Transform.Translation = glm::vec3(-3.0f, 0.0f, 0.0f);
+        cube_transform.Transform.SetLocalTranslation({-3.0f, 0.0f, 0.0f});
 
         Entity quad_entity = m_Scene->CreateEntity("Quad");
         S<Quad> quad_mesh = CreateS<Quad>();
@@ -128,7 +128,7 @@ namespace Ciri
         S<Material> quad_mat = m_Scene->CreateMaterial(spec);
         quad_entity.AddComponent<MaterialComponent>(quad_mat);
         TransformComponent &quad_transform = quad_entity.AddComponent<TransformComponent>();
-        quad_transform.Transform.Translation = glm::vec3(3.0f, 0.0f, 0.0f);
+        quad_transform.Transform.SetLocalTranslation({3.0f, 0.0f, 0.0f});
 
         Entity empty1 = m_Scene->CreateEntity("Empty 1");
         Entity empty2 = m_Scene->CreateEntity("Empty 2");

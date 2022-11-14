@@ -6,17 +6,72 @@ namespace Ciri
     {
         Transform::Transform(const glm::mat4 &mat)
         {
-            Decompose(mat);
+            DecomposeTransform(mat, m_LocalTranslation, m_LocalRotation, m_LocalScale);
+            m_LocalMatrix = mat;
+            m_WorldMatrix = mat;
         }
 
-        glm::mat4 Transform::Compose()
+        void Transform::Update()
         {
-            return ComposeTransform(Translation, Rotation, Scale);
+            m_LocalMatrix = ComposeTransform(m_LocalTranslation, m_LocalRotation, m_LocalScale);
+            m_WorldMatrix = m_ParentMatrix * m_LocalMatrix;
+            m_Dirty = false;
         }
 
-        void Transform::Decompose(const glm::mat4 &mat)
+        void Transform::SetParentMatrix(const glm::mat4 &mat)
         {
-            DecomposeTransform(mat, Translation, Rotation, Scale);
+            if (m_Dirty)
+            {
+                Update();
+            }
+
+            m_ParentMatrix = mat;
+            m_WorldMatrix = m_ParentMatrix * m_LocalMatrix;
+        }
+
+        void Transform::SetLocalMatrix(const glm::mat4 &mat)
+        {
+            DecomposeTransform(mat, m_LocalTranslation, m_LocalRotation, m_LocalScale);
+            m_LocalMatrix = mat;
+            m_WorldMatrix = m_ParentMatrix * m_LocalMatrix;
+        }
+
+        void Transform::SetLocalTranslation(const glm::vec3 &translation)
+        {
+            m_LocalTranslation = translation;
+            m_Dirty = true;
+        }
+
+        void Transform::SetLocalRotation(const glm::vec3 &rotation)
+        {
+            m_LocalRotation = rotation;
+            m_Dirty = true;
+        }
+
+        void Transform::SetLocalScale(const glm::vec3 &scale)
+        {
+            m_LocalScale = scale;
+            m_Dirty = true;
+        }
+
+        const glm::mat4 &Transform::GetLocalMatrix()
+        {
+            if (m_Dirty)
+            {
+                Update();
+            }
+
+            return m_LocalMatrix;
+        }
+
+        const glm::mat4 &Transform::GetWorldMatrix()
+        {
+            if (m_Dirty)
+            {
+                Update();
+            }
+
+            return m_WorldMatrix;
         }
 
         glm::mat4 ComposeTransform(const glm::vec3 &translation, const glm::quat &rotation, const glm::vec3 &scale)
@@ -107,6 +162,17 @@ namespace Ciri
             }
 
             return true;
+        }
+
+        bool DecomposeTransform(const glm::mat4 &transform, glm::vec3 &r_translation, glm::quat &r_rotation, glm::vec3 &r_scale)
+        {
+            glm::vec3 rotation;
+            if (DecomposeTransform(transform, r_translation, rotation, r_scale))
+            {
+                r_rotation = glm::quat(rotation);
+                return true;
+            }
+            return false;
         }
     }
 }
