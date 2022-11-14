@@ -27,6 +27,7 @@ namespace Ciri
 
             const glm::mat4 &GetLocalMatrix();
             const glm::mat4 &GetWorldMatrix();
+            const glm::mat4 &GetParentMatrix() const { return m_ParentMatrix; }
 
             const glm::vec3 &Transform::GetLocalTranslation() const
             {

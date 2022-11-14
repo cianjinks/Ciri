@@ -19,20 +19,16 @@ namespace Ciri
             ImGuizmo::SetDrawlist();
             ImGuizmo::SetRect(m_Rect.x, m_Rect.y, m_Rect.z, m_Rect.w);
             TransformComponent &tc = m_SelectedEntity.GetComponent<TransformComponent>();
-            glm::mat4 node_transform = tc.Transform.GetLocalMatrix();
+            glm::mat4 node_transform = tc.Transform.GetWorldMatrix();
             ImGuizmo::Manipulate(glm::value_ptr(m_Camera->GetViewMat()), glm::value_ptr(m_Camera->GetProjectionMat()),
                                  ImGuizmo::OPERATION::TRANSLATE | ImGuizmo::OPERATION::SCALE | ImGuizmo::OPERATION::ROTATE, ImGuizmo::LOCAL,
                                  glm::value_ptr(node_transform));
 
             if (ImGuizmo::IsUsing())
             {
+                node_transform = glm::inverse(tc.Transform.GetParentMatrix()) * node_transform;
                 tc.Transform.SetLocalMatrix(node_transform);
-                // glm::vec3 translation, rotation, scale;
-                // Math::DecomposeTransform(node_transform, translation, rotation, scale);
-                // tc.Transform.Translation = translation;
-                // glm::vec3 deltaRotation = rotation - tc.Transform.Rotation;
-                // tc.Transform.Rotation += deltaRotation;
-                // tc.Transform.Scale = scale;
+                m_SelectedEntity.UpdateTransforms();
             }
         }
     }

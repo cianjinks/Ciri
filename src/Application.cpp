@@ -95,6 +95,7 @@ namespace Ciri
         m_RendererSettingsPanel = CreateU<RendererSettingsPanel>(m_Renderer);
     }
 
+#if 1
     void Application::DefineScene()
     {
         Entity sphere_entity = m_Scene->CreateEntity("Sphere");
@@ -106,7 +107,6 @@ namespace Ciri
         spec.baseColor = {1.0f, 0.0f, 0.0f};
         S<Material> sphere_mat = m_Scene->CreateMaterial(spec);
         sphere_entity.AddComponent<MaterialComponent>(sphere_mat);
-        TransformComponent &sphere_transform = sphere_entity.AddComponent<TransformComponent>();
 
         Entity cube_entity = m_Scene->CreateEntity("Cube");
         S<Cube> cube_mesh = CreateS<Cube>();
@@ -116,7 +116,7 @@ namespace Ciri
         spec.baseColor = {0.0f, 1.0f, 0.0f};
         S<Material> cube_mat = m_Scene->CreateMaterial(spec);
         cube_entity.AddComponent<MaterialComponent>(cube_mat);
-        TransformComponent &cube_transform = cube_entity.AddComponent<TransformComponent>();
+        TransformComponent &cube_transform = cube_entity.GetComponent<TransformComponent>();
         cube_transform.Transform.SetLocalTranslation({-3.0f, 0.0f, 0.0f});
 
         Entity quad_entity = m_Scene->CreateEntity("Quad");
@@ -127,8 +127,8 @@ namespace Ciri
         spec.baseColor = {0.0f, 1.0f, 1.0f};
         S<Material> quad_mat = m_Scene->CreateMaterial(spec);
         quad_entity.AddComponent<MaterialComponent>(quad_mat);
-        TransformComponent &quad_transform = quad_entity.AddComponent<TransformComponent>();
-        quad_transform.Transform.SetLocalTranslation({3.0f, 0.0f, 0.0f});
+        TransformComponent &quad_transform = quad_entity.GetComponent<TransformComponent>();
+        quad_transform.Transform.SetLocalTranslation({6.0f, 0.0f, 0.0f});
 
         Entity empty1 = m_Scene->CreateEntity("Empty 1");
         Entity empty2 = m_Scene->CreateEntity("Empty 2");
@@ -140,4 +140,51 @@ namespace Ciri
 
         CIRI_LOG("Scene Initialised");
     }
+
+#else
+
+    void Application::DefineScene()
+    {
+        Entity cube1_entity = m_Scene->CreateEntity("Cube 1");
+        S<Cube> cube1_mesh = CreateS<Cube>();
+        cube1_mesh->Construct();
+        cube1_entity.AddComponent<MeshComponent>(cube1_mesh);
+        MaterialSpecification spec = {};
+        spec.name = "Cube 1";
+        spec.baseColor = {0.0f, 1.0f, 0.0f};
+        S<Material> cube1_mat = m_Scene->CreateMaterial(spec);
+        cube1_entity.AddComponent<MaterialComponent>(cube1_mat);
+        TransformComponent &cube1_transform = cube1_entity.GetComponent<TransformComponent>();
+        cube1_transform.Transform.SetLocalTranslation({0.0f, 0.0f, 0.0f});
+
+        Entity cube2_entity = m_Scene->CreateEntity("Cube 2");
+        S<Cube> cube2_mesh = CreateS<Cube>();
+        cube2_mesh->Construct();
+        cube2_entity.AddComponent<MeshComponent>(cube2_mesh);
+        spec.name = "Cube 2";
+        spec.baseColor = {1.0f, 0.0f, 0.0f};
+        S<Material> cube2_mat = m_Scene->CreateMaterial(spec);
+        cube2_entity.AddComponent<MaterialComponent>(cube2_mat);
+        TransformComponent &cube2_transform = cube2_entity.GetComponent<TransformComponent>();
+        cube2_transform.Transform.SetLocalTranslation({0.0f, -2.0f, 0.0f});
+        cube2_transform.Transform.SetLocalScale({0.5f, 0.5f, 0.5f});
+
+        Entity cube3_entity = m_Scene->CreateEntity("Cube 3");
+        S<Cube> cube3_mesh = CreateS<Cube>();
+        cube3_mesh->Construct();
+        cube3_entity.AddComponent<MeshComponent>(cube3_mesh);
+        spec.name = "Cube 3";
+        spec.baseColor = {0.0f, 1.0f, 1.0f};
+        S<Material> cube3_mat = m_Scene->CreateMaterial(spec);
+        cube3_entity.AddComponent<MaterialComponent>(cube3_mat);
+        TransformComponent &cube3_transform = cube3_entity.GetComponent<TransformComponent>();
+        cube3_transform.Transform.SetLocalTranslation({0.0f, -4.0f, 0.0f});
+        cube3_transform.Transform.SetLocalScale({0.25f, 0.25f, 0.25f});
+
+        cube2_entity.SetParent(cube1_entity);
+        cube3_entity.SetParent(cube2_entity);
+
+        CIRI_LOG("Scene Initialised");
+    }
+#endif
 }

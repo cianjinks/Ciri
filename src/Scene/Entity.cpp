@@ -57,5 +57,48 @@ namespace Ciri
         {
             parent_hierarchy.First = *this;
         }
+
+        UpdateTransforms();
+    }
+
+    /* Ensure the transform heirarchy for this entity is correct.
+       It's a bit strange to do this here, probably better implemented in the Scene or some kind of `SceneGraph`.  */
+    void Entity::UpdateTransforms()
+    {
+        Entity current = *this;
+        HierarchyComponent &hierarchy = GetComponent<HierarchyComponent>();
+
+        glm::mat4 parent_matrix = glm::mat4(1.0f);
+        if (hierarchy.Parent.IsValid())
+        {
+            TransformComponent &tcp = hierarchy.Parent.GetComponent<TransformComponent>();
+            parent_matrix = tcp.Transform.GetWorldMatrix();
+        }
+
+        /* Propogate transforms throughout the subtree. */
+        std::stack<std::pair<Entity, glm::mat4>> stack;
+        stack.push({current, parent_matrix});
+        while (!stack.empty())
+        {
+            auto [entity, parent_transform] = stack.top();
+            stack.pop();
+
+            TransformComponent &tc = entity.GetComponent<TransformComponent>();
+            tc.Transform.SetParentMatrix(parent_transform);
+            parent_transform = tc.Transform.GetWorldMatrix();
+
+            /* Add children to stack. */
+            HierarchyComponent entity_hierarchy = entity.GetComponent<HierarchyComponent>();
+            if (entity_hierarchy.First.IsValid())
+            {
+                Entity child = entity_hierarchy.First;
+                while (child.IsValid())
+                {
+                    stack.push({child, parent_transform});
+                    entity_hierarchy = child.GetComponent<HierarchyComponent>();
+                    child = entity_hierarchy.Next;
+                }
+            }
+        }
     }
 }

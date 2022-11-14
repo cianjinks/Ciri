@@ -19,6 +19,7 @@ namespace Ciri
 		Entity entity(m_Registry.create(), shared_from_this());
 		entity.AddComponent<TagComponent>(tag);
 		entity.AddComponent<HierarchyComponent>();
+		entity.AddComponent<TransformComponent>();
 		return entity;
 	}
 

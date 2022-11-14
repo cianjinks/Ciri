@@ -22,6 +22,7 @@ namespace Ciri
         bool IsValid() { return m_Entity != entt::null; }
 
         void SetParent(Entity parent);
+        void UpdateTransforms();
 
         template <typename T, typename... Args>
         T &AddComponent(Args &&...args)
