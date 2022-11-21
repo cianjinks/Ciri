@@ -32,10 +32,7 @@ namespace Ciri
             {
                 return scene->m_Registry.emplace<T>(m_Entity, std::forward<Args>(args)...);
             }
-            else
-            {
-                CIRI_ASSERT(false, "Entity tried to use a dangling scene reference!");
-            }
+            CIRI_ASSERT(false, "Entity tried to use a dangling scene reference!");
         }
 
         template <typename T>
@@ -46,10 +43,7 @@ namespace Ciri
             {
                 return scene->m_Registry.get<T>(m_Entity);
             }
-            else
-            {
-                CIRI_ASSERT(false, "Entity tried to use a dangling scene reference!");
-            }
+            CIRI_ASSERT(false, "Entity tried to use a dangling scene reference!");
         }
 
         template <typename T>
@@ -59,10 +53,7 @@ namespace Ciri
             {
                 return scene->m_Registry.all_of<T>(m_Entity);
             }
-            else
-            {
-                CIRI_ASSERT(false, "Entity tried to use a dangling scene reference!");
-            }
+            CIRI_ASSERT(false, "Entity tried to use a dangling scene reference!");
         }
 
         operator uint32_t() const { return (uint32_t)m_Entity; }

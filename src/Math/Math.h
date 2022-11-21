@@ -31,17 +31,17 @@ namespace Ciri
             const glm::mat4 &GetWorldMatrix();
             const glm::mat4 &GetParentMatrix() const { return m_ParentMatrix; }
 
-            const glm::vec3 &Transform::GetLocalTranslation() const
+            const glm::vec3 &GetLocalTranslation() const
             {
                 return m_LocalTranslation;
             }
 
-            const glm::vec3 &Transform::GetLocalScale() const
+            const glm::vec3 &GetLocalScale() const
             {
                 return m_LocalScale;
             }
 
-            const glm::quat &Transform::GetLocalRotation() const
+            const glm::quat &GetLocalRotation() const
             {
                 return m_LocalRotation;
             }

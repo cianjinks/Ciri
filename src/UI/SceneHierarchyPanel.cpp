@@ -14,11 +14,11 @@ namespace Ciri
     {
         ImGui::Begin("Scene");
         const entt::registry &registry = m_Scene->GetRegistry();
-        registry.each([&](auto entity)
+        registry.each([&](auto e)
                       {
-            if (registry.valid(entity))
+            if (registry.valid(e))
             {
-                Entity entity(entity, m_Scene);
+                Entity entity(e, m_Scene);
                 HierarchyComponent &hierarchy = entity.GetComponent<HierarchyComponent>();
                 if (!hierarchy.Parent.IsValid())
                 {
