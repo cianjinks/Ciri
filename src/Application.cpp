@@ -107,6 +107,8 @@ namespace Ciri
         spec.baseColor = {1.0f, 0.0f, 0.0f};
         S<Material> sphere_mat = m_Scene->CreateMaterial(spec);
         sphere_entity.AddComponent<MaterialComponent>(sphere_mat);
+        TransformComponent &sphere_transform = sphere_entity.GetComponent<TransformComponent>();
+        sphere_transform.Transform.SetLocalTranslation({0.0f, 1.0f, 0.0f});
 
         Entity cube_entity = m_Scene->CreateEntity("Cube");
         S<Cube> cube_mesh = CreateS<Cube>();
@@ -137,6 +139,13 @@ namespace Ciri
         quad_entity.SetParent(cube_entity);
         empty1.SetParent(sphere_entity);
         empty2.SetParent(cube_entity);
+
+        // Entity sponza_entity = m_Scene->LoadModel(Importer::ASSIMP, "sponza", "resources/model/gltf/Sponza/glTF/Sponza.gltf");
+        // TransformComponent &sponza_transform = sponza_entity.GetComponent<TransformComponent>();
+        // sponza_transform.Transform.SetLocalScale({0.05f, 0.05f, 0.05f});
+        // sponza_entity.UpdateTransforms();
+
+        Entity winter_entity = m_Scene->LoadModel(Importer::ASSIMP, "winter", "resources/model/gltf/Winter/scene.gltf");
 
         CIRI_LOG("Scene Initialised");
     }

@@ -46,12 +46,10 @@ namespace Ciri
         if (parent_hierarchy.First.IsValid())
         {
             Entity child = parent_hierarchy.First;
+            parent_hierarchy.First = *this;
+            hierarchy.Next = child;
             HierarchyComponent &child_hierarchy = child.GetComponent<HierarchyComponent>();
-            while (child_hierarchy.Next.IsValid())
-            {
-                child_hierarchy = child.GetComponent<HierarchyComponent>();
-            }
-            child_hierarchy.Next = *this;
+            child_hierarchy.Prev = *this;
         }
         else
         {

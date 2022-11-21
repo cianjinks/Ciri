@@ -39,6 +39,8 @@ namespace Ciri
 
         Entity CreateEntity(const std::string &tag);
         S<Material> CreateMaterial(MaterialSpecification &spec);
+        S<Material> GetMaterial(std::string name);
+        Entity LoadModel(Importer type, const std::string &tag, const std::string &path);
 
         friend Entity;
     };

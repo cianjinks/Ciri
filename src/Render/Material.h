@@ -27,7 +27,7 @@ namespace Ciri
         uint32_t emissiveTextureID = 0;
 
         // https://media.disneyanimation.com/uploads/production/publication_asset/48/asset/s2012_pbs_disney_brdf_notes_v3.pdf
-        glm::vec3 baseColor = glm::vec3(0.0f);
+        glm::vec3 baseColor = glm::vec3(1.0f);
         float subsurface = 0.0f;
         float metallic = 0.0f;
         float specular = 0.0f;
