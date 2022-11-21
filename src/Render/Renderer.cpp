@@ -189,7 +189,7 @@ namespace Ciri
 
     void Renderer::RenderScene(const S<Scene> &scene, const S<Camera> &camera, bool viewport)
     {
-        glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Render Pipeline
@@ -253,8 +253,10 @@ namespace Ciri
         {
             auto [tc, mc] = group.get<TransformComponent, MeshComponent>(entity);
 
-            glm::mat4 mvp = proj * view * tc.Transform.GetWorldMatrix();
-            m_ShaderLib->SetMat4f("u_MVP", glm::value_ptr(mvp));
+            glm::mat4 model = tc.Transform.GetWorldMatrix();
+            m_ShaderLib->SetMat4f("u_ProjectionMatrix", glm::value_ptr(proj));
+            m_ShaderLib->SetMat4f("u_ViewMatrix", glm::value_ptr(view));
+            m_ShaderLib->SetMat4f("u_ModelMatrix", glm::value_ptr(model));
 
             Entity wrap_entity(entity, scene);
             if (wrap_entity.HasComponent<MaterialComponent>())
