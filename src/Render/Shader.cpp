@@ -71,6 +71,8 @@ namespace Ciri
 
         AddShader("World Position", ShaderType::WORLD_POSITION, "resources/shader/screen_quad.vert", "resources/shader/world_position.frag");
         AddShader("Origin Distance", ShaderType::ORIGIN_DISTANCE, "resources/shader/screen_quad.vert", "resources/shader/dist_origin.frag");
+
+        AddShader("Phong Lighting", ShaderType::PHONG_LIGHTING, "resources/shader/screen_quad.vert", "resources/shader/phong.frag");
     }
 
     void ShaderLibrary::CompileShaders()

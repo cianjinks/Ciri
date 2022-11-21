@@ -19,7 +19,9 @@ namespace Ciri
         EMISSIVE,
 
         WORLD_POSITION,
-        ORIGIN_DISTANCE
+        ORIGIN_DISTANCE,
+
+        PHONG_LIGHTING
     };
 
     struct Shader

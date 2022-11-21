@@ -46,6 +46,12 @@ namespace Ciri
                 return m_LocalRotation;
             }
 
+            /* TODO: Optimize. */
+            const glm::vec3 GetWorldTranslation() const
+            {
+                return glm::vec3(m_WorldMatrix * glm::vec4(m_LocalTranslation, 1.0f));
+            }
+
         private:
             glm::vec3 m_LocalTranslation = glm::vec3(0.0f);
             glm::quat m_LocalRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);

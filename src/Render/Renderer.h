@@ -38,6 +38,9 @@ namespace Ciri
         uint32_t m_ScreenQuadVAO;
         uint32_t m_ScreenQuadVBO;
 
+        // Lighting Constants
+        static const uint32_t s_MaxPointLights;
+
     public:
         Renderer(int32_t targetWidth, int32_t targetHeight);
         ~Renderer();
@@ -67,6 +70,7 @@ namespace Ciri
 
     private:
         void RenderSceneGeometry(const S<Scene> &scene, const S<Camera> &camera);
+        void RenderLighting(const S<Scene> &scene, const S<Camera> &camera);
         void RenderScreenQuad();
 
         void BlitDepthBuffer(uint32_t framebuffer);

@@ -63,6 +63,22 @@ namespace Ciri
         MaterialComponent(const S<Material> &material)
             : CMaterial(material) {}
     };
+
+    enum class LightType
+    {
+        POINT = 0
+    };
+
+    struct LightComponent
+    {
+        LightType Type = LightType::POINT;
+        glm::vec3 Color = glm::vec3(1.0f);
+
+        LightComponent() = default;
+        LightComponent(const LightComponent &) = default;
+        LightComponent(LightType type, glm::vec3 color)
+            : Type(type), Color(color) {}
+    };
 }
 
 #endif

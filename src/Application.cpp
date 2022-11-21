@@ -147,6 +147,11 @@ namespace Ciri
 
         Entity winter_entity = m_Scene->LoadModel(Importer::ASSIMP, "winter", "resources/model/gltf/Winter/scene.gltf");
 
+        Entity point_light = m_Scene->CreateEntity("Point Light 1");
+        point_light.AddComponent<LightComponent>(LightType::POINT, glm::vec3(1.0f, 1.0f, 0.0f));
+        TransformComponent &pl_transform = point_light.GetComponent<TransformComponent>();
+        pl_transform.Transform.SetLocalTranslation({0.0f, 10.0f, 0.0f});
+
         CIRI_LOG("Scene Initialised");
     }
 
