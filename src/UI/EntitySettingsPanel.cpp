@@ -32,6 +32,18 @@ namespace Ciri
                 tc.Transform.SetLocalTranslation(translation);
                 tc.Transform.SetLocalRotation(glm::radians(rotation));
                 tc.Transform.SetLocalScale(scale);
+                ImGui::Separator();
+            }
+
+            if (m_SelectedEntity.HasComponent<MaterialComponent>())
+            {
+                auto &mc = m_SelectedEntity.GetComponent<MaterialComponent>();
+                if (ImGui::BeginCombo("Material", mc.CMaterial->spec.name.c_str(), 0))
+                {
+                    /* TODO: Access material library to allow choosing material. */
+                    ImGui::EndCombo();
+                }
+                ImGui::Separator();
             }
 
             // // Material setting
