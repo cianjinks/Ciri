@@ -12,6 +12,7 @@ namespace Ciri
         GEOMETRY_BUFFER,
 
         BASE_COLOR,
+        PHONG_LIGHTING,
         LINEAR_DEPTH,
         NORMAL,
         OCCLUSION,
@@ -20,8 +21,6 @@ namespace Ciri
 
         WORLD_POSITION,
         ORIGIN_DISTANCE,
-
-        PHONG_LIGHTING
     };
 
     struct Shader

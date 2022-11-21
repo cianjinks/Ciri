@@ -203,40 +203,46 @@ namespace Ciri
         RenderSceneGeometry(scene, camera);
         m_ShaderLib->BindShader(ShaderType::NONE);
 
+        // 2. Lighting Pass + Other things for now
         glBindFramebuffer(GL_FRAMEBUFFER, viewport ? m_ViewportFB : 0);
+        m_ShaderLib->BindShader(m_CurrentShader);
 
-        // 2. Lighting?
-        RenderLighting(scene, camera);
+        if (m_CurrentShader == ShaderType::PHONG_LIGHTING)
+        {
+            RenderLighting(scene, camera);
+        }
+        else if (m_CurrentShader != ShaderType::GEOMETRY_BUFFER)
+        {
+            camera->RecalcVP();
+            glm::mat4 invProjMat = camera->GetInvProjMat();
+            glm::mat4 invViewMat = camera->GetInvViewMat();
+            m_ShaderLib->SetMat4f("u_InvProjMat", glm::value_ptr(invProjMat));
+            m_ShaderLib->SetMat4f("u_InvViewMat", glm::value_ptr(invViewMat));
+            m_ShaderLib->SetFloat1f("u_CameraFar", camera->Far);
+            m_ShaderLib->SetFloat1f("u_CameraNear", camera->Near);
+            // Render Target Textures
+            m_ShaderLib->SetInt1i("u_DepthTexture", 0);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, m_GDepthTexture);
+            m_ShaderLib->SetInt1i("u_BaseColorTexture", 1);
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, m_GBaseColorTexture);
+            m_ShaderLib->SetInt1i("u_NormalOcclusionTexture", 2);
+            glActiveTexture(GL_TEXTURE2);
+            glBindTexture(GL_TEXTURE_2D, m_GNormalOcclusionTexture);
+            m_ShaderLib->SetInt1i("u_MetallicRoughnessTexture", 3);
+            glActiveTexture(GL_TEXTURE3);
+            glBindTexture(GL_TEXTURE_2D, m_GMetallicRoughnessTexture);
+            m_ShaderLib->SetInt1i("u_EmissiveTexture", 4);
+            glActiveTexture(GL_TEXTURE4);
+            glBindTexture(GL_TEXTURE_2D, m_GEmissiveTexture);
+
+            RenderScreenQuad();
+            glBindTexture(GL_TEXTURE_2D, 0);
+            m_ShaderLib->BindShader(ShaderType::NONE);
+        }
 
         // 3. Output Result
-        // m_ShaderLib->BindShader(m_CurrentShader);
-        // camera->RecalcVP();
-        // glm::mat4 invProjMat = camera->GetInvProjMat();
-        // glm::mat4 invViewMat = camera->GetInvViewMat();
-        // m_ShaderLib->SetMat4f("u_InvProjMat", glm::value_ptr(invProjMat));
-        // m_ShaderLib->SetMat4f("u_InvViewMat", glm::value_ptr(invViewMat));
-        // m_ShaderLib->SetFloat1f("u_CameraFar", camera->Far);
-        // m_ShaderLib->SetFloat1f("u_CameraNear", camera->Near);
-        // // Render Target Textures
-        // m_ShaderLib->SetInt1i("u_DepthTexture", 0);
-        // glActiveTexture(GL_TEXTURE0);
-        // glBindTexture(GL_TEXTURE_2D, m_GDepthTexture);
-        // m_ShaderLib->SetInt1i("u_BaseColorTexture", 1);
-        // glActiveTexture(GL_TEXTURE1);
-        // glBindTexture(GL_TEXTURE_2D, m_GBaseColorTexture);
-        // m_ShaderLib->SetInt1i("u_NormalOcclusionTexture", 2);
-        // glActiveTexture(GL_TEXTURE2);
-        // glBindTexture(GL_TEXTURE_2D, m_GNormalOcclusionTexture);
-        // m_ShaderLib->SetInt1i("u_MetallicRoughnessTexture", 3);
-        // glActiveTexture(GL_TEXTURE3);
-        // glBindTexture(GL_TEXTURE_2D, m_GMetallicRoughnessTexture);
-        // m_ShaderLib->SetInt1i("u_EmissiveTexture", 4);
-        // glActiveTexture(GL_TEXTURE4);
-        // glBindTexture(GL_TEXTURE_2D, m_GEmissiveTexture);
-
-        // RenderScreenQuad();
-        // glBindTexture(GL_TEXTURE_2D, 0);
-        // m_ShaderLib->BindShader(ShaderType::NONE);
         BlitDepthBuffer(viewport ? m_ViewportFB : 0);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -303,8 +309,6 @@ namespace Ciri
     void Renderer::RenderLighting(const S<Scene> &scene,
                                   const S<Camera> &camera)
     {
-        m_ShaderLib->BindShader(ShaderType::PHONG_LIGHTING);
-
         /* GBuffer Textures. */
         m_ShaderLib->SetInt1i("u_DepthTexture", 0);
         glActiveTexture(GL_TEXTURE0);
@@ -316,14 +320,14 @@ namespace Ciri
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, m_GNormalOcclusionTexture);
 
-        /* Camera information for computing FragPos from depth. **/
+        /* Camera information for computing FragPos from depth. */
         camera->RecalcVP();
         glm::mat4 invProjMat = camera->GetInvProjMat();
         glm::mat4 invViewMat = camera->GetInvViewMat();
         m_ShaderLib->SetMat4f("u_InvProjMat", glm::value_ptr(invProjMat));
         m_ShaderLib->SetMat4f("u_InvViewMat", glm::value_ptr(invViewMat));
 
-        /* Uploading lights. TODO: Use UBO. */
+        /* Uploading lights. */
         int num_point_lights = 0;
         entt::registry &registry = scene->GetRegistry();
         auto group = registry.group<LightComponent>(entt::get<TransformComponent>);
@@ -335,6 +339,7 @@ namespace Ciri
             {
                 if (num_point_lights < s_MaxPointLights)
                 {
+                    /* TODO: Use UBO.*/
                     std::string uniform_string = "u_PointLights[" + std::to_string(num_point_lights) + "]";
                     std::string uniform_position_string = uniform_string + ".position";
                     std::string uniform_color_string = uniform_string + ".color";

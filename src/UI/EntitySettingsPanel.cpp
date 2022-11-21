@@ -37,8 +37,9 @@ namespace Ciri
 
             if (m_SelectedEntity.HasComponent<MaterialComponent>())
             {
+                ImGui::Text("Material");
                 auto &mc = m_SelectedEntity.GetComponent<MaterialComponent>();
-                if (ImGui::BeginCombo("Material", mc.CMaterial->spec.name.c_str(), 0))
+                if (ImGui::BeginCombo("", mc.CMaterial->spec.name.c_str(), 0))
                 {
                     /* TODO: Access material library to allow choosing material. */
                     ImGui::EndCombo();
@@ -46,23 +47,13 @@ namespace Ciri
                 ImGui::Separator();
             }
 
-            // // Material setting
-            // if (m_SelectedNode->NodeMesh)
-            // {
-            //     if (ImGui::BeginCombo("Material", m_SelectedNode->NodeMaterial->info.name.c_str(), 0))
-            //     {
-            //         for (auto &pair : m_MaterialLibrary.GetMaterials())
-            //         {
-            //             S<Material> material = pair.second;
-            //             const bool is_selected = (m_SelectedNode->NodeMaterial == material);
-            //             if (ImGui::Selectable(material->info.name.c_str(), is_selected))
-            //                 m_SelectedNode->NodeMaterial = material;
-            //             if (is_selected)
-            //                 ImGui::SetItemDefaultFocus();
-            //         }
-            //         ImGui::EndCombo();
-            //     }
-            // }
+            if (m_SelectedEntity.HasComponent<LightComponent>())
+            {
+                ImGui::Text("Light");
+                auto &lc = m_SelectedEntity.GetComponent<LightComponent>();
+                ImGui::ColorEdit3("Color", &lc.Color.x);
+                ImGui::Separator();
+            }
         }
         ImGui::End();
     }

@@ -63,6 +63,7 @@ namespace Ciri
         AddShader("Geometry Buffer", ShaderType::GEOMETRY_BUFFER, "resources/shader/gbuffer.vert", "resources/shader/gbuffer.frag");
 
         AddShader("Base Color", ShaderType::BASE_COLOR, "resources/shader/screen_quad.vert", "resources/shader/base_color.frag");
+        AddShader("Phong Lighting", ShaderType::PHONG_LIGHTING, "resources/shader/screen_quad.vert", "resources/shader/phong.frag");
         AddShader("Linear Depth", ShaderType::LINEAR_DEPTH, "resources/shader/screen_quad.vert", "resources/shader/linear_depth.frag");
         AddShader("Normal", ShaderType::NORMAL, "resources/shader/screen_quad.vert", "resources/shader/normal.frag");
         AddShader("Occlusion", ShaderType::OCCLUSION, "resources/shader/screen_quad.vert", "resources/shader/occlusion.frag");
@@ -71,8 +72,6 @@ namespace Ciri
 
         AddShader("World Position", ShaderType::WORLD_POSITION, "resources/shader/screen_quad.vert", "resources/shader/world_position.frag");
         AddShader("Origin Distance", ShaderType::ORIGIN_DISTANCE, "resources/shader/screen_quad.vert", "resources/shader/dist_origin.frag");
-
-        AddShader("Phong Lighting", ShaderType::PHONG_LIGHTING, "resources/shader/screen_quad.vert", "resources/shader/phong.frag");
     }
 
     void ShaderLibrary::CompileShaders()

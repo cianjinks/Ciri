@@ -16,7 +16,7 @@ namespace Ciri
 
     private:
         S<ShaderLibrary> m_ShaderLib;
-        ShaderType m_CurrentShader = ShaderType::BASE_COLOR;
+        ShaderType m_CurrentShader = ShaderType::PHONG_LIGHTING;
 
         uint32_t m_GBuffer;
 
