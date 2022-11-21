@@ -18,14 +18,14 @@ namespace Ciri
         ~SceneHierarchyPanel() = default;
 
         void OnUIRender();
-        void RenderNode(Entity entity);
 
         void SetScene(const S<Scene> &scene) { m_Scene = scene; }
 
         Entity GetSelectedEntity() { return m_SelectedEntity; }
 
     private:
-        // void RenderNodeHierarchy(S<SceneNode> root, int ptr_id);
+        void RenderNode(Entity entity);
+        const char *GetEntityIcon(Entity entity);
     };
 }
 

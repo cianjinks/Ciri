@@ -44,7 +44,7 @@ namespace Ciri
         }
 
         auto &tc = entity.GetComponent<TagComponent>();
-        bool node_open = ImGui::TreeNodeEx((void *)(uint64_t)(uint32_t)entity, node_flags, "%s %s", ICON_FK_CUBE, tc.Tag.c_str());
+        bool node_open = ImGui::TreeNodeEx((void *)(uint64_t)(uint32_t)entity, node_flags, "%s %s", GetEntityIcon(entity), tc.Tag.c_str());
 
         if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
         {
@@ -63,5 +63,14 @@ namespace Ciri
             }
             ImGui::TreePop();
         }
+    }
+
+    const char *SceneHierarchyPanel::GetEntityIcon(Entity entity)
+    {
+        if (entity.HasComponent<MeshComponent>())
+        {
+            return ICON_FK_CUBE;
+        }
+        return ICON_FK_SQUARE_O;
     }
 }
