@@ -11,10 +11,14 @@ uniform sampler2D u_NormalOcclusionTexture;
 uniform mat4 u_InvProjMat;
 uniform mat4 u_InvViewMat;
 
+uniform vec3 u_CameraPos;
+
 struct PointLight
 {
     vec3 position;
-    vec3 color;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
 };
 #define MAX_POINT_LIGHTS 256
 uniform PointLight u_PointLights[MAX_POINT_LIGHTS];
@@ -32,13 +36,20 @@ vec3 ComputeWorldSpacePosition(float depth)
     return worldSpacePosition.xyz;
 }
 
-vec3 CalcPointLight(PointLight light, vec3 basecolor, vec3 normal, vec3 fragpos)
+vec3 CalcPointLight(PointLight light, vec3 basecolor, vec3 normal, vec3 camerapos, vec3 fragpos)
 {
     vec3 lightDir = normalize(light.position - fragpos);
 
-    vec3 ambient = 0.1 * basecolor;
-    vec3 diffuse = light.color * max(dot(normal, lightDir), 0.0) * basecolor;
-    return (ambient + diffuse);
+    vec3 ambient = light.ambient * basecolor; // Material model has no ambient cause it was designed for PBR, use basecolor instead
+
+    float diff = max(dot(normal, lightDir), 0.0);
+    vec3 diffuse = light.diffuse * diff * basecolor;
+
+    vec3 viewDir = normalize(camerapos - fragpos);
+    vec3 reflectDir = reflect(-lightDir, normal); 
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0f), 32);
+    vec3 specular = light.specular * spec; // Material model has specular, but it is not output as part of the gbuffer
+    return (ambient + diffuse + specular);
 }
 
 void main()
@@ -51,7 +62,7 @@ void main()
     vec3 result = vec3(0.0);
     for (int p = 0; p < u_NumPointLights; p++)
     {
-        result += CalcPointLight(u_PointLights[p], BaseColor, Normal, FragPos);
+        result += CalcPointLight(u_PointLights[p], BaseColor, Normal, u_CameraPos, FragPos);
     }
     a_Color = vec4(result, 1.0f);
 }
