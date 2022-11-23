@@ -51,7 +51,9 @@ namespace Ciri
             {
                 ImGui::Text("Light");
                 auto &lc = m_SelectedEntity.GetComponent<LightComponent>();
-                ImGui::ColorEdit3("Color", &lc.Color.x);
+                ImGui::ColorEdit3("Ambient", &lc.Ambient.x);
+                ImGui::ColorEdit3("Diffuse", &lc.Diffuse.x);
+                ImGui::ColorEdit3("Specular", &lc.Specular.x);
                 ImGui::Separator();
             }
         }

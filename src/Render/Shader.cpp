@@ -20,31 +20,31 @@ namespace Ciri
 
     void ShaderLibrary::SetMat3f(const char *name, float *mat3)
     {
-        uint32_t loc = glGetUniformLocation(m_CurrentShader->program_id, name);
+        int loc = glGetUniformLocation(m_CurrentShader->program_id, name);
         glUniformMatrix3fv(loc, 1, GL_FALSE, mat3);
     }
 
     void ShaderLibrary::SetMat4f(const char *name, float *mat4)
     {
-        uint32_t loc = glGetUniformLocation(m_CurrentShader->program_id, name);
+        int loc = glGetUniformLocation(m_CurrentShader->program_id, name);
         glUniformMatrix4fv(loc, 1, GL_FALSE, mat4);
     }
 
     void ShaderLibrary::SetInt1i(const char *name, int32_t int1)
     {
-        uint32_t loc = glGetUniformLocation(m_CurrentShader->program_id, name);
+        int loc = glGetUniformLocation(m_CurrentShader->program_id, name);
         glUniform1i(loc, int1);
     }
 
     void ShaderLibrary::SetFloat1f(const char *name, float float1)
     {
-        uint32_t loc = glGetUniformLocation(m_CurrentShader->program_id, name);
+        int loc = glGetUniformLocation(m_CurrentShader->program_id, name);
         glUniform1f(loc, float1);
     }
 
     void ShaderLibrary::SetVec3f(const char *name, glm::vec3 vec3)
     {
-        uint32_t loc = glGetUniformLocation(m_CurrentShader->program_id, name);
+        int loc = glGetUniformLocation(m_CurrentShader->program_id, name);
         glUniform3fv(loc, 1, &vec3.x);
     }
 
