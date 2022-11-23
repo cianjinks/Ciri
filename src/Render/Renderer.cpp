@@ -328,7 +328,6 @@ namespace Ciri
         glm::mat4 invViewMat = camera->GetInvViewMat();
         m_ShaderLib->SetMat4f("u_InvProjMat", glm::value_ptr(invProjMat));
         m_ShaderLib->SetMat4f("u_InvViewMat", glm::value_ptr(invViewMat));
-        m_ShaderLib->SetVec3f("u_CameraPos", camera->Position);
 
         /* Uploading lights. */
         int num_point_lights = 0;
@@ -345,13 +344,9 @@ namespace Ciri
                     /* TODO: Use UBO.*/
                     std::string uniform_string = "u_PointLights[" + std::to_string(num_point_lights) + "]";
                     std::string uniform_position_string = uniform_string + ".position";
-                    std::string uniform_ambient_string = uniform_string + ".ambient";
-                    std::string uniform_diffuse_string = uniform_string + ".diffuse";
-                    std::string uniform_specular_string = uniform_string + ".specular";
+                    std::string uniform_color_string = uniform_string + ".color";
                     m_ShaderLib->SetVec3f(uniform_position_string.c_str(), tc.Transform.GetWorldTranslation());
-                    m_ShaderLib->SetVec3f(uniform_ambient_string.c_str(), lc.Ambient);
-                    m_ShaderLib->SetVec3f(uniform_diffuse_string.c_str(), lc.Diffuse);
-                    m_ShaderLib->SetVec3f(uniform_specular_string.c_str(), lc.Specular);
+                    m_ShaderLib->SetVec3f(uniform_color_string.c_str(), lc.Color);
                 }
                 num_point_lights++;
             }

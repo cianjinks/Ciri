@@ -153,19 +153,19 @@ namespace Ciri
         Entity point_light1 = m_Scene->CreateEntity("Point Light 1");
         point_light1.AddComponent<LightComponent>(LightType::POINT, glm::vec3(1.0f, 1.0f, 0.0f));
         TransformComponent &pl1_transform = point_light1.GetComponent<TransformComponent>();
-        pl1_transform.Transform.SetLocalTranslation({0.0f, 30.0f, 0.0f});
+        pl1_transform.Transform.SetLocalTranslation({0.0f, 10.0f, 0.0f});
         point_light1.UpdateTransforms();
 
         Entity point_light2 = m_Scene->CreateEntity("Point Light 2");
         point_light2.AddComponent<LightComponent>(LightType::POINT, glm::vec3(0.0f, 1.0f, 0.0f));
         TransformComponent &pl2_transform = point_light2.GetComponent<TransformComponent>();
-        pl2_transform.Transform.SetLocalTranslation({30.0f, 30.0f, 0.0f});
+        pl2_transform.Transform.SetLocalTranslation({3.0f, 10.0f, 0.0f});
         point_light2.UpdateTransforms();
 
         Entity point_light3 = m_Scene->CreateEntity("Point Light 3");
         point_light3.AddComponent<LightComponent>(LightType::POINT, glm::vec3(0.5f, 0.0f, 0.5f));
         TransformComponent &pl3_transform = point_light3.GetComponent<TransformComponent>();
-        pl3_transform.Transform.SetLocalTranslation({-30.0f, 30.0f, 0.0f});
+        pl3_transform.Transform.SetLocalTranslation({-3.0f, 10.0f, 0.0f});
         point_light3.UpdateTransforms();
 
         CIRI_LOG("Scene Initialised");

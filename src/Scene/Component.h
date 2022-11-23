@@ -72,16 +72,12 @@ namespace Ciri
     struct LightComponent
     {
         LightType Type = LightType::POINT;
-        glm::vec3 Ambient = glm::vec3(0.1f);
-        glm::vec3 Diffuse = glm::vec3(1.0f);
-        glm::vec3 Specular = glm::vec3(0.1f);
+        glm::vec3 Color = glm::vec3(1.0f);
 
         LightComponent() = default;
         LightComponent(const LightComponent &) = default;
         LightComponent(LightType type, glm::vec3 color)
-            : Type(type), Diffuse(color) {}
-        LightComponent(LightType type, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular)
-            : Type(type), Ambient(ambient), Diffuse(diffuse), Specular(specular) {}
+            : Type(type), Color(color) {}
     };
 }
 

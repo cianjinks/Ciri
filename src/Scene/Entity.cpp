@@ -60,9 +60,7 @@ namespace Ciri
     }
 
     /* Ensure the transform heirarchy for this entity is correct.
-       It's a bit strange to do this here, probably better implemented in the Scene or some kind of `SceneGraph`.
-       TODO: At the moment, this has to be called manually when modifying transforms. This is not good.
-    */
+       It's a bit strange to do this here, probably better implemented in the Scene or some kind of `SceneGraph`.  */
     void Entity::UpdateTransforms()
     {
         Entity current = *this;
