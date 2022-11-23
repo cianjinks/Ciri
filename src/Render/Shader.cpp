@@ -134,7 +134,9 @@ namespace Ciri
             glAttachShader(shader->program_id, vert_object);
             glAttachShader(shader->program_id, frag_object);
             glLinkProgram(shader->program_id);
+            CheckLinkage(shader->name, shader->program_id);
             glValidateProgram(shader->program_id);
+            CheckValidation(shader->name, shader->program_id);
             glUseProgram(0); // Is this necessary?
         }
     }
@@ -187,15 +189,52 @@ namespace Ciri
         glGetShaderiv(shader_object, GL_COMPILE_STATUS, &result);
         if (result == GL_FALSE)
         {
-            CIRI_ERROR("Shader {} failed:", name);
             int32_t length;
             glGetShaderiv(shader_object, GL_INFO_LOG_LENGTH, &length);
             char *log = new char[length];
             glGetShaderInfoLog(shader_object, length, &length, log);
             CIRI_ERROR(log);
+            CIRI_ERROR("Shader {} failed:", name);
             delete[] log;
             glDeleteShader(shader_object);
         }
         return result;
     }
+
+    bool ShaderLibrary::CheckLinkage(const char *name, uint32_t shader_program)
+    {
+        int32_t result;
+        glGetShaderiv(shader_program, GL_LINK_STATUS, &result);
+        if (result == GL_FALSE)
+        {
+            int32_t length;
+            glGetShaderiv(shader_program, GL_INFO_LOG_LENGTH, &length);
+            char *log = new char[length];
+            glGetProgramInfoLog(shader_program, length, &length, log);
+            CIRI_ERROR(log);
+            CIRI_ERROR("Failed to link shader {}!", name);
+            delete[] log;
+            glDeleteProgram(shader_program);
+        }
+        return result;
+    }
+
+    bool ShaderLibrary::CheckValidation(const char *name, uint32_t shader_program)
+    {
+        int32_t result;
+        glGetShaderiv(shader_program, GL_VALIDATE_STATUS, &result);
+        if (result == GL_FALSE)
+        {
+            int32_t length;
+            glGetShaderiv(shader_program, GL_INFO_LOG_LENGTH, &length);
+            char *log = new char[length];
+            glGetProgramInfoLog(shader_program, length, &length, log);
+            CIRI_ERROR(log);
+            CIRI_ERROR("Failed to validate shader {}!", name);
+            delete[] log;
+            glDeleteProgram(shader_program);
+        }
+        return result;
+    }
+
 }

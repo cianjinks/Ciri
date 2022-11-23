@@ -69,6 +69,8 @@ namespace Ciri
 
         std::string ParseFile(const char *file_path);
         bool CheckCompilation(const char *name, uint32_t shader_object);
+        bool CheckLinkage(const char *name, uint32_t shader_program);
+        bool CheckValidation(const char *name, uint32_t shader_program);
     };
 
 }
