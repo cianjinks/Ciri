@@ -146,11 +146,27 @@ namespace Ciri
         // sponza_entity.UpdateTransforms();
 
         Entity winter_entity = m_Scene->LoadModel(Importer::ASSIMP, "winter", "resources/model/gltf/Winter/scene.gltf");
+        TransformComponent &winter_transform = winter_entity.GetComponent<TransformComponent>();
+        winter_transform.Transform.SetLocalScale(glm::vec3(10.0f));
+        winter_entity.UpdateTransforms();
 
-        Entity point_light = m_Scene->CreateEntity("Point Light 1");
-        point_light.AddComponent<LightComponent>(LightType::POINT, glm::vec3(1.0f, 1.0f, 0.0f));
-        TransformComponent &pl_transform = point_light.GetComponent<TransformComponent>();
-        pl_transform.Transform.SetLocalTranslation({0.0f, 10.0f, 0.0f});
+        Entity point_light1 = m_Scene->CreateEntity("Point Light 1");
+        point_light1.AddComponent<LightComponent>(LightType::POINT, glm::vec3(1.0f, 1.0f, 0.0f));
+        TransformComponent &pl1_transform = point_light1.GetComponent<TransformComponent>();
+        pl1_transform.Transform.SetLocalTranslation({0.0f, 10.0f, 0.0f});
+        point_light1.UpdateTransforms();
+
+        Entity point_light2 = m_Scene->CreateEntity("Point Light 2");
+        point_light2.AddComponent<LightComponent>(LightType::POINT, glm::vec3(0.0f, 1.0f, 0.0f));
+        TransformComponent &pl2_transform = point_light2.GetComponent<TransformComponent>();
+        pl2_transform.Transform.SetLocalTranslation({3.0f, 10.0f, 0.0f});
+        point_light2.UpdateTransforms();
+
+        Entity point_light3 = m_Scene->CreateEntity("Point Light 3");
+        point_light3.AddComponent<LightComponent>(LightType::POINT, glm::vec3(0.5f, 0.0f, 0.5f));
+        TransformComponent &pl3_transform = point_light3.GetComponent<TransformComponent>();
+        pl3_transform.Transform.SetLocalTranslation({-3.0f, 10.0f, 0.0f});
+        point_light3.UpdateTransforms();
 
         CIRI_LOG("Scene Initialised");
     }

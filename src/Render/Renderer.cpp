@@ -265,6 +265,8 @@ namespace Ciri
             m_ShaderLib->SetMat4f("u_ProjectionMatrix", glm::value_ptr(proj));
             m_ShaderLib->SetMat4f("u_ViewMatrix", glm::value_ptr(view));
             m_ShaderLib->SetMat4f("u_ModelMatrix", glm::value_ptr(model));
+            glm::mat3 normal_matrix = glm::mat3(glm::transpose(glm::inverse(model)));
+            m_ShaderLib->SetMat3f("u_NormalMatrix", glm::value_ptr(normal_matrix));
 
             Entity wrap_entity(entity, scene);
             if (wrap_entity.HasComponent<MaterialComponent>())

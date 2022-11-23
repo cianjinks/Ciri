@@ -56,6 +56,7 @@ namespace Ciri
         std::map<ShaderType, Shader *> &GetShaderList() { return m_ShaderList; }
 
         // Uniforms
+        void SetMat3f(const char *name, float *mat3);
         void SetMat4f(const char *name, float *mat4);
         void SetInt1i(const char *name, int32_t int1);
         void SetFloat1f(const char *name, float float1);

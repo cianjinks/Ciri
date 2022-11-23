@@ -39,7 +39,7 @@ namespace Ciri
             {
                 ImGui::Text("Material");
                 auto &mc = m_SelectedEntity.GetComponent<MaterialComponent>();
-                if (ImGui::BeginCombo("", mc.CMaterial->spec.name.c_str(), 0))
+                if (ImGui::BeginCombo("##", mc.CMaterial->spec.name.c_str(), 0))
                 {
                     /* TODO: Access material library to allow choosing material. */
                     ImGui::EndCombo();

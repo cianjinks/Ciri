@@ -18,6 +18,12 @@ namespace Ciri
         }
     }
 
+    void ShaderLibrary::SetMat3f(const char *name, float *mat3)
+    {
+        uint32_t loc = glGetUniformLocation(m_CurrentShader->program_id, name);
+        glUniformMatrix3fv(loc, 1, GL_FALSE, mat3);
+    }
+
     void ShaderLibrary::SetMat4f(const char *name, float *mat4)
     {
         uint32_t loc = glGetUniformLocation(m_CurrentShader->program_id, name);
