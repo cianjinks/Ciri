@@ -49,11 +49,28 @@ namespace Ciri
 
             if (m_SelectedEntity.HasComponent<LightComponent>())
             {
-                ImGui::Text("Light");
                 auto &lc = m_SelectedEntity.GetComponent<LightComponent>();
-                ImGui::ColorEdit3("Ambient", &lc.Ambient.x);
-                ImGui::ColorEdit3("Diffuse", &lc.Diffuse.x);
-                ImGui::ColorEdit3("Specular", &lc.Specular.x);
+                if (lc.Type == LightType::POINT)
+                {
+                    ImGui::Text("Point Light");
+                    ImGui::ColorEdit3("Ambient", &lc.Ambient.x);
+                    ImGui::ColorEdit3("Diffuse", &lc.Diffuse.x);
+                    ImGui::ColorEdit3("Specular", &lc.Specular.x);
+                    ImGui::DragFloat("Linear", &lc.Linear, 1.0f, 0.0f);
+                    ImGui::DragFloat("Quadratic", &lc.Quadratic, 1.0f, 0.0f);
+                }
+                else if (lc.Type == LightType::SPOT)
+                {
+                    ImGui::Text("Spot Light");
+                    ImGui::InputFloat3("Local Direction", &lc.Direction.x); /* Not transformed by rotation. */
+                    ImGui::ColorEdit3("Ambient", &lc.Ambient.x);
+                    ImGui::ColorEdit3("Diffuse", &lc.Diffuse.x);
+                    ImGui::ColorEdit3("Specular", &lc.Specular.x);
+                    ImGui::DragFloat("Linear", &lc.Linear, 1.0f, 0.0f);
+                    ImGui::DragFloat("Quadratic", &lc.Quadratic, 1.0f, 0.0f);
+                    ImGui::DragFloat("Inner Cutoff", &lc.InnerCutoff, 1.0f, 0.0f);
+                    ImGui::DragFloat("Outer Cutoff", &lc.OuterCutoff, 1.0f, 0.0f);
+                }
                 ImGui::Separator();
             }
         }

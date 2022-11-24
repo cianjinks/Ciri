@@ -12,7 +12,8 @@
 namespace Ciri
 {
     const uint32_t Renderer::s_NumRenderTargets = 4;
-    const uint32_t Renderer::s_MaxPointLights = 128; /* See `phong.frag`. */
+    const uint32_t Renderer::s_MaxPointLights = 64; /* See `phong.frag`. */
+    const uint32_t Renderer::s_MaxSpotLights = 64;
 
     Renderer::Renderer(int targetWidth, int targetHeight)
         : TargetWidth(targetWidth), TargetHeight(targetHeight)
@@ -332,6 +333,7 @@ namespace Ciri
 
         /* Uploading lights. */
         int num_point_lights = 0;
+        int num_spot_lights = 0;
         entt::registry &registry = scene->GetRegistry();
         auto group = registry.group<LightComponent>(entt::get<TransformComponent>);
         for (auto entity : group)
@@ -359,11 +361,45 @@ namespace Ciri
                 }
                 num_point_lights++;
             }
+            else if (lc.Type == LightType::SPOT)
+            {
+                if (num_spot_lights < s_MaxSpotLights)
+                {
+                    /* TODO: Use UBO.*/
+                    std::string uniform_string = "u_SpotLights[" + std::to_string(num_point_lights) + "]";
+                    std::string uniform_position_string = uniform_string + ".position";
+                    std::string uniform_direction_string = uniform_string + ".direction";
+                    std::string uniform_ambient_string = uniform_string + ".ambient";
+                    std::string uniform_diffuse_string = uniform_string + ".diffuse";
+                    std::string uniform_specular_string = uniform_string + ".specular";
+                    std::string uniform_linear_string = uniform_string + ".linear";
+                    std::string uniform_quadratic_string = uniform_string + ".quadratic";
+                    std::string uniform_inner_cutoff_string = uniform_string + ".innerCutoff";
+                    std::string uniform_outer_cutoff_string = uniform_string + ".outerCutoff";
+
+                    glm::vec3 direction = glm::quat(tc.Transform.GetWorldRotation()) * lc.Direction;
+                    m_ShaderLib->SetVec3f(uniform_position_string.c_str(), tc.Transform.GetWorldTranslation());
+                    m_ShaderLib->SetVec3f(uniform_direction_string.c_str(), direction);
+                    m_ShaderLib->SetVec3f(uniform_ambient_string.c_str(), lc.Ambient);
+                    m_ShaderLib->SetVec3f(uniform_diffuse_string.c_str(), lc.Diffuse);
+                    m_ShaderLib->SetVec3f(uniform_specular_string.c_str(), lc.Specular);
+                    m_ShaderLib->SetFloat1f(uniform_linear_string.c_str(), lc.Linear);
+                    m_ShaderLib->SetFloat1f(uniform_quadratic_string.c_str(), lc.Quadratic);
+                    m_ShaderLib->SetFloat1f(uniform_inner_cutoff_string.c_str(), glm::cos(glm::radians(lc.InnerCutoff)));
+                    m_ShaderLib->SetFloat1f(uniform_outer_cutoff_string.c_str(), glm::cos(glm::radians(lc.OuterCutoff)));
+                }
+                num_spot_lights++;
+            }
         }
         m_ShaderLib->SetInt1i("u_NumPointLights", num_point_lights);
+        m_ShaderLib->SetInt1i("u_NumSpotLights", num_spot_lights);
         if (num_point_lights > s_MaxPointLights)
         {
             CIRI_WARN("Failed to render some point lights. Scene contains too many point lights ({}), max is {}!", num_point_lights, s_MaxPointLights);
+        }
+        if (num_spot_lights > s_MaxSpotLights)
+        {
+            CIRI_WARN("Failed to render some spot lights. Scene contains too many spot lights ({}), max is {}!", num_spot_lights, s_MaxSpotLights);
         }
 
         /* Output Result. */

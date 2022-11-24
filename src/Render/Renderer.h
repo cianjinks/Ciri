@@ -40,6 +40,7 @@ namespace Ciri
 
         // Lighting Constants
         static const uint32_t s_MaxPointLights;
+        static const uint32_t s_MaxSpotLights;
 
     public:
         Renderer(int32_t targetWidth, int32_t targetHeight);

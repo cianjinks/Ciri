@@ -24,9 +24,28 @@ struct PointLight
     float linear;
     float quadratic;
 };
-#define MAX_POINT_LIGHTS 128 // Setting this to 256 breaks the shader when the PointLight struct is > 9 floats :/
+#define MAX_POINT_LIGHTS 64 // Setting this or MAX_SPOT_LIGHTS to 128 breaks the shader. No error is given but clearly there is a limit on uniform array sizes.
 uniform PointLight u_PointLights[MAX_POINT_LIGHTS];
 uniform int u_NumPointLights;
+
+struct SpotLight
+{
+    vec3 position;
+    vec3 direction;
+
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+
+    float linear;
+    float quadratic;
+
+    float innerCutoff;
+    float outerCutoff;
+};
+#define MAX_SPOT_LIGHTS 64
+uniform SpotLight u_SpotLights[MAX_SPOT_LIGHTS];
+uniform int u_NumSpotLights;
 
 vec3 ComputeWorldSpacePosition(float depth)
 {
@@ -45,7 +64,7 @@ vec3 CalcPointLight(PointLight light, vec3 basecolor, vec3 normal, vec3 camerapo
     // Ambient
     vec3 ambient = light.ambient * basecolor; // Material model has no ambient cause it was designed for PBR, use basecolor instead
 
-    // Difuse
+    // Diffuse
     vec3 lightDir = normalize(light.position - fragpos);
     float diff = max(dot(normal, lightDir), 0.0);
     vec3 diffuse = light.diffuse * diff * basecolor;
@@ -59,9 +78,40 @@ vec3 CalcPointLight(PointLight light, vec3 basecolor, vec3 normal, vec3 camerapo
     // Attenuation
     float distance = length(light.position - fragpos);
     float attenuation = 1.0f / (1.0f + light.linear * distance + light.quadratic * (distance * distance));
-    ambient *= attenuation;
+    // ambient *= attenuation;
     diffuse *= attenuation;
     specular *= attenuation;
+
+    return (ambient + diffuse + specular);
+}
+
+vec3 CalcSpotLight(SpotLight light, vec3 basecolor, vec3 normal, vec3 camerapos, vec3 fragpos)
+{
+    // Ambient
+    vec3 ambient = light.ambient * basecolor;
+
+    // Spotlight Intensity
+    vec3 lightDir = normalize(light.position - fragpos);
+    float theta = dot(lightDir, normalize(-light.direction));
+    float epsilon   = light.innerCutoff - light.outerCutoff;
+    float intensity = clamp((theta - light.outerCutoff) / epsilon, 0.0, 1.0);
+
+    // Diffuse
+    float diff = max(dot(normal, lightDir), 0.0);
+    vec3 diffuse = light.diffuse * diff * basecolor;
+
+    // Specular
+    vec3 viewDir = normalize(camerapos - fragpos);
+    vec3 reflectDir = reflect(-lightDir, normal);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0f), 32);
+    vec3 specular = light.specular * spec;
+
+    // Attenuation
+    float distance = length(light.position - fragpos);
+    float attenuation = 1.0f / (1.0f + light.linear * distance + light.quadratic * (distance * distance));
+    // ambient *= attenuation;
+    diffuse *= attenuation * intensity;
+    specular *= attenuation * intensity;
 
     return (ambient + diffuse + specular);
 }
@@ -78,5 +128,11 @@ void main()
     {
         result += CalcPointLight(u_PointLights[p], BaseColor, Normal, u_CameraPos, FragPos);
     }
+
+    for (int p = 0; p < u_NumSpotLights; p++)
+    {
+        result += CalcSpotLight(u_SpotLights[p], BaseColor, Normal, u_CameraPos, FragPos);
+    }
+
     a_Color = vec4(result, 1.0f);
 }

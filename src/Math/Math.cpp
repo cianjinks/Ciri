@@ -81,6 +81,13 @@ namespace Ciri
             return translation;
         }
 
+        const glm::vec3 Transform::GetWorldRotation() const
+        {
+            glm::vec3 translation, rotation, scale;
+            DecomposeTransform(m_WorldMatrix, translation, rotation, scale);
+            return rotation;
+        }
+
         glm::mat4 ComposeTransform(const glm::vec3 &translation, const glm::quat &rotation, const glm::vec3 &scale)
         {
             glm::mat4 result = glm::mat4(1.0f);

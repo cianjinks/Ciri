@@ -48,6 +48,7 @@ namespace Ciri
 
             /* TODO: Optimize. */
             const glm::vec3 GetWorldTranslation() const;
+            const glm::vec3 GetWorldRotation() const;
 
         private:
             glm::vec3 m_LocalTranslation = glm::vec3(0.0f);

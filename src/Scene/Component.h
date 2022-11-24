@@ -66,9 +66,11 @@ namespace Ciri
 
     enum class LightType
     {
-        POINT = 0
+        POINT = 0,
+        SPOT = 1
     };
 
+    /* TODO: This struct contains the data for all light types, even when unused. Need to separate it out. */
     struct LightComponent
     {
         LightType Type = LightType::POINT;
@@ -76,9 +78,12 @@ namespace Ciri
         glm::vec3 Ambient = glm::vec3(0.1f);
         glm::vec3 Diffuse = glm::vec3(1.0f);
         glm::vec3 Specular = glm::vec3(0.1f);
+        float Linear = 	0.014f;
+        float Quadratic = 0.0007f;
 
-        float Linear = 0.027f;
-        float Quadratic = 0.0028f;
+        glm::vec3 Direction = glm::vec3(0.0f, -1.0f, 0.0f);
+        float InnerCutoff = 45.0f;
+        float OuterCutoff = 60.0f;
 
         LightComponent() = default;
         LightComponent(const LightComponent &) = default;
