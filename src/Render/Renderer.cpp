@@ -348,10 +348,14 @@ namespace Ciri
                     std::string uniform_ambient_string = uniform_string + ".ambient";
                     std::string uniform_diffuse_string = uniform_string + ".diffuse";
                     std::string uniform_specular_string = uniform_string + ".specular";
+                    std::string uniform_linear_string = uniform_string + ".linear";
+                    std::string uniform_quadratic_string = uniform_string + ".quadratic";
                     m_ShaderLib->SetVec3f(uniform_position_string.c_str(), tc.Transform.GetWorldTranslation());
                     m_ShaderLib->SetVec3f(uniform_ambient_string.c_str(), lc.Ambient);
                     m_ShaderLib->SetVec3f(uniform_diffuse_string.c_str(), lc.Diffuse);
                     m_ShaderLib->SetVec3f(uniform_specular_string.c_str(), lc.Specular);
+                    m_ShaderLib->SetFloat1f(uniform_linear_string.c_str(), lc.Linear);
+                    m_ShaderLib->SetFloat1f(uniform_quadratic_string.c_str(), lc.Quadratic);
                 }
                 num_point_lights++;
             }
