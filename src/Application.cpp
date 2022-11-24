@@ -95,7 +95,7 @@ namespace Ciri
         m_RendererSettingsPanel = CreateU<RendererSettingsPanel>(m_Renderer);
     }
 
-#if 1
+#if 0
     void Application::DefineScene()
     {
         Entity sphere_entity = m_Scene->CreateEntity("Sphere");
@@ -175,44 +175,24 @@ namespace Ciri
 
     void Application::DefineScene()
     {
-        Entity cube1_entity = m_Scene->CreateEntity("Cube 1");
-        S<Cube> cube1_mesh = CreateS<Cube>();
-        cube1_mesh->Construct();
-        cube1_entity.AddComponent<MeshComponent>(cube1_mesh);
+        Entity quad_entity = m_Scene->CreateEntity("Quad");
+        S<Quad> quad_mesh = CreateS<Quad>();
+        quad_mesh->Construct();
+        quad_entity.AddComponent<MeshComponent>(quad_mesh);
         MaterialSpecification spec = {};
-        spec.name = "Cube 1";
-        spec.baseColor = {0.0f, 1.0f, 0.0f};
-        S<Material> cube1_mat = m_Scene->CreateMaterial(spec);
-        cube1_entity.AddComponent<MaterialComponent>(cube1_mat);
-        TransformComponent &cube1_transform = cube1_entity.GetComponent<TransformComponent>();
-        cube1_transform.Transform.SetLocalTranslation({0.0f, 0.0f, 0.0f});
-
-        Entity cube2_entity = m_Scene->CreateEntity("Cube 2");
-        S<Cube> cube2_mesh = CreateS<Cube>();
-        cube2_mesh->Construct();
-        cube2_entity.AddComponent<MeshComponent>(cube2_mesh);
-        spec.name = "Cube 2";
-        spec.baseColor = {1.0f, 0.0f, 0.0f};
-        S<Material> cube2_mat = m_Scene->CreateMaterial(spec);
-        cube2_entity.AddComponent<MaterialComponent>(cube2_mat);
-        TransformComponent &cube2_transform = cube2_entity.GetComponent<TransformComponent>();
-        cube2_transform.Transform.SetLocalTranslation({0.0f, -2.0f, 0.0f});
-        cube2_transform.Transform.SetLocalScale({0.5f, 0.5f, 0.5f});
-
-        Entity cube3_entity = m_Scene->CreateEntity("Cube 3");
-        S<Cube> cube3_mesh = CreateS<Cube>();
-        cube3_mesh->Construct();
-        cube3_entity.AddComponent<MeshComponent>(cube3_mesh);
-        spec.name = "Cube 3";
+        spec.name = "Quad";
         spec.baseColor = {0.0f, 1.0f, 1.0f};
-        S<Material> cube3_mat = m_Scene->CreateMaterial(spec);
-        cube3_entity.AddComponent<MaterialComponent>(cube3_mat);
-        TransformComponent &cube3_transform = cube3_entity.GetComponent<TransformComponent>();
-        cube3_transform.Transform.SetLocalTranslation({0.0f, -4.0f, 0.0f});
-        cube3_transform.Transform.SetLocalScale({0.25f, 0.25f, 0.25f});
+        S<Material> quad_mat = m_Scene->CreateMaterial(spec);
+        quad_entity.AddComponent<MaterialComponent>(quad_mat);
+        TransformComponent &quad_transform = quad_entity.GetComponent<TransformComponent>();
+        quad_transform.Transform.SetLocalScale({50.0f, 1.0f, 50.0f});
+        quad_entity.UpdateTransforms();
 
-        cube2_entity.SetParent(cube1_entity);
-        cube3_entity.SetParent(cube2_entity);
+        Entity point_light1 = m_Scene->CreateEntity("Point Light 1");
+        point_light1.AddComponent<LightComponent>(LightType::POINT, glm::vec3(1.0f, 1.0f, 0.0f));
+        TransformComponent &pl1_transform = point_light1.GetComponent<TransformComponent>();
+        pl1_transform.Transform.SetLocalTranslation({0.0f, 5.0f, 0.0f});
+        point_light1.UpdateTransforms();
 
         CIRI_LOG("Scene Initialised");
     }
