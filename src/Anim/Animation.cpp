@@ -49,7 +49,7 @@ namespace Ciri
 
     void Animation::UpdateAnimation(float dt)
     {
-        if (Pause)
+        if (!Pause)
         {
             m_DeltaTime = dt;
             m_CurrentTime += m_TicksPerSecond * dt;

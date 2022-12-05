@@ -180,6 +180,10 @@ namespace Ciri
                 }
             }
         }
+
+        // TODO: Strange hack to fix issues with first vertex
+        boneids[0].x = boneids[1].x;
+        boneweights[0].x = boneweights[1].x;
     }
 
     void AssimpImporter::ProcessAssimpAnimation(Entity entity, const aiScene *assimp_scene, const aiAnimation* assimp_anim, std::map<std::string, BoneInfo>& boneinfomap, int& bonecounter)
