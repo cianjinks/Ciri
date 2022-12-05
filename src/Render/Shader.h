@@ -10,6 +10,7 @@ namespace Ciri
     {
         NONE = 0,
         GEOMETRY_BUFFER,
+        GEOMETRY_BUFFER_ANIM,
 
         BASE_COLOR,
         PHONG_LIGHTING,

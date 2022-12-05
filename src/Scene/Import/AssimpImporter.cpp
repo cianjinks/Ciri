@@ -15,10 +15,14 @@ namespace Ciri
 
         std::string file_dir = path.substr(0, path.find_last_of('/'));
 
-        ProcessAssimpNode(scene, entity, assimp_scene, assimp_scene->mRootNode, file_dir);
+        // TEMP
+        std::map<std::string, BoneInfo> boneInfoMap;
+        int boneCounter = 0;
+
+        ProcessAssimpNode(scene, entity, assimp_scene, assimp_scene->mRootNode, file_dir, boneInfoMap, boneCounter);
     }
 
-    void AssimpImporter::ProcessAssimpNode(const S<Scene> &scene, Entity entity, const aiScene *assimp_scene, const aiNode *node, std::string &file_dir)
+    void AssimpImporter::ProcessAssimpNode(const S<Scene> &scene, Entity entity, const aiScene *assimp_scene, const aiNode *node, std::string &file_dir, std::map<std::string, BoneInfo>& boneinfomap, int& bonecounter)
     {
         TransformComponent &tc = entity.GetComponent<TransformComponent>();
         tc.Transform.SetLocalMatrix(Math::AssimpConvertMatrixToGLMFormat(node->mTransformation));
@@ -27,12 +31,17 @@ namespace Ciri
         for (uint32_t m = 0; m < node->mNumMeshes; m++)
         {
             aiMesh *assimp_mesh = assimp_scene->mMeshes[node->mMeshes[m]];
-            ProcessAssimpMesh(scene, entity, assimp_scene, assimp_mesh, file_dir);
+            ProcessAssimpMesh(scene, entity, assimp_scene, assimp_mesh, file_dir, boneinfomap, bonecounter);
 
             if (assimp_mesh->mMaterialIndex >= 0)
             {
                 aiMaterial *assimp_material = assimp_scene->mMaterials[assimp_mesh->mMaterialIndex];
                 ProcessAssimpMaterial(scene, entity, assimp_material, file_dir);
+            }
+
+            if (assimp_scene->mNumAnimations > 0)
+            {
+                ProcessAssimpAnimation(entity, assimp_scene, assimp_scene->mAnimations[0], boneinfomap, bonecounter);
             }
         }
 
@@ -40,12 +49,12 @@ namespace Ciri
         {
             const aiNode *child = node->mChildren[n];
             Entity child_entity = scene->CreateEntity(std::string(child->mName.C_Str()));
-            ProcessAssimpNode(scene, child_entity, assimp_scene, child, file_dir);
+            ProcessAssimpNode(scene, child_entity, assimp_scene, child, file_dir, boneinfomap, bonecounter);
             child_entity.SetParent(entity);
         }
     }
 
-    void AssimpImporter::ProcessAssimpMesh(const S<Scene> &scene, Entity entity, const aiScene *assimp_scene, const aiMesh *assimp_mesh, std::string &file_dir)
+    void AssimpImporter::ProcessAssimpMesh(const S<Scene> &scene, Entity entity, const aiScene *assimp_scene, const aiMesh *assimp_mesh, std::string &file_dir, std::map<std::string, BoneInfo>& boneinfomap, int& bonecounter)
     {
         std::vector<glm::vec3> positionData;
         std::vector<glm::vec3> normalData;
@@ -75,8 +84,12 @@ namespace Ciri
             }
         }
 
+        std::vector<glm::i32vec4> boneidData;
+        std::vector<glm::vec4> boneweightData;
+        ProcessAssimpBones(assimp_mesh, boneidData, boneweightData, boneinfomap, bonecounter);
+
         S<Mesh>
-            mesh = CreateS<Mesh>(positionData, normalData, texCoordData, indexData);
+            mesh = CreateS<Mesh>(positionData, normalData, texCoordData, indexData, boneidData, boneweightData);
         mesh->Construct();
         entity.AddComponent<MeshComponent>(mesh);
     }
@@ -119,6 +132,60 @@ namespace Ciri
         }
 
         entity.AddComponent<MaterialComponent>(material);
+    }
+
+    void AssimpImporter::ProcessAssimpBones(const aiMesh *assimp_mesh, std::vector<glm::i32vec4> &boneids, std::vector<glm::vec4> &boneweights, std::map<std::string, BoneInfo> &boneinfomap, int &bonecounter)
+    {
+        for (int bone_index = 0; bone_index < assimp_mesh->mNumBones; bone_index++)
+        {
+            int boneID = -1;
+            std::string boneName = assimp_mesh->mBones[bone_index]->mName.C_Str();
+            if (boneinfomap.find(boneName) == boneinfomap.end())
+            {
+                BoneInfo newBoneInfo;
+                newBoneInfo.id = bonecounter;
+                newBoneInfo.offset = Math::AssimpConvertMatrixToGLMFormat(assimp_mesh->mBones[bone_index]->mOffsetMatrix);
+                boneinfomap[boneName] = newBoneInfo;
+                boneID = bonecounter;
+                bonecounter++;
+            }
+            else
+            {
+                boneID = boneinfomap[boneName].id;
+            }
+
+            auto weights = assimp_mesh->mBones[bone_index]->mWeights;
+            uint32_t numWeights = assimp_mesh->mBones[bone_index]->mNumWeights;
+            for (int weight_index = 0; weight_index < numWeights; ++weight_index)
+            {
+                int vertex_id = weights[weight_index].mVertexId;
+                float weight = weights[weight_index].mWeight;
+
+                for (int i = 0; i < 4; ++i)
+                {
+                    if (boneids.size() <= vertex_id)
+                    {
+                        boneids.resize(vertex_id + 1, glm::i32vec4(-1));
+                    }
+                    if (boneweights.size() <= vertex_id)
+                    {
+                        boneweights.resize(vertex_id + 1, glm::vec4(0.0f));
+                    }
+                    if (boneids[vertex_id][i] < 0)
+                    {
+                        boneweights[vertex_id][i] = weight;
+                        boneids[vertex_id][i] = boneID;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    void AssimpImporter::ProcessAssimpAnimation(Entity entity, const aiScene *assimp_scene, const aiAnimation* assimp_anim, std::map<std::string, BoneInfo>& boneinfomap, int& bonecounter)
+    {
+        S<Animation> animation = CreateS<Animation>(assimp_scene, assimp_anim, boneinfomap, bonecounter);
+        entity.AddComponent<AnimationComponent>(animation);
     }
 
 #if 0

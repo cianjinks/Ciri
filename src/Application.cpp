@@ -25,8 +25,9 @@ namespace Ciri
     {
         while (!m_Window->ShouldClose())
         {
-            m_Camera->OnUpdate(m_Window->GetTimeStep());
-            m_Renderer->RenderScene(m_Scene, m_Camera, UI::IsActive());
+            float dt = m_Window->GetTimeStep();
+            m_Camera->OnUpdate(dt);
+            m_Renderer->RenderScene(dt, m_Scene, m_Camera, UI::IsActive());
             m_Viewport->OnUpdate();
             UI::PreRender();
             OnUIRender();
@@ -95,7 +96,7 @@ namespace Ciri
         m_RendererSettingsPanel = CreateU<RendererSettingsPanel>(m_Renderer);
     }
 
-#if 1
+#if 0
     void Application::DefineScene()
     {
         Entity sphere_entity = m_Scene->CreateEntity("Sphere");
@@ -206,6 +207,13 @@ namespace Ciri
         TransformComponent &sl1_transform = spot_light1.GetComponent<TransformComponent>();
         sl1_transform.Transform.SetLocalTranslation({0.0f, 5.0f, 20.0f});
         spot_light1.UpdateTransforms();
+
+        Entity elk = m_Scene->LoadModel(Importer::ASSIMP, "elk", "resources/model/gltf/elk/scene.gltf");
+        TransformComponent &elk_transform = elk.GetComponent<TransformComponent>();
+        elk_transform.Transform.SetLocalScale(glm::vec3(4.0f));
+        elk.UpdateTransforms();
+
+        // Entity vampire = m_Scene->LoadModel(Importer::ASSIMP, "vampire", "resources/model/dae/dancing_vampire.dae");
 
         CIRI_LOG("Scene Initialised");
     }

@@ -189,7 +189,7 @@ namespace Ciri
         }
     }
 
-    void Renderer::RenderScene(const S<Scene> &scene, const S<Camera> &camera, bool viewport)
+    void Renderer::RenderScene(float dt, const S<Scene> &scene, const S<Camera> &camera, bool viewport)
     {
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -201,7 +201,7 @@ namespace Ciri
         glDrawBuffers(s_NumRenderTargets, m_RenderTargets);
 
         m_ShaderLib->BindShader(ShaderType::GEOMETRY_BUFFER);
-        RenderSceneGeometry(scene, camera);
+        RenderSceneGeometry(dt, scene, camera);
         m_ShaderLib->BindShader(ShaderType::NONE);
 
         // 2. Lighting Pass + Other things for now
@@ -249,7 +249,8 @@ namespace Ciri
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void Renderer::RenderSceneGeometry(const S<Scene> &scene,
+    void Renderer::RenderSceneGeometry(float dt,
+                                       const S<Scene> &scene,
                                        const S<Camera> &camera)
     {
         camera->RecalcVP();
@@ -262,6 +263,25 @@ namespace Ciri
         {
             auto [tc, mc] = group.get<TransformComponent, MeshComponent>(entity);
 
+            Entity wrap_entity(entity, scene);
+            if (wrap_entity.HasComponent<AnimationComponent>())
+            {
+                auto &ac = wrap_entity.GetComponent<AnimationComponent>();
+                S<Animation>& animation = ac.Anim;
+
+                /* Updating animations in the renderer as opposed to via an update function in a different place. */
+                /* Really bad design but works for now. */
+                m_ShaderLib->BindShader(ShaderType::GEOMETRY_BUFFER_ANIM);
+                animation->UpdateAnimation(dt);
+
+                std::vector<glm::mat4> &final_bone_matrices = animation->GetFinalBoneMatrices();
+                for (int i = 0; i < final_bone_matrices.size(); i++)
+                {
+                    std::string uniform_str = "u_FinalBoneMatrices[" + std::to_string(i) + "]";
+                    m_ShaderLib->SetMat4f(uniform_str.c_str(), glm::value_ptr(final_bone_matrices[i]));
+                }
+            }
+
             glm::mat4 model = tc.Transform.GetWorldMatrix();
             m_ShaderLib->SetMat4f("u_ProjectionMatrix", glm::value_ptr(proj));
             m_ShaderLib->SetMat4f("u_ViewMatrix", glm::value_ptr(view));
@@ -269,7 +289,6 @@ namespace Ciri
             glm::mat3 normal_matrix = glm::mat3(glm::transpose(glm::inverse(model)));
             m_ShaderLib->SetMat3f("u_NormalMatrix", glm::value_ptr(normal_matrix));
 
-            Entity wrap_entity(entity, scene);
             if (wrap_entity.HasComponent<MaterialComponent>())
             {
                 auto &mc = wrap_entity.GetComponent<MaterialComponent>();
@@ -306,6 +325,11 @@ namespace Ciri
 
             glBindVertexArray(0);
             glBindTexture(GL_TEXTURE_2D, 0);
+
+            if (wrap_entity.HasComponent<AnimationComponent>())
+            {
+                m_ShaderLib->BindShader(ShaderType::GEOMETRY_BUFFER);
+            }
         }
     }
 

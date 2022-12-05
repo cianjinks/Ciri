@@ -67,7 +67,11 @@ namespace Ciri
 
     const char *SceneHierarchyPanel::GetEntityIcon(Entity entity)
     {
-        if (entity.HasComponent<LightComponent>())
+        if (entity.HasComponent<AnimationComponent>())
+        {
+            return ICON_FK_BUG;
+        }
+        else if (entity.HasComponent<LightComponent>())
         {
             return ICON_FK_LIGHTBULB_O;
         }

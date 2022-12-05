@@ -3,6 +3,7 @@
 
 #include "Render/Material.h"
 #include "Mesh/Mesh.h"
+#include "Anim/Animation.h"
 
 #include "entt.hpp"
 #include <glm/glm.hpp>
@@ -89,6 +90,16 @@ namespace Ciri
         LightComponent(const LightComponent &) = default;
         LightComponent(LightType type, glm::vec3 color)
             : Type(type), Diffuse(color) {}
+    };
+
+    struct AnimationComponent
+    {
+        S<Animation> Anim;
+
+        AnimationComponent() = default;
+        AnimationComponent(const AnimationComponent &other) = default;
+        AnimationComponent(const S<Animation> &animation)
+            : Anim(animation) {}
     };
 }
 
