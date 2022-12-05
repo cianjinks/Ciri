@@ -208,7 +208,8 @@ namespace Ciri
         sl1_transform.Transform.SetLocalTranslation({0.0f, 5.0f, 20.0f});
         spot_light1.UpdateTransforms();
 
-        Entity elk = m_Scene->LoadModel(Importer::ASSIMP, "elk", "resources/model/gltf/elk/scene.gltf");
+        // Entity elk = m_Scene->LoadModel(Importer::ASSIMP, "elk", "resources/model/gltf/elk/scene.gltf");
+        Entity elk = m_Scene->LoadModel(Importer::ASSIMP, "elk", "resources/model/gltf/elk2/elk.gltf");
         TransformComponent &elk_transform = elk.GetComponent<TransformComponent>();
         elk_transform.Transform.SetLocalScale(glm::vec3(4.0f));
         elk.UpdateTransforms();

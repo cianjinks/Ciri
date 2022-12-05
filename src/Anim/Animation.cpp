@@ -49,13 +49,16 @@ namespace Ciri
 
     void Animation::UpdateAnimation(float dt)
     {
-        m_DeltaTime = dt;
-        m_CurrentTime += m_TicksPerSecond * dt;
-        m_CurrentTime = fmod(m_CurrentTime, m_Duration);
-        /* Ignore root node transform. */
-        for (int i = 0; i < m_RootNode.childrenCount; i++)
+        if (Pause)
         {
-            CalculateBoneTransform(&m_RootNode.children[i], glm::mat4(1.0f));
+            m_DeltaTime = dt;
+            m_CurrentTime += m_TicksPerSecond * dt;
+            m_CurrentTime = fmod(m_CurrentTime, m_Duration);
+            /* Ignore root node transform. */
+            for (int i = 0; i < m_RootNode.childrenCount; i++)
+            {
+                CalculateBoneTransform(&m_RootNode.children[i], glm::mat4(1.0f));
+            }
         }
     }
 

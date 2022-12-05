@@ -73,6 +73,14 @@ namespace Ciri
                 }
                 ImGui::Separator();
             }
+
+            if (m_SelectedEntity.HasComponent<AnimationComponent>())
+            {
+                auto &ac = m_SelectedEntity.GetComponent<AnimationComponent>();
+                ImGui::Text("Animation");
+                ImGui::Checkbox("Pause", &ac.Anim->Pause);
+                ImGui::Separator();
+            }
         }
         ImGui::End();
     }

@@ -269,10 +269,11 @@ namespace Ciri
                 auto &ac = wrap_entity.GetComponent<AnimationComponent>();
                 S<Animation>& animation = ac.Anim;
 
+                animation->UpdateAnimation(dt);
+
                 /* Updating animations in the renderer as opposed to via an update function in a different place. */
                 /* Really bad design but works for now. */
                 m_ShaderLib->BindShader(ShaderType::GEOMETRY_BUFFER_ANIM);
-                animation->UpdateAnimation(dt);
 
                 std::vector<glm::mat4> &final_bone_matrices = animation->GetFinalBoneMatrices();
                 for (int i = 0; i < final_bone_matrices.size(); i++)

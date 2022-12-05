@@ -17,6 +17,9 @@ namespace Ciri
 
     class Animation
     {
+    public:
+        bool Pause = false;
+
     private:
         float m_Duration;
         int m_TicksPerSecond;
