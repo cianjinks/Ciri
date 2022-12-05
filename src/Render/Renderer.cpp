@@ -391,7 +391,7 @@ namespace Ciri
                 if (num_spot_lights < s_MaxSpotLights)
                 {
                     /* TODO: Use UBO.*/
-                    std::string uniform_string = "u_SpotLights[" + std::to_string(num_point_lights) + "]";
+                    std::string uniform_string = "u_SpotLights[" + std::to_string(num_spot_lights) + "]";
                     std::string uniform_position_string = uniform_string + ".position";
                     std::string uniform_direction_string = uniform_string + ".direction";
                     std::string uniform_ambient_string = uniform_string + ".ambient";

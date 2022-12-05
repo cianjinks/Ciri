@@ -30,6 +30,11 @@ namespace Ciri
         // TODO: Support multiple meshes, it will crash at the moment!
         for (uint32_t m = 0; m < node->mNumMeshes; m++)
         {
+            if (m == 1)
+            {
+                break;
+            }
+
             aiMesh *assimp_mesh = assimp_scene->mMeshes[node->mMeshes[m]];
             ProcessAssimpMesh(scene, entity, assimp_scene, assimp_mesh, file_dir, boneinfomap, bonecounter);
 
@@ -182,8 +187,11 @@ namespace Ciri
         }
 
         // TODO: Strange hack to fix issues with first vertex
-        boneids[0].x = boneids[1].x;
-        boneweights[0].x = boneweights[1].x;
+        if (!boneids.empty() && !boneweights.empty())
+        {
+            boneids[0].x = boneids[1].x;
+            boneweights[0].x = boneweights[1].x;
+        }
     }
 
     void AssimpImporter::ProcessAssimpAnimation(Entity entity, const aiScene *assimp_scene, const aiAnimation* assimp_anim, std::map<std::string, BoneInfo>& boneinfomap, int& bonecounter)

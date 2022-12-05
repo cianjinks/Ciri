@@ -96,7 +96,6 @@ namespace Ciri
         m_RendererSettingsPanel = CreateU<RendererSettingsPanel>(m_Renderer);
     }
 
-#if 0
     void Application::DefineScene()
     {
         Entity sphere_entity = m_Scene->CreateEntity("Sphere");
@@ -122,101 +121,57 @@ namespace Ciri
         TransformComponent &cube_transform = cube_entity.GetComponent<TransformComponent>();
         cube_transform.Transform.SetLocalTranslation({-3.0f, 0.0f, 0.0f});
 
-        Entity quad_entity = m_Scene->CreateEntity("Quad");
-        S<Quad> quad_mesh = CreateS<Quad>();
-        quad_mesh->Construct();
-        quad_entity.AddComponent<MeshComponent>(quad_mesh);
-        spec.name = "Quad";
-        spec.baseColor = {0.0f, 1.0f, 1.0f};
-        S<Material> quad_mat = m_Scene->CreateMaterial(spec);
-        quad_entity.AddComponent<MaterialComponent>(quad_mat);
-        TransformComponent &quad_transform = quad_entity.GetComponent<TransformComponent>();
-        quad_transform.Transform.SetLocalTranslation({6.0f, 0.0f, 0.0f});
-
-        Entity empty1 = m_Scene->CreateEntity("Empty 1");
-        Entity empty2 = m_Scene->CreateEntity("Empty 2");
-
-        cube_entity.SetParent(sphere_entity);
-        quad_entity.SetParent(cube_entity);
-        empty1.SetParent(sphere_entity);
-        empty2.SetParent(cube_entity);
-
-        // Entity sponza_entity = m_Scene->LoadModel(Importer::ASSIMP, "sponza", "resources/model/gltf/Sponza/glTF/Sponza.gltf");
-        // TransformComponent &sponza_transform = sponza_entity.GetComponent<TransformComponent>();
-        // sponza_transform.Transform.SetLocalScale({0.05f, 0.05f, 0.05f});
-        // sponza_entity.UpdateTransforms();
-
-        Entity winter_entity = m_Scene->LoadModel(Importer::ASSIMP, "winter", "resources/model/gltf/Winter/scene.gltf");
+        Entity winter_entity = m_Scene->LoadModel(Importer::ASSIMP, "winter", "resources/model/gltf/submission_scene/winter_edit_ice_lake.gltf");
         TransformComponent &winter_transform = winter_entity.GetComponent<TransformComponent>();
         winter_transform.Transform.SetLocalScale(glm::vec3(10.0f));
         winter_entity.UpdateTransforms();
 
-        Entity point_light1 = m_Scene->CreateEntity("Point Light 1");
-        point_light1.AddComponent<LightComponent>(LightType::POINT, glm::vec3(1.0f, 1.0f, 0.0f));
+        Entity tree_entity = m_Scene->LoadModel(Importer::ASSIMP, "Tree", "resources/model/gltf/tree_star/tree_star.gltf");
+        TransformComponent& tree_transform = tree_entity.GetComponent<TransformComponent>();
+        tree_transform.Transform.SetLocalTranslation(glm::vec3(194.0f, 0, -24.0f));
+        tree_transform.Transform.SetLocalScale(glm::vec3(10.0f));
+        tree_entity.UpdateTransforms();
+
+        Entity point_light1 = m_Scene->CreateEntity("Star Light");
+        auto& star_lc = point_light1.AddComponent<LightComponent>(LightType::POINT, glm::vec3(1.0f, 1.0f, 0.0f));
+        star_lc.Linear = 0.007f;
+        star_lc.Quadratic = 0.0002f;
         TransformComponent &pl1_transform = point_light1.GetComponent<TransformComponent>();
-        pl1_transform.Transform.SetLocalTranslation({0.0f, 30.0f, 50.0f});
+        pl1_transform.Transform.SetLocalTranslation({194.2f, 70.9f, -23.67f});
         point_light1.UpdateTransforms();
 
-        Entity point_light2 = m_Scene->CreateEntity("Point Light 2");
-        point_light2.AddComponent<LightComponent>(LightType::POINT, glm::vec3(0.0f, 1.0f, 0.0f));
-        TransformComponent &pl2_transform = point_light2.GetComponent<TransformComponent>();
-        pl2_transform.Transform.SetLocalTranslation({40.0f, 30.0f, 0.0f});
-        point_light2.UpdateTransforms();
+        std::vector<glm::vec3> street_lights = {
+            {214.1f, 37.76f, 16.4f},
+            {214.1f, 37.76f, 44.6f},
+            {141.6f, 37.76f, 44.6f},
+            {141.6f, 37.76f, 16.4f},
+            {75.5f, 37.76f, 44.6f},
+            {75.5f, 37.76f, 16.4f},
+            {-0.36f, 37.76f, 44.6f},
+            {-0.36f, 37.76f, 16.4f},
+            {-70.5f, 37.76f, 44.6f},
+            {-70.5f, 37.76f, 16.4f}
+        };
 
-        Entity point_light3 = m_Scene->CreateEntity("Point Light 3");
-        point_light3.AddComponent<LightComponent>(LightType::POINT, glm::vec3(0.5f, 0.0f, 0.5f));
-        TransformComponent &pl3_transform = point_light3.GetComponent<TransformComponent>();
-        pl3_transform.Transform.SetLocalTranslation({-40.0f, 30.0f, 0.0f});
-        point_light3.UpdateTransforms();
+        Entity street_lights_entity = m_Scene->CreateEntity("Street Lights");
+        for (int s = 0; s < street_lights.size(); s++)
+        {
+            Entity street_light = m_Scene->CreateEntity("Street Light " + std::to_string(s));
+            auto& lc = street_light.AddComponent<LightComponent>(LightType::SPOT, glm::vec3(1.0f, 0.9f, 0.57f));
+            lc.InnerCutoff = 4.0f;
+            lc.OuterCutoff = 35.0f;
+            TransformComponent &sl_transform = street_light.GetComponent<TransformComponent>();
+            sl_transform.Transform.SetLocalTranslation(street_lights[s]);
+            street_light.UpdateTransforms();
+            street_light.SetParent(street_lights_entity);
+        }
 
-        Entity spot_light1 = m_Scene->CreateEntity("Spot Light 1");
-        LightComponent& lc = spot_light1.AddComponent<LightComponent>(LightType::SPOT, glm::vec3(1.0f, 1.0f, 1.0f));
-        lc.InnerCutoff = 10.0f;
-        lc.OuterCutoff = 20.0f;
-        TransformComponent &sl1_transform = spot_light1.GetComponent<TransformComponent>();
-        sl1_transform.Transform.SetLocalTranslation({-70.5f, 37.5f, 44.5f});
-        spot_light1.UpdateTransforms();
-        CIRI_LOG("Scene Initialised");
-    }
 
-#else
-
-    void Application::DefineScene()
-    {
-        Entity quad_entity = m_Scene->CreateEntity("Quad");
-        S<Quad> quad_mesh = CreateS<Quad>();
-        quad_mesh->Construct();
-        quad_entity.AddComponent<MeshComponent>(quad_mesh);
-        MaterialSpecification spec = {};
-        spec.name = "Quad";
-        spec.baseColor = {0.0f, 1.0f, 1.0f};
-        S<Material> quad_mat = m_Scene->CreateMaterial(spec);
-        quad_entity.AddComponent<MaterialComponent>(quad_mat);
-        TransformComponent &quad_transform = quad_entity.GetComponent<TransformComponent>();
-        quad_transform.Transform.SetLocalScale({50.0f, 1.0f, 50.0f});
-        quad_entity.UpdateTransforms();
-
-        Entity point_light1 = m_Scene->CreateEntity("Point Light 1");
-        point_light1.AddComponent<LightComponent>(LightType::POINT, glm::vec3(1.0f, 1.0f, 0.0f));
-        TransformComponent &pl1_transform = point_light1.GetComponent<TransformComponent>();
-        pl1_transform.Transform.SetLocalTranslation({0.0f, 5.0f, -20.0f});
-        point_light1.UpdateTransforms();
-
-        Entity spot_light1 = m_Scene->CreateEntity("Spot Light 1");
-        spot_light1.AddComponent<LightComponent>(LightType::SPOT, glm::vec3(0.0f, 1.0f, 1.0f));
-        TransformComponent &sl1_transform = spot_light1.GetComponent<TransformComponent>();
-        sl1_transform.Transform.SetLocalTranslation({0.0f, 5.0f, 20.0f});
-        spot_light1.UpdateTransforms();
-
-        // Entity elk = m_Scene->LoadModel(Importer::ASSIMP, "elk", "resources/model/gltf/elk/scene.gltf");
-        Entity elk = m_Scene->LoadModel(Importer::ASSIMP, "elk", "resources/model/gltf/elk2/elk.gltf");
+        Entity elk = m_Scene->LoadModel(Importer::ASSIMP, "elk", "resources/model/gltf/elk/scene.gltf");
         TransformComponent &elk_transform = elk.GetComponent<TransformComponent>();
         elk_transform.Transform.SetLocalScale(glm::vec3(4.0f));
         elk.UpdateTransforms();
 
-        // Entity vampire = m_Scene->LoadModel(Importer::ASSIMP, "vampire", "resources/model/dae/dancing_vampire.dae");
-
         CIRI_LOG("Scene Initialised");
     }
-#endif
 }

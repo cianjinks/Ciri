@@ -47,6 +47,8 @@ struct SpotLight
 uniform SpotLight u_SpotLights[MAX_SPOT_LIGHTS];
 uniform int u_NumSpotLights;
 
+#define GLOBAL_AMBIENT 0.1f
+
 vec3 ComputeWorldSpacePosition(float depth)
 {
     vec4 clipSpacePosition = vec4(v_TexCoord * 2.0 - 1.0, depth * 2.0 - 1.0, 1.0);
@@ -62,7 +64,7 @@ vec3 ComputeWorldSpacePosition(float depth)
 vec3 CalcPointLight(PointLight light, vec3 basecolor, vec3 normal, vec3 camerapos, vec3 fragpos)
 {
     // Ambient
-    vec3 ambient = light.ambient * basecolor; // Material model has no ambient cause it was designed for PBR, use basecolor instead
+    vec3 ambient = light.ambient * basecolor * GLOBAL_AMBIENT; // Material model has no ambient cause it was designed for PBR, use basecolor instead
 
     // Diffuse
     vec3 lightDir = normalize(light.position - fragpos);
@@ -88,7 +90,7 @@ vec3 CalcPointLight(PointLight light, vec3 basecolor, vec3 normal, vec3 camerapo
 vec3 CalcSpotLight(SpotLight light, vec3 basecolor, vec3 normal, vec3 camerapos, vec3 fragpos)
 {
     // Ambient
-    vec3 ambient = light.ambient * basecolor;
+    vec3 ambient = light.ambient * basecolor * GLOBAL_AMBIENT;
 
     // Spotlight Intensity
     vec3 lightDir = normalize(light.position - fragpos);
