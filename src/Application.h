@@ -40,6 +40,9 @@ namespace Ciri
         U<MaterialSettingsPanel> m_MaterialSettingsPanel;
         U<RendererSettingsPanel> m_RendererSettingsPanel;
 
+        // TEMP
+        std::vector<Entity> animated_elk;
+
     public:
         Application();
         ~Application() = default;
@@ -50,6 +53,7 @@ namespace Ciri
 
         void DefineUI();
         void DefineScene();
+        void UpdateScene(float dt);
     };
 }
 

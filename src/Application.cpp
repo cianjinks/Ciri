@@ -1,6 +1,7 @@
 #include "Application.h"
 
 #include "imgui.h"
+#include <glm/gtx/common.hpp>
 
 namespace Ciri
 {
@@ -27,6 +28,7 @@ namespace Ciri
         {
             float dt = m_Window->GetTimeStep();
             m_Camera->OnUpdate(dt);
+            UpdateScene(dt);
             m_Renderer->RenderScene(dt, m_Scene, m_Camera, UI::IsActive());
             m_Viewport->OnUpdate();
             UI::PreRender();
@@ -166,12 +168,48 @@ namespace Ciri
             street_light.SetParent(street_lights_entity);
         }
 
+        Entity elk1 = m_Scene->LoadModel(Importer::ASSIMP, "elk1", "resources/model/gltf/elk/scene.gltf");
+        TransformComponent &elk1_transform = elk1.GetComponent<TransformComponent>();
+        elk1_transform.Transform.SetLocalScale(glm::vec3(10.0f));
+        elk1_transform.Transform.SetLocalTranslation(glm::vec3(277.54f, -2.84f, 45.35f));
+        elk1_transform.Transform.SetLocalRotation(glm::radians(glm::vec3(90.0f, -90.0f, 180.0f)));
+        elk1.UpdateTransforms();
 
-        Entity elk = m_Scene->LoadModel(Importer::ASSIMP, "elk", "resources/model/gltf/elk/scene.gltf");
-        TransformComponent &elk_transform = elk.GetComponent<TransformComponent>();
-        elk_transform.Transform.SetLocalScale(glm::vec3(4.0f));
-        elk.UpdateTransforms();
+        Entity elk2 = m_Scene->LoadModel(Importer::ASSIMP, "elk2", "resources/model/gltf/elk/scene.gltf");
+        TransformComponent &elk2_transform = elk2.GetComponent<TransformComponent>();
+        elk2_transform.Transform.SetLocalScale(glm::vec3(10.0f));
+        elk2_transform.Transform.SetLocalTranslation(glm::vec3(298.0f, -2.84f, 19.9f));
+        elk2_transform.Transform.SetLocalRotation(glm::radians(glm::vec3(90.0f, -90.0f, 180.0f)));
+        elk2.UpdateTransforms();
+
+        Entity elk3 = m_Scene->LoadModel(Importer::ASSIMP, "elk3", "resources/model/gltf/elk/scene.gltf");
+        TransformComponent &elk3_transform = elk3.GetComponent<TransformComponent>();
+        elk3_transform.Transform.SetLocalScale(glm::vec3(10.0f));
+        elk3_transform.Transform.SetLocalTranslation(glm::vec3(298.0f, -2.84f, 63.28f));
+        elk3_transform.Transform.SetLocalRotation(glm::radians(glm::vec3(90.0f, -90.0f, 180.0f)));
+        elk3.UpdateTransforms();
+
+        animated_elk.push_back(elk1);
+        animated_elk.push_back(elk2);
+        animated_elk.push_back(elk3);
 
         CIRI_LOG("Scene Initialised");
+    }
+
+    void Application::UpdateScene(float dt)
+    {
+        float distance = 410.0f;
+        float speed = 50.0f;
+        float starts[3] = {277.54f, 298.0f, 298.0f};
+
+        for (int e = 0; e < animated_elk.size(); e++)
+        {
+            Entity elk = animated_elk[e];
+            auto& tc = elk.GetComponent<TransformComponent>();
+            glm::vec3 translation = tc.Transform.GetLocalTranslation();
+            translation.x = starts[e] - glm::fmod(glm::abs((translation.x - (speed * dt)) - starts[e]), distance);
+            tc.Transform.SetLocalTranslation(translation);
+            elk.UpdateTransforms();
+        }
     }
 }
