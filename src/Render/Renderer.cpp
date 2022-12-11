@@ -355,6 +355,8 @@ namespace Ciri
         m_ShaderLib->SetMat4f("u_InvProjMat", glm::value_ptr(invProjMat));
         m_ShaderLib->SetMat4f("u_InvViewMat", glm::value_ptr(invViewMat));
         m_ShaderLib->SetVec3f("u_CameraPos", camera->Position);
+        m_ShaderLib->SetFloat1f("u_CameraFar", camera->Far);
+        m_ShaderLib->SetFloat1f("u_CameraNear", camera->Near);
 
         /* Uploading lights. */
         int num_point_lights = 0;

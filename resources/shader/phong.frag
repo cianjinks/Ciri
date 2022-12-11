@@ -12,6 +12,8 @@ uniform mat4 u_InvProjMat;
 uniform mat4 u_InvViewMat;
 
 uniform vec3 u_CameraPos;
+uniform float u_CameraFar;
+uniform float u_CameraNear;
 
 struct PointLight
 {
@@ -48,6 +50,7 @@ uniform SpotLight u_SpotLights[MAX_SPOT_LIGHTS];
 uniform int u_NumSpotLights;
 
 #define GLOBAL_AMBIENT 0.1f
+#define ENABLE_FOG 1
 
 vec3 ComputeWorldSpacePosition(float depth)
 {
@@ -118,6 +121,25 @@ vec3 CalcSpotLight(SpotLight light, vec3 basecolor, vec3 normal, vec3 camerapos,
     return (ambient + diffuse + specular);
 }
 
+#if ENABLE_FOG
+float LinearizeDepth(float depth)
+{
+    float z = depth * 2.0 - 1.0; // back to NDC
+    return (2.0 * u_CameraNear * u_CameraFar) / (u_CameraFar + u_CameraNear - z * (u_CameraFar - u_CameraNear));
+}
+
+float GetFogFactor(float d)
+{
+    const float FogMax = 150.0;
+    const float FogMin = 100.0;
+
+    if (d>=FogMax) return 1;
+    if (d<=FogMin) return 0;
+
+    return 1 - (FogMax - d) / (FogMax - FogMin);
+}
+#endif
+
 void main()
 {
     float Depth = texture(u_DepthTexture, v_TexCoord).x;
@@ -136,5 +158,10 @@ void main()
         result += CalcSpotLight(u_SpotLights[p], BaseColor, Normal, u_CameraPos, FragPos);
     }
 
+#if ENABLE_FOG
+    vec3 fog_color = vec3(0.1);
+    a_Color = vec4(mix(result, fog_color, GetFogFactor(LinearizeDepth(Depth))), 1.0f);
+#else
     a_Color = vec4(result, 1.0f);
+#endif
 }
