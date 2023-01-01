@@ -1,0 +1,11 @@
+Model Information:
+* title:	Pedestal
+* source:	https://sketchfab.com/3d-models/pedestal-bbc51dca899346b6aa879c19bce82ebe
+* author:	elouisetrewartha (https://sketchfab.com/etrewartha)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Pedestal" (https://sketchfab.com/3d-models/pedestal-bbc51dca899346b6aa879c19bce82ebe) by elouisetrewartha (https://sketchfab.com/etrewartha) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

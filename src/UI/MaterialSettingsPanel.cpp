@@ -15,7 +15,7 @@ namespace Ciri
         if (m_SelectedMaterial)
         {
             ImGui::Text(m_SelectedMaterial->spec.name.c_str());
-            ImGui::InputFloat3("Base Color", &m_SelectedMaterial->spec.baseColor.x);
+            ImGui::ColorEdit3("Base Color", &m_SelectedMaterial->spec.baseColor.x);
             CreateTextureCombo("Albedo Tex", m_SelectedMaterial->spec.baseColorFilepath, m_SelectedMaterial->spec.baseColorTextureID);
             CreateTextureCombo("Normal Tex", m_SelectedMaterial->spec.normalFilepath, m_SelectedMaterial->spec.normalTextureID);
             CreateTextureCombo("Metallic Tex", m_SelectedMaterial->spec.metallicRoughnessFilepath, m_SelectedMaterial->spec.metallicRoughnessTextureID);

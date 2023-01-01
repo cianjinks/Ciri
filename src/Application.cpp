@@ -100,30 +100,7 @@ namespace Ciri
 
     void Application::DefineScene()
     {
-        Entity sphere_entity = m_Scene->CreateEntity("Sphere");
-        S<Sphere> sphere_mesh = CreateS<Sphere>(32, 32);
-        sphere_mesh->Construct();
-        sphere_entity.AddComponent<MeshComponent>(sphere_mesh);
-        MaterialSpecification spec = {};
-        spec.name = "Sphere";
-        spec.baseColor = {1.0f, 0.0f, 0.0f};
-        S<Material> sphere_mat = m_Scene->CreateMaterial(spec);
-        sphere_entity.AddComponent<MaterialComponent>(sphere_mat);
-        TransformComponent &sphere_transform = sphere_entity.GetComponent<TransformComponent>();
-        sphere_transform.Transform.SetLocalTranslation({0.0f, 1.0f, 0.0f});
-
-        Entity cube_entity = m_Scene->CreateEntity("Cube");
-        S<Cube> cube_mesh = CreateS<Cube>();
-        cube_mesh->Construct();
-        cube_entity.AddComponent<MeshComponent>(cube_mesh);
-        spec.name = "Cube";
-        spec.baseColor = {0.0f, 1.0f, 0.0f};
-        S<Material> cube_mat = m_Scene->CreateMaterial(spec);
-        cube_entity.AddComponent<MaterialComponent>(cube_mat);
-        TransformComponent &cube_transform = cube_entity.GetComponent<TransformComponent>();
-        cube_transform.Transform.SetLocalTranslation({-3.0f, 0.0f, 0.0f});
-
-        Entity winter_entity = m_Scene->LoadModel(Importer::ASSIMP, "winter", "resources/model/gltf/submission_scene/winter_edit_ice_lake.gltf");
+        Entity winter_entity = m_Scene->LoadModel(Importer::ASSIMP, "winter", "resources/model/gltf/submission_scene/winter_edit.gltf");
         TransformComponent &winter_transform = winter_entity.GetComponent<TransformComponent>();
         winter_transform.Transform.SetLocalScale(glm::vec3(10.0f));
         winter_entity.UpdateTransforms();
@@ -192,6 +169,100 @@ namespace Ciri
         animated_elk.push_back(elk1);
         animated_elk.push_back(elk2);
         animated_elk.push_back(elk3);
+
+        const static int num_pedestals = 6;
+        glm::vec3 pedestal_positions[num_pedestals] = {
+            {97.19, -0.1, -10.35},
+            {97.19, -0.1, -29.43},
+            {112.0, -0.1, -41.34},
+            {130.0, -0.1, -41.34},
+            {148.0, 0.3, -41.34},
+            {166.0, 0.3, -41.34},
+        };
+        for (int p = 0; p < num_pedestals; p++)
+        {
+            Entity pedestal = m_Scene->LoadModel(Importer::ASSIMP, "pedestal" + std::to_string(p), "resources/model/gltf/pedestal/scene.gltf");
+            TransformComponent &ptransform = pedestal.GetComponent<TransformComponent>();
+            ptransform.Transform.SetLocalTranslation(pedestal_positions[p]);
+            pedestal.UpdateTransforms();
+        }
+
+        // Objects on pedestals
+        glm::vec3 pedestal_object_offset = glm::vec3(0.0f, 15.0f, 0.0f);
+        Entity sphere_entity = m_Scene->CreateEntity("Sphere");
+        S<Sphere> sphere_mesh = CreateS<Sphere>(32, 32);
+        sphere_mesh->Construct();
+        sphere_entity.AddComponent<MeshComponent>(sphere_mesh);
+        MaterialSpecification spec = {};
+        spec.name = "Sphere";
+        spec.baseColor = {1.0f, 0.0f, 0.0f};
+        S<Material> sphere_mat = m_Scene->CreateMaterial(spec);
+        sphere_entity.AddComponent<MaterialComponent>(sphere_mat);
+        TransformComponent &sphere_transform = sphere_entity.GetComponent<TransformComponent>();
+        sphere_transform.Transform.SetLocalTranslation(pedestal_positions[0] + pedestal_object_offset);
+        sphere_transform.Transform.SetLocalScale(glm::vec3(3.0f));
+
+        Entity cube_entity = m_Scene->CreateEntity("Cube");
+        S<Cube> cube_mesh = CreateS<Cube>();
+        cube_mesh->Construct();
+        cube_entity.AddComponent<MeshComponent>(cube_mesh);
+        spec.name = "Cube";
+        spec.baseColor = {0.0f, 1.0f, 0.0f};
+        S<Material> cube_mat = m_Scene->CreateMaterial(spec);
+        cube_entity.AddComponent<MaterialComponent>(cube_mat);
+        TransformComponent &cube_transform = cube_entity.GetComponent<TransformComponent>();
+        cube_transform.Transform.SetLocalTranslation(pedestal_positions[1] + pedestal_object_offset);
+        cube_transform.Transform.SetLocalScale(glm::vec3(3.0f));
+
+        Entity sphere2_entity = m_Scene->CreateEntity("Sphere 2");
+        S<Sphere> sphere2_mesh = CreateS<Sphere>(32, 32);
+        sphere2_mesh->Construct();
+        sphere2_entity.AddComponent<MeshComponent>(sphere2_mesh);
+        spec.name = "Sphere 2";
+        spec.baseColor = {1.0f, 0.0f, 1.0f};
+        S<Material> sphere2_mat = m_Scene->CreateMaterial(spec);
+        sphere2_entity.AddComponent<MaterialComponent>(sphere2_mat);
+        TransformComponent &sphere2_transform = sphere2_entity.GetComponent<TransformComponent>();
+        sphere2_transform.Transform.SetLocalTranslation(pedestal_positions[2] + pedestal_object_offset);
+        sphere2_transform.Transform.SetLocalScale(glm::vec3(3.0f));
+
+        Entity cube2_entity = m_Scene->CreateEntity("Cube 2");
+        S<Cube> cube2_mesh = CreateS<Cube>();
+        cube2_mesh->Construct();
+        cube2_entity.AddComponent<MeshComponent>(cube2_mesh);
+        spec.name = "Cube 2";
+        spec.baseColor = {0.0f, 0.0f, 1.0f};
+        S<Material> cube2_mat = m_Scene->CreateMaterial(spec);
+        cube2_entity.AddComponent<MaterialComponent>(cube2_mat);
+        TransformComponent &cube2_transform = cube2_entity.GetComponent<TransformComponent>();
+        cube2_transform.Transform.SetLocalTranslation(pedestal_positions[3] + pedestal_object_offset);
+        cube2_transform.Transform.SetLocalScale(glm::vec3(2.0f));
+        cube2_transform.Transform.SetLocalRotation(glm::radians(glm::vec3(0.0f, 45.0f, 45.0f)));
+
+        Entity sphere3_entity = m_Scene->CreateEntity("Sphere 3");
+        S<Sphere> sphere3_mesh = CreateS<Sphere>(8, 8);
+        sphere3_mesh->Construct();
+        sphere3_entity.AddComponent<MeshComponent>(sphere3_mesh);
+        spec.name = "Sphere 3";
+        spec.baseColor = {0.5f, 0.0f, 1.0f};
+        S<Material> sphere3_mat = m_Scene->CreateMaterial(spec);
+        sphere3_entity.AddComponent<MaterialComponent>(sphere3_mat);
+        TransformComponent &sphere3_transform = sphere3_entity.GetComponent<TransformComponent>();
+        sphere3_transform.Transform.SetLocalTranslation(pedestal_positions[4] + pedestal_object_offset);
+        sphere3_transform.Transform.SetLocalScale(glm::vec3(3.0f));
+        sphere3_transform.Transform.SetLocalRotation(glm::radians(glm::vec3(45.0f, 0.0f, 0.0f)));
+
+        Entity cube3_entity = m_Scene->CreateEntity("Cube 3");
+        S<Cube> cube3_mesh = CreateS<Cube>();
+        cube3_mesh->Construct();
+        cube3_entity.AddComponent<MeshComponent>(cube3_mesh);
+        spec.name = "Cube 3";
+        spec.baseColor = {0.75f, 0.75f, 0.0f};
+        S<Material> cube3_mat = m_Scene->CreateMaterial(spec);
+        cube3_entity.AddComponent<MaterialComponent>(cube3_mat);
+        TransformComponent &cube3_transform = cube3_entity.GetComponent<TransformComponent>();
+        cube3_transform.Transform.SetLocalTranslation(pedestal_positions[5] + pedestal_object_offset);
+        cube3_transform.Transform.SetLocalScale(glm::vec3(2.0f));
 
         CIRI_LOG("Scene Initialised");
     }
