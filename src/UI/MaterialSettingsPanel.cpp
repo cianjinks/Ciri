@@ -16,6 +16,10 @@ namespace Ciri
         {
             ImGui::Text(m_SelectedMaterial->spec.name.c_str());
             ImGui::ColorEdit3("Base Color", &m_SelectedMaterial->spec.baseColor.x);
+            ImGui::ColorEdit3("Phong Ambient", &m_SelectedMaterial->spec.phongAmbient.x);
+            ImGui::ColorEdit3("Phong Specular", &m_SelectedMaterial->spec.phongSpecular.x);
+            ImGui::SliderFloat("Phong Shininess", &m_SelectedMaterial->spec.phongShininess, 1, 1024);
+
             CreateTextureCombo("Albedo Tex", m_SelectedMaterial->spec.baseColorFilepath, m_SelectedMaterial->spec.baseColorTextureID);
             CreateTextureCombo("Normal Tex", m_SelectedMaterial->spec.normalFilepath, m_SelectedMaterial->spec.normalTextureID);
             CreateTextureCombo("Metallic Tex", m_SelectedMaterial->spec.metallicRoughnessFilepath, m_SelectedMaterial->spec.metallicRoughnessTextureID);

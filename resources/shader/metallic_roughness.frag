@@ -8,6 +8,10 @@ uniform sampler2D u_MetallicRoughnessTexture;
 
 void main()
 {
-    vec2 metallic_roughness = texture(u_MetallicRoughnessTexture, v_TexCoord).gb;
-    a_Color = vec4(0.0f, metallic_roughness, 1.0f);
+    // vec2 metallic_roughness = texture(u_MetallicRoughnessTexture, v_TexCoord).gb;
+    // a_Color = vec4(0.0f, metallic_roughness, 1.0f);
+
+    // Replaced with phong ambient for assignment
+    vec3 ambient = texture(u_MetallicRoughnessTexture, v_TexCoord).rgb;
+    a_Color = vec4(ambient, 1.0f);
 }

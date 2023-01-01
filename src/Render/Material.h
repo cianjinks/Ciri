@@ -38,6 +38,11 @@ namespace Ciri
         float sheenTint = 0.0f;
         float clearcoat = 0.0f;
         float clearcoatGloss = 0.0f;
+
+        // NOTE: For assignment submission I am quickly hacking in phong material properties (see renderer and gbuffer.frag)
+        glm::vec3 phongAmbient = glm::vec3(0.1f);
+        glm::vec3 phongSpecular = glm::vec3(0.5f);
+        float phongShininess = 32.0f;
     };
 
     class Material

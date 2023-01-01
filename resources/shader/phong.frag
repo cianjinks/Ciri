@@ -6,7 +6,9 @@ in vec2 v_TexCoord;
 
 uniform sampler2D u_DepthTexture;
 uniform sampler2D u_BaseColorTexture;
-uniform sampler2D u_NormalOcclusionTexture;
+uniform sampler2D u_NormalOcclusionTexture; // Occlusion is actually Phong Shininess
+uniform sampler2D u_MetallicRoughnessTexture; // Actually Phong Ambient
+uniform sampler2D u_EmissiveTexture; // Actually Phong Specular
 
 uniform mat4 u_InvProjMat;
 uniform mat4 u_InvViewMat;
@@ -64,10 +66,10 @@ vec3 ComputeWorldSpacePosition(float depth)
     return worldSpacePosition.xyz;
 }
 
-vec3 CalcPointLight(PointLight light, vec3 basecolor, vec3 normal, vec3 camerapos, vec3 fragpos)
+vec3 CalcPointLight(PointLight light, vec3 basecolor, vec3 mat_ambient, vec3 mat_spec, float mat_shininess, vec3 normal, vec3 camerapos, vec3 fragpos)
 {
     // Ambient
-    vec3 ambient = light.ambient * basecolor * GLOBAL_AMBIENT; // Material model has no ambient cause it was designed for PBR, use basecolor instead
+    vec3 ambient = light.ambient * mat_ambient; // basecolor * GLOBAL_AMBIENT;
 
     // Diffuse
     vec3 lightDir = normalize(light.position - fragpos);
@@ -77,8 +79,8 @@ vec3 CalcPointLight(PointLight light, vec3 basecolor, vec3 normal, vec3 camerapo
     // Specular
     vec3 viewDir = normalize(camerapos - fragpos);
     vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0f), 32);
-    vec3 specular = light.specular * spec; // Material model has specular, but it is not output as part of the gbuffer
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0f), mat_shininess);
+    vec3 specular = light.specular * spec * mat_spec;
 
     // Attenuation
     float distance = length(light.position - fragpos);
@@ -90,10 +92,10 @@ vec3 CalcPointLight(PointLight light, vec3 basecolor, vec3 normal, vec3 camerapo
     return (ambient + diffuse + specular);
 }
 
-vec3 CalcSpotLight(SpotLight light, vec3 basecolor, vec3 normal, vec3 camerapos, vec3 fragpos)
+vec3 CalcSpotLight(SpotLight light, vec3 basecolor, vec3 mat_ambient, vec3 mat_spec, float mat_shininess, vec3 normal, vec3 camerapos, vec3 fragpos)
 {
     // Ambient
-    vec3 ambient = light.ambient * basecolor * GLOBAL_AMBIENT;
+    vec3 ambient = light.ambient * mat_ambient; // * basecolor * GLOBAL_AMBIENT;
 
     // Spotlight Intensity
     vec3 lightDir = normalize(light.position - fragpos);
@@ -108,8 +110,8 @@ vec3 CalcSpotLight(SpotLight light, vec3 basecolor, vec3 normal, vec3 camerapos,
     // Specular
     vec3 viewDir = normalize(camerapos - fragpos);
     vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0f), 32);
-    vec3 specular = light.specular * spec;
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0f), mat_shininess);
+    vec3 specular = light.specular * spec * mat_spec;
 
     // Attenuation
     float distance = length(light.position - fragpos);
@@ -146,16 +148,19 @@ void main()
     vec3 FragPos = ComputeWorldSpacePosition(Depth);
     vec3 BaseColor = texture(u_BaseColorTexture, v_TexCoord).xyz;
     vec3 Normal = texture(u_NormalOcclusionTexture, v_TexCoord).xyz;
+    vec3 PhongAmbient = texture(u_MetallicRoughnessTexture, v_TexCoord).rgb;
+    vec3 PhongSpecular = texture(u_EmissiveTexture, v_TexCoord).rgb;
+    float PhongShininess = texture(u_NormalOcclusionTexture, v_TexCoord).a;
 
     vec3 result = vec3(0.0);
     for (int p = 0; p < u_NumPointLights; p++)
     {
-        result += CalcPointLight(u_PointLights[p], BaseColor, Normal, u_CameraPos, FragPos);
+        result += CalcPointLight(u_PointLights[p], BaseColor, PhongAmbient, PhongSpecular, PhongShininess, Normal, u_CameraPos, FragPos);
     }
 
     for (int p = 0; p < u_NumSpotLights; p++)
     {
-        result += CalcSpotLight(u_SpotLights[p], BaseColor, Normal, u_CameraPos, FragPos);
+        result += CalcSpotLight(u_SpotLights[p], BaseColor, PhongAmbient, PhongSpecular, PhongShininess, Normal, u_CameraPos, FragPos);
     }
 
 #if ENABLE_FOG

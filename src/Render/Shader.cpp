@@ -73,9 +73,10 @@ namespace Ciri
         AddShader("Phong Lighting", ShaderType::PHONG_LIGHTING, "resources/shader/screen_quad.vert", "resources/shader/phong.frag");
         AddShader("Linear Depth", ShaderType::LINEAR_DEPTH, "resources/shader/screen_quad.vert", "resources/shader/linear_depth.frag");
         AddShader("Normal", ShaderType::NORMAL, "resources/shader/screen_quad.vert", "resources/shader/normal.frag");
-        AddShader("Occlusion", ShaderType::OCCLUSION, "resources/shader/screen_quad.vert", "resources/shader/occlusion.frag");
-        AddShader("Metallic & Roughness", ShaderType::METALLIC_ROUGHNESS, "resources/shader/screen_quad.vert", "resources/shader/metallic_roughness.frag");
-        AddShader("Emissive", ShaderType::EMISSIVE, "resources/shader/screen_quad.vert", "resources/shader/emissive.frag");
+        // NOTE: Hacked in phong material system in place of PBR for assignment
+        AddShader("Phong Shininess", ShaderType::OCCLUSION, "resources/shader/screen_quad.vert", "resources/shader/occlusion.frag");
+        AddShader("Phong Ambient", ShaderType::METALLIC_ROUGHNESS, "resources/shader/screen_quad.vert", "resources/shader/metallic_roughness.frag");
+        AddShader("Phong Specular", ShaderType::EMISSIVE, "resources/shader/screen_quad.vert", "resources/shader/emissive.frag");
 
         AddShader("World Position", ShaderType::WORLD_POSITION, "resources/shader/screen_quad.vert", "resources/shader/world_position.frag");
         AddShader("Origin Distance", ShaderType::ORIGIN_DISTANCE, "resources/shader/screen_quad.vert", "resources/shader/dist_origin.frag");

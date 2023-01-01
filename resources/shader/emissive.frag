@@ -8,5 +8,7 @@ uniform sampler2D u_EmissiveTexture;
 
 void main()
 {
-    a_Color = texture(u_EmissiveTexture, v_TexCoord);
+    // Replaced with phong specular for assignment
+    vec3 specular = texture(u_EmissiveTexture, v_TexCoord).rgb;
+    a_Color = vec4(specular, 1.0f);
 }

@@ -295,6 +295,11 @@ namespace Ciri
                 auto &mc = wrap_entity.GetComponent<MaterialComponent>();
                 S<Material> &material = mc.CMaterial;
                 m_ShaderLib->SetVec3f("u_BaseColor", material->spec.baseColor);
+                // NOTE: For assignment I am quickly hacking in phong materials
+                m_ShaderLib->SetVec3f("u_PhongAmbient", material->spec.phongAmbient);
+                m_ShaderLib->SetVec3f("u_PhongSpecular", material->spec.phongSpecular);
+                m_ShaderLib->SetFloat1f("u_PhongShininess", material->spec.phongShininess);
+                //
                 m_ShaderLib->SetInt1i("u_BaseColorTexture", 0);
                 glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, material->spec.baseColorTextureID);
@@ -347,6 +352,12 @@ namespace Ciri
         m_ShaderLib->SetInt1i("u_NormalOcclusionTexture", 2);
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, m_GNormalOcclusionTexture);
+        m_ShaderLib->SetInt1i("u_MetallicRoughnessTexture", 3);
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, m_GMetallicRoughnessTexture);
+        m_ShaderLib->SetInt1i("u_EmissiveTexture", 4);
+        glActiveTexture(GL_TEXTURE4);
+        glBindTexture(GL_TEXTURE_2D, m_GEmissiveTexture);
 
         /* Camera information for computing FragPos from depth. */
         camera->RecalcVP();
